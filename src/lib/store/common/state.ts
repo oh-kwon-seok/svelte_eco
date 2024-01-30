@@ -41,26 +41,7 @@ const url_state : any = writable({ path : '', query : ''});
   });
 
 
-  const dashboard_state : any = writable({
-    new_order_count : 0,
-    cancel_order_count : 0,
-    pay_count : 0,
-    supply_price : 0,
-    humi : [],
-    temp : [],  
-    temp_date : [],
-    humi_date : [],
-
-    special_temp : [],
-    special_humi : [],
-    
-    special_temp_date : [],
-    special_humi_date : [],
-
-    
-  });
-
-  
+ 
 
   const login_state : any = writable({
     user_idx : "",
@@ -89,15 +70,13 @@ const url_state : any = writable({ path : '', query : ''});
 
   const common_product_state : any = writable([]);
 
-  const common_car_state : any = writable([]);
+
 
   const common_company_state : any = writable([]);
 
   const common_user_state : any = writable([]);
 
-  const common_user_order_state : any = writable([]);
-  
-  const common_user_order_sub_state : any = writable([]);
+
   
   
   
