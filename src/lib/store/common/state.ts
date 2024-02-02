@@ -12,7 +12,7 @@ const menu_state = writable({
   info : false,
   project : false,
   process_equipment : false,
-  product : false,
+  item : false,
   shipment : false,
 
 });
@@ -55,31 +55,50 @@ const url_state : any = writable({ path : '', query : ''});
   });
 
 
-  const table_state : any = writable({
-    product : "",
-    car : "",
+  const table_list_state : any = writable({  // 메뉴별 페이지에 있는 리스트
+    item : "",
     company : "",
     user : "",
-    user_product : "",
-    user_order : "",
-    user_list : "",
-    user_order_sub : "",
-    user_order_sub_list : "",
+  
+    department : "",
+    position : "",
+    factory : "",
+    factory_sub : "",
     
   });
 
-  const common_product_state : any = writable([]);
+  const table_modal_state : any = writable({  // 모달에서 쓰는 리스트
+   
+    
+  });
+
+  // common 은 창고나 공장 등 정보를 select하기위해서 필요한 기능임 infoCallAPI 용
 
 
 
   const common_company_state : any = writable([]);
-
-  const common_user_state : any = writable([]);
-
-
+  const common_department_state : any = writable([]);
+  const common_position_state : any = writable([]);
+  const common_factory_state : any = writable([]);
+  const common_factory_sub_state : any = writable([]);
   
-  
-  
+
+
   const common_selected_state : any = writable([]); // 삭제용 데이터
 
-  export {menu_state,cookie_state,load_state,common_alert_state,common_search_state,login_state,url_state,common_product_state,common_toast_state,table_state,common_car_state,common_company_state,common_selected_state,common_user_state,common_user_order_state,common_user_order_sub_state,dashboard_state};
+  export {menu_state,
+    cookie_state,
+    load_state,
+    common_alert_state,
+    common_search_state,
+    login_state,
+    url_state,
+    table_list_state,
+    table_modal_state,
+    common_toast_state,
+    common_company_state,
+    common_department_state,
+    common_position_state,
+    common_factory_state,
+    common_factory_sub_state,
+    common_selected_state};

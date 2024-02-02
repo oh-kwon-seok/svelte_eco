@@ -15,23 +15,23 @@
     import { ChevronDownSolid, SearchOutline } from 'flowbite-svelte-icons';
 
 
-    import Util from '$lib/components/modal/car/Util.svelte';
+    import Util from '$lib/components/modal/item/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {carModalOpen} from '$lib/store/car/function';
+    import {itemModalOpen,itemExcelUpload} from '$lib/store/item/function';
     import {excelDownload, excelUpload, fileButtonClick} from '$lib/store/common/function';
     
-    import {car_form_state,car_modal_state} from '$lib/store/car/state';
+    import {item_form_state,item_modal_state} from '$lib/store/item/state';
 
-    import {url_state,cookie_state,common_car_state,table_state,common_toast_state,common_search_state} from '$lib/store/common/state';
+    import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
     import {TABLE_COMPONENT,EXCEL_CONFIG} from '$lib/module/common/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
     
-    import {makeTable,infoCallApi} from '$lib/store/common/function';
+    import {makeCustomTable,infoCallApi} from '$lib/store/common/function';
     
 
 	import { afterUpdate, onMount } from 'svelte';
@@ -39,7 +39,7 @@
   
     // import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
-
+   
 	import moment from 'moment';
             
   
@@ -50,9 +50,8 @@
 
 
     onMount(()=>{
-        console.log('시점');
-       
-        makeTable(table_state,"car",tableComponent);
+        
+        makeCustomTable(table_list_state,"item",tableComponent,"select");
 
     });
 
@@ -61,9 +60,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/car'){
+        }else if($url_state['path'] === '/item'){
          
-            makeTable(table_state,"car",tableComponent);
+            makeCustomTable(table_list_state,"item",tableComponent,"select");
         }
       
     })
@@ -80,6 +79,7 @@
   /* 나머지 스타일 정의 */
 </style>
 
+
         
         {#if $common_toast_state['value'] === true}
          <Toast />
@@ -94,7 +94,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='기준정보 관리' subtitle='차량관리'/>
+              <Title title='기준정보 관리' subtitle='품목관리'/>
             </div>
 
            
@@ -105,36 +105,49 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">차량 관리</span>
+                      <span slot="title">품목 관리</span>
 
                 
-                      <SearchBar title="car"/>
+                      <SearchBar title="item"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {carModalOpen('','add')}}>
+                        <Button  on:click={() => {itemModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-                        <Button  color='red' on:click={() => carModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => itemModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('car',EXCEL_CONFIG['car'])}>
+                        <Button  color='green' on:click={() =>excelDownload('item',EXCEL_CONFIG['item'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀다운
+                        </Button>
+
+                        <Button  color='green' on:click={(e)=> fileButtonClick('upload')}>
+                          <Icon.UploadSolid class='mr-2' size="20" />
+                            엑셀 업로드
+                          <input 
+                          hidden  
+                          id = 'upload' 
+                          type='file' 
+                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+                          on:change={(e)=> itemExcelUpload(e)}
+                    
+                          />
                       </Button>
 
                       
 
-                        {#if $car_modal_state['title'] === 'add'}
+                        {#if $item_modal_state['title'] === 'add'}
                           <Util title="add" />
-                        {:else if $car_modal_state['title'] === 'update'}
+                        {:else if $item_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $car_modal_state['title'] === 'check_delete'}
+                          {:else if $item_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
                         {/if}
                         

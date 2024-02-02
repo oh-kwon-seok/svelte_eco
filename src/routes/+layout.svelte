@@ -26,11 +26,11 @@
 
 		
 		infoCallApi('company');
-		infoCallApi('car');
-		infoCallApi('user');
+		infoCallApi('department');
+		infoCallApi('position');
+		infoCallApi('factory');
+		infoCallApi('factory_sub');
 		
-		
-
 	
 	});
 	

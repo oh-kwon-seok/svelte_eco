@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_product_state,  common_car_state,common_company_state,common_user_state,common_user_order_state,common_user_order_sub_state,table_state } from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_car_state,common_company_state,common_user_state,common_user_order_state,common_user_order_sub_state,table_list_state } from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -33,9 +33,9 @@ let list_data : any;
 let login_data : any;
 let url_data : any;
 
-let table_data : any;
+let table_list_data : any;
 
-let product_data : any;
+let item_data : any;
 
 let car_data : any;
 
@@ -81,13 +81,13 @@ login_state.subscribe((data) => {
 
 })
 
-table_state.subscribe((data : any) => {
-  table_data = data;
+table_list_state.subscribe((data : any) => {
+  table_list_data = data;
 })
 
 
-common_product_state.subscribe((data : any) => {
-  product_data = data;
+common_item_state.subscribe((data : any) => {
+  item_data = data;
 })
 
 
@@ -355,8 +355,8 @@ const check_delete = (data, key,value) => {
 
 const excelDownload = (type,config) => {
   
-      let data =  table_data[type].getSelectedData();
-      console.log('data  : ', table_data[type].getSelectedData());
+      let data =  table_list_data[type].getSelectedData();
+      console.log('data  : ', table_list_data[type].getSelectedData());
       
       
       
@@ -378,7 +378,7 @@ const excelDownload = (type,config) => {
 
           let text_title : any= '';
           switch(type){
-              case 'product': 
+              case 'item': 
                   text_title = '품목 관리';
               break;
               
@@ -641,25 +641,21 @@ const excelDownload = (type,config) => {
           axios.get(url,config).then(res=>{
             console.log('url : ',url);
             console.log('select_query : ',res);
-            console.log('table_data : ',table_data);
+            console.log('table_list_data : ',table_list_data);
             console.log('type : ', type);
             console.log('params : ', params);
             
-            table_data[type].setData(res.data);
-            table_state.update(() => table_data);
+            table_list_data[type].setData(res.data);
+            table_list_state.update(() => table_list_data);
            
          })
       
       }
 
 
-      const makeCustomTable = (table_state,type,tableComponent,select) => {
+      const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
-
-        console.log(table_state);
-        console.log(type);
-        console.log(tableComponent);
-        
+       
         const url = `${api}/${type}/${select}`; 
         
         search_data['filter'] = TABLE_FILTER[type];
@@ -699,12 +695,12 @@ const excelDownload = (type,config) => {
            
             if(res.data.length > 0){
              
-              if(table_state[type]){
-                table_state[type].destory();
+              if(table_list_state[type]){
+                table_list_state[type].destory();
               }
 
               
-              table_data[type] =   new Tabulator(tableComponent, {
+              table_list_data[type] =   new Tabulator(tableComponent, {
               height:TABLE_TOTAL_CONFIG['height'],
               layout:TABLE_TOTAL_CONFIG['layout'],
               pagination:TABLE_TOTAL_CONFIG['pagination'],
@@ -737,20 +733,20 @@ const excelDownload = (type,config) => {
          
              
               });
-              console.log('table_data  :', table_data);
+              console.log('table_list_data  :', table_list_data);
 
-              table_state.update(()=> table_data);
+              table_list_state.update(()=> table_list_data);
 
           
             
               
         }else{
           
-          if(table_state[type]){
-            table_state[type].destory();
+          if(table_list_state[type]){
+            table_list_state[type].destory();
           }
 
-          table_data[type] =   new Tabulator(tableComponent, {
+          table_list_data[type] =   new Tabulator(tableComponent, {
             height:TABLE_TOTAL_CONFIG['height'],
             layout:TABLE_TOTAL_CONFIG['layout'],
             pagination:TABLE_TOTAL_CONFIG['pagination'],
@@ -781,9 +777,9 @@ const excelDownload = (type,config) => {
             
       
             });
-            console.log('table_data  :', table_data);
+            console.log('table_list_data  :', table_list_data);
 
-            table_state.update(()=> table_data);
+            table_list_state.update(()=> table_list_data);
 
 
        
@@ -834,8 +830,8 @@ const excelDownload = (type,config) => {
         axios.get(url,config).then(res=>{
           console.log('res.data : ',res);
           
-          table_data[type].setData(res.data);
-          table_state.update(() => table_data);
+          table_list_data[type].setData(res.data);
+          table_list_state.update(() => table_list_data);
          
        })
     

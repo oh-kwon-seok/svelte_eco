@@ -89,7 +89,7 @@
 				tokenChange(res.data['token']);
 
 		
-				window.location.href = '/sale/user_order';
+				window.location.href = '/info/item';
 			
 			}else if(res.data['success'] === false){
 				

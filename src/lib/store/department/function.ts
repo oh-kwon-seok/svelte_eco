@@ -3,7 +3,7 @@
 //@ts-nocheck
 
 import { writable } from 'svelte/store';
-import {company_modal_state,company_form_state} from './state';
+import {department_modal_state,department_form_state} from './state';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
@@ -31,20 +31,19 @@ let selected_data : any;
 
 let init_form_data = {
   uid : 0,
-  code : '',
   name : '',
-  phone : '',
-  email : '',
+
   used : 1,
+ 
 
 }
 
 
-company_modal_state.subscribe((data) => {
+department_modal_state.subscribe((data) => {
     update_modal = data;
 })
 
-company_form_state.subscribe((data) => {
+department_form_state.subscribe((data) => {
     update_form = data;
 })
 
@@ -75,7 +74,7 @@ common_selected_state.subscribe((data) => {
 
 
 
-const companyModalOpen = (data : any, title : any) => {
+const departmentModalOpen = (data : any, title : any) => {
   console.log('data : ', data);
 
   console.log('title : ', title);
@@ -86,12 +85,12 @@ const companyModalOpen = (data : any, title : any) => {
     common_alert_state.update(() => alert);
     update_modal['title'] = title;
     update_modal[title]['use'] = true;
-    company_modal_state.update(() => update_modal);
+    department_modal_state.update(() => update_modal);
 
     console.log('update_modal : ', update_modal);
 
     if(title === 'add'){
-      company_form_state.update(() => init_form_data);
+      department_form_state.update(() => init_form_data);
      
     }
     if(title === 'update' ){
@@ -100,12 +99,12 @@ const companyModalOpen = (data : any, title : any) => {
             update_form[item] = data[item];
         
           }); 
-            company_form_state.update(() => update_form);
-            company_modal_state.update(() => update_modal);
+            department_form_state.update(() => update_form);
+            department_modal_state.update(() => update_modal);
            
     }
     if(title === 'check_delete'){
-      let data =  table_list_data['company'].getSelectedData();
+      let data =  table_list_data['department'].getSelectedData();
 
       common_selected_state.update(() => data);
    
@@ -122,7 +121,7 @@ const modalClose = (title) => {
   alert['type'] = 'save';
   alert['value'] = false;
   common_alert_state.update(() => alert);
-  company_modal_state.update(() => update_modal);
+  department_modal_state.update(() => update_modal);
 
 
 }
@@ -141,13 +140,13 @@ const save = (param,title) => {
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
-        company_modal_state.update(() => update_modal);
+        department_modal_state.update(() => update_modal);
  
         return common_alert_state.update(() => alert);
   
       }else {
       
-        const url = `${api}/company/save`
+        const url = `${api}/department/save`
         try {
   
           let params = {
@@ -171,9 +170,9 @@ const save = (param,title) => {
             update_modal['title'] = '';
             update_modal['add']['use'] = !update_modal['add']['use'];
         
-            company_modal_state.update(() => update_modal);
-            company_form_state.update(()=> init_form_data);
-            select_query('company');
+            department_modal_state.update(() => update_modal);
+            department_form_state.update(()=> init_form_data);
+            select_query('department');
             return common_toast_state.update(() => toast);
 
           }else{
@@ -191,7 +190,7 @@ const save = (param,title) => {
     }
     
     if(title === 'update'){
-      const url = `${api}/company/update`
+      const url = `${api}/department/update`
       try {
 
         let params = {
@@ -216,9 +215,9 @@ const save = (param,title) => {
           toast['value'] = true;
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
-          company_modal_state.update(() => update_modal);
-          company_form_state.update(()=> init_form_data);
-          select_query('company');
+          department_modal_state.update(() => update_modal);
+          department_form_state.update(()=> init_form_data);
+          select_query('department');
           return common_toast_state.update(() => toast);
 
         }else{
@@ -250,7 +249,7 @@ const save = (param,title) => {
 
         if(uid_array.length > 0){
 
-          const url = `${api}/company/delete`
+          const url = `${api}/department/delete`
           try {
     
             let params = {
@@ -268,10 +267,10 @@ const save = (param,title) => {
               toast['value'] = true;
               update_modal['title'] = title;
               update_modal[title]['use'] = false;
-              company_modal_state.update(() => update_modal);
-              company_form_state.update(()=> init_form_data);
+              department_modal_state.update(() => update_modal);
+              department_form_state.update(()=> init_form_data);
 
-              select_query('company');
+              select_query('department');
     
               return common_toast_state.update(() => toast);
     
@@ -309,7 +308,7 @@ const save = (param,title) => {
   //       maker : update_form['maker'],
   //       code : '',
   //       name : '',
-  //       company : 'BOX',
+  //       department : 'BOX',
   //       type : '완제품',
   //       check : false,
   //       use_qty : 0,
@@ -344,7 +343,7 @@ const save = (param,title) => {
   //     update_form['child'].pop();
   //   }
   
-  //   company_form_state.update(() => update_form);
+  //   department_form_state.update(() => update_form);
     
   // }
 
@@ -361,7 +360,7 @@ const save = (param,title) => {
   
   //   }
     
-  //   company_form_state.update(() => update_form);
+  //   department_form_state.update(() => update_form);
     
 
 
@@ -372,4 +371,4 @@ const save = (param,title) => {
 
 
 
-export {companyModalOpen,save,modalClose}
+export {departmentModalOpen,save,modalClose}

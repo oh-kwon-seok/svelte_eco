@@ -8,10 +8,10 @@
     
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
-    import {product_modal_state, product_form_state} from '$lib/store/product/state';
+    import {product_modal_state, product_form_state} from '$lib/store/item/state';
     import {common_alert_state, common_toast_state,common_company_state} from '$lib/store/common/state';
     
-    import {save,modalClose} from '$lib/store/product/function';
+    import {save,modalClose} from '$lib/store/item/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT,TABLE_HEADER_LIST_FILTER} from '$lib/module/common/constants';
     
     export let title;
