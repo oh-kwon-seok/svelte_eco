@@ -2,22 +2,20 @@
 import { DateTime } from 'luxon';
 
 
-import {product_modal_state} from '$lib/store/item/state';
-
-import {table_state} from '$lib/store/common/state';
+import {item_modal_state} from '$lib/store/item/state';
 
 
 
-import {productModalOpen} from '$lib/store/item/function';
 
-import { carModalOpen } from '$lib/store/car/function';
+import {itemModalOpen} from '$lib/store/item/function';
+
 
 import { companyModalOpen } from '$lib/store/company/function';
 import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from './function';
 
 import { userModalOpen} from '$lib/store/user/function';
 
-import { userOrderModalOpen} from '$lib/store/user_order/function';
+import { factoryModalOpen} from '$lib/store/factory/function';
 import moment from 'moment';
 
 import axios from 'axios'
@@ -25,649 +23,7 @@ import axios from 'axios'
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
-const printContent = (data : any) => {
 
-    console.log('data : ', data);
-
-   let regdate = moment(data.created).format('YYYY 년 MM월 DD일'); 
-   
-    const url = `${api}/user_order_sub/info_select`;
-    const params = { user_order_uid : data.uid};
-    const config = {
-        params : params,
-        headers:{
-          "Content-Type": "application/json",
-          
-        }
-      }
-
-
-    axios.get(url,config).then(res=>{
-
-   let user_order_checked_data =  res.data;
-
-   let skyblue = "#1E90FF";
-
-
-   const productDetails = user_order_checked_data.length > 0 && user_order_checked_data.map((item,index) => `
-   
-   <tr>
-    
-     <td style="text-align : center; "class="info-bottom-border info-left-border info-right-border">${index+1}</td>
-     <td style="text-align : left; "class="info-bottom-border">${item.product.name}</td>
-     <td style="text-align : right; "class="info-bottom-border info-left-border ">${commaNumber(item.qty)}</td>
-     <td style="text-align : right; "class="info-bottom-border info-left-border">${commaNumber(item.price)}</td>
-     <td style="text-align : right; "class="info-bottom-border info-left-border info-right-border">${commaNumber(item.supply_price)}</td>
-   </tr>
- `).join('');
-
-
- const tempDetails = Array.from({ length: 10 - user_order_checked_data.length}, (_, index) => `
- <tr>
-   <td style="text-align: center;" class="info-bottom-border info-left-border info-right-border">${user_order_checked_data.length+index+1}</td>
-   <td style="text-align: left;" class="info-bottom-border"></td>
-   <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
-   <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
-   <td style="text-align: right;" class="info-bottom-border info-left-border info-right-border"></td>
- </tr>
-`).join('');
-
-
-   const content = `
-     <html>
-       <head>
-         <style>
-         @media print {
-            @page {
-              size: A4;
-             
-              margin: 0.5cm;
-            }
-            body {
-              font-family: 'Nanum Gothic', sans-serif;
-              margin: 0;
-              padding: 0px 30px 0px 5px;
-            box-sizing: border-box;
-
-              background-color: #fff;
-              display: flex;
-              flex-direction: column;
-            }
-            .container {
-              width: 100%;
-              height: 47%;
-               
-            }
-            .red-border {
-              border: 3px solid red;
-              border-radius: 10px;
-              padding: 10px; /* 예시로 padding을 추가하여 테두리가 둥글게 나타날 수 있도록 함 */
-              padding-top : 10px;
-
-            }
-            .skyblue-border {
-              border: 3px solid ${skyblue};
-              border-radius: 10px;
-              padding-top : 10px;
-              padding: 10px; /* 예시로 padding을 추가하여 테두리가 둥글게 나타날 수 있도록 함 */
-            }
-            .header {
-              text-align: center;
-              padding: 10px 0;
-              
-            }
-            .header_sub {
-                text-align: center;
-                display : flex;
-                flex-direction : row;
-                padding: 10px 0;
-                
-              }
-            .top_title {
-                text-align: center;
-                font-size : 24px;
-                font-weight : bold;
-                text-decoration: underline;
-                color : red;
-              }
-              .top_title_sub {
-                width : "30%",
-                text-align: center;
-                font-size : 16px;
-                color : red;
-              
-              }
-          
-
-
-              .bottom_title {
-                text-align: center;
-                font-size : 24px;
-                font-weight : bold;
-                text-decoration: underline;
-                color : ${skyblue};
-              }
-              .bottom_title_sub {
-                width : "30%",
-                text-align: center;
-                font-size : 16px;
-                color : ${skyblue};
-              
-              }
-
-
-            .content {
-              padding: 20px 0;
-            }
-            .bottom_footer {
-              text-align: left;
-              padding: 10px 0 10px 0;
-              
-            }
-
-            .table-container {
-                //border-collapse: collapse;
-              }
-          
-              .table-container table, .table-container th, .table-container td {
-                border: none;
-              }
-          
-              .table-container th, .table-container td {
-                padding: 3px; /* 원하는 패딩 값 설정 */
-              }
-
-              .table_row {
-                padding: 5px; 
-
-                display:flex; flex-direction : row;
-              }
-
-
-              .info-table-container {
-                border: 2px solid red; /* 테이블의 전체 border 색상 설정 */
-                border-collapse: collapse;
-              
-              }
-           
-          
-              .info-table-container th, .info-table-container td {
-                border: 1px solid red; /* 각 셀의 border 색상 설정 */
-                padding: 1px; /* 원하는 패딩 값 설정 */
-                font-size:12px;
-              }
-             
-              
-                td.info-no-border {
-                    border: none; /* 모든 테두리 없애기 */
-                }
-            
-                td.info-top-border {
-                    border-top: none; /* 위쪽 테두리 없애기 */
-                }
-            
-                td.info-right-border {
-                    border-right: none; /* 오른쪽 테두리 없애기 */
-                }
-            
-                td.info-bottom-border {
-                    border-bottom: none; /* 아래쪽 테두리 없애기 */
-                }
-            
-                td.info-left-border {
-                    border-left: none; /* 왼쪽 테두리 없애기 */
-                }
-
-
-                .info-sub-table-container {
-                    margin-top : 10px;
-                    border: 2px solid red; /* 테이블의 전체 border 색상 설정 */
-                    border-collapse: collapse;
-                    width: 100%;
-                  }
-               
-              
-                  .info-sub-table-container th, .info-sub-table-container td {
-                    border: 1px solid red; /* 각 셀의 border 색상 설정 */
-                    padding: 1px; /* 원하는 패딩 값 설정 */
-                    font-size:12px;
-                  }
-                  td.info-no-border {
-                    border: none; /* 모든 테두리 없애기 */
-                }
-            
-                td.info-top-border {
-                    border-top: none; /* 위쪽 테두리 없애기 */
-                }
-            
-                td.info-right-border {
-                    border-right: none; /* 오른쪽 테두리 없애기 */
-                }
-            
-                td.info-bottom-border {
-                    border-bottom: none; /* 아래쪽 테두리 없애기 */
-                }
-            
-                td.info-left-border {
-                    border-left: none; /* 왼쪽 테두리 없애기 */
-                }
-
-
-
-
-
-
-
-
-                .info-bottom-table-container {
-                    border: 2px solid ${skyblue}; /* 테이블의 전체 border 색상 설정 */
-                    border-collapse: collapse;
-                  
-                  }
-               
-              
-                  .info-bottom-table-container th, .info-bottom-table-container td {
-                    border: 1px solid ${skyblue}; /* 각 셀의 border 색상 설정 */
-                    padding: 1px; /* 원하는 패딩 값 설정 */
-                    font-size:12px;
-                  }
-                 
-                  
-                    td.info-no-border {
-                        border: none; /* 모든 테두리 없애기 */
-                    }
-                
-                    td.info-top-border {
-                        border-top: none; /* 위쪽 테두리 없애기 */
-                    }
-                
-                    td.info-right-border {
-                        border-right: none; /* 오른쪽 테두리 없애기 */
-                    }
-                
-                    td.info-bottom-border {
-                        border-bottom: none; /* 아래쪽 테두리 없애기 */
-                    }
-                
-                    td.info-left-border {
-                        border-left: none; /* 왼쪽 테두리 없애기 */
-                    }
-    
-    
-                    .info-bottom-sub-table-container {
-                        margin-top : 10px;
-                        border: 2px solid ${skyblue}; /* 테이블의 전체 border 색상 설정 */
-                        border-collapse: collapse;
-                        width: 100%;
-                      }
-                   
-                  
-                      .info-bottom-sub-table-container th, .info-bottom-sub-table-container td {
-                        border: 1px solid ${skyblue}; /* 각 셀의 border 색상 설정 */
-                        padding: 1px; /* 원하는 패딩 값 설정 */
-                        font-size:12px;
-                      }
-                      td.info-no-border {
-                        border: none; /* 모든 테두리 없애기 */
-                    }
-                
-                    td.info-top-border {
-                        border-top: none; /* 위쪽 테두리 없애기 */
-                    }
-                
-                    td.info-right-border {
-                        border-right: none; /* 오른쪽 테두리 없애기 */
-                    }
-                
-                    td.info-bottom-border {
-                        border-bottom: none; /* 아래쪽 테두리 없애기 */
-                    }
-                
-                    td.info-left-border {
-                        border-left: none; /* 왼쪽 테두리 없애기 */
-                    }
-                 
-            
-
-          }
-         </style>
-       </head>
-       <body>
-       <div class="container red-border">
-       <div class="header">
-         <span class="top_title">거&nbsp;&nbsp;래&nbsp;&nbsp;명&nbsp;&nbsp;세&nbsp;&nbsp;서</span>
-        </div>
-       
-        
-                <div class="table-container">
-                    <table class="table-with-border">
-                    <thead>
-                        <tr>
-                            <th  style="width : 50px; text-align : left; color : red;">NO.</th>
-                            <th  style="width : 250px; text-align : left;">${data.uid}</th>
-                        
-                            <th style="width : 130px; text-align : left; color : red;">(공급자 보관용)</th>
-                            <th style="width : 100px; text-align : left; color : red;">TEL :</th>
-                            <th style="width : 50px; text-align : left; color : red;">FAX : </th>
-                            
-                            <th style="width : 120px; text-align : left; color : black;">${CLIENT_INFO.fax}</th>
-                            
-                        </tr>    
-                    </thead>
-                    </table>
-                </div>
-
-                <div style="display:flex; flex-direction : row; width : 100%;" >
-                    <div style="display:flex; flex-direction : column; width : 40%;" class="table-container">
-                        <div class="table_row">
-                            
-                            <div style="text-align : left; color : red;font-weight: bold; ">일자</div>
-                            <div style="text-align : left;  ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${regdate}</div>
-                        </div>
-                        <div class="table_row">
-                            
-                            <div style="text-align : left; text-decoration : underline; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${data.user.customer_name}</div>
-                            <div style="text-align : left; text-decoration: underline; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;귀하</div>
-
-                        </div>
-                        <div class="table_row">
-                                
-                            <div style="text-align : left; text-decoration : underline; color : red; font-weight: bold; font-size : 16px;">아래와 같이 거래합니다.</div>
-                        
-                        </div>
-
-                        <div class="table_row">
-                                
-                            <div style="text-align : left; color : red; font-weight: bold; font-size : 20px;">합계금</div>
-                            <div style="text-align : left;  font-weight: bold; font-size : 24px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${commaNumber(data.totalSupplyPrice)}<br/></div>
-                        </div>
-                          
-                    </div>
-                    <div style="display:flex; flex-direction : row; justify-content: flex-end; width : 60%;" class="table-container">
-                    <div class="info-table-container">
-                       
-                    <table>
-                    <tbody>
-                <tr >
-                    <td  class="info-no-border" style="writing-mode: vertical-lr; letter-spacing: 30px;" rowspan="4">공급자</td>
-                    <td  class="info-top-border">등록번호</td>
-                    <td  class="info-top-border info-right-border info-left-border" colspan="3">${CLIENT_INFO.code}</td>
-                  </tr>
-                  <tr>
-                    <td  class="info-bottom-border info-top-border">상호</td>
-                    <td class="info-bottom-border info-top-border info-left-border">${CLIENT_INFO.company_name}</td>
-                    <td class="info-bottom-border info-right-border info-top-border info-left-border">성명</td>
-                    <td class="info-bottom-border info-top-border info-right-border">${CLIENT_INFO.name}</td>
-                  </tr>
-                  <tr>
-                    <td class="">사업장주소</td>
-                    <td class="info-left-border info-right-border" colspan="3">${CLIENT_INFO.address}</td>
-                  </tr>
-                  <tr>
-                    <td class="info-top-border info-bottom-border ">업태</td>
-                    <td class="info-top-border info-bottom-border info-left-border">${CLIENT_INFO.type}</td>
-                    <td class="info-top-border info-bottom-border info-left-border info-right-border">종목</td>
-                    <td class="info-top-border info-bottom-border info-right-border">${CLIENT_INFO.type2}</td>
-                  </tr>
-                    </tbody>
-                  </table>
-                       
-                    </div>
-                </div>
-              
-                
-                </div>
-
-
-
-
-
-
-
-
-                <div style="display:flex; flex-direction : row; width : 100%;" class="table-container">
-                <div class="info-sub-table-container">
-                   
-                <table>
-                <tbody>
-                <tr >
-                <td style="width : 40px; text-align:center; font-weight : 600" class="info-no-border">순 서</td>
-                <td style="width : 480px; text-align:center; font-weight : 600" class="info-bottom-border info-top-border">품 명</td>
-                <td style="width : 100px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">수 량</td>
-                <td style="width : 100px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">단 가</td>
-                <td style="width : 200px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border info-right-border">공 급 가 액</td>
-                
-                </tr>
-
-                ${productDetails}
-                ${tempDetails}
-                   
-                </tbody>
-               
-              </table>
-                
-              
-    
-                </div>
-            </div>
-
-            <div class="bottom_footer">
-            <span style="text-align : left;">전미수금 : ${data.totalUnpaidPrice-data.totalSupplyPrice > 0? commaNumber(data.totalUnpaidPrice-data.totalSupplyPrice) : 0}</span>
-    
-            <span style="text-align : left;">&nbsp;&nbsp;&nbsp;합계 : ${commaNumber(data.totalUnpaidPrice-data.totalSupplyPrice+data.totalSupplyPrice)}</span>
-
-
-            <span style="text-align : left; font-weight : bold; padding-left : 50px;">입금 :        </span>
-            <span style="text-align : left; font-weight : bold; padding-left : 150px;">잔액 :        </span>
-            
-         
-            <br/>
-           
-             
-            ${data.description}
-            </div>
-
-
-
-              
-            
-     </div>
-
-     
-     
-     <div style="margin-top : 2px;" class="container skyblue-border">
-       <div class="header">
-         <span class="bottom_title">거&nbsp;&nbsp;래&nbsp;&nbsp;명&nbsp;&nbsp;세&nbsp;&nbsp;서</span>
-        </div>
-       
-        
-                <div class="table-container">
-                    <table class="table-with-border">
-                    <thead>
-                        <tr>
-                       
-
-                            <th  style="width : 50px; text-align : left; color : ${skyblue};">NO.</th>
-                            <th  style="width : 200px; text-align : left;">${data.uid}</th>
-
-
-                            <th style="width : 150px; text-align : left; color : ${skyblue};">(공급받는자 보관용)</th>
-                            <th style="width : 100px; text-align : left; color : ${skyblue};">TEL :</th>
-                            <th style="width : 50px; text-align : left; color : ${skyblue};">FAX : </th>
-                            
-                            <th style="width : 120px; text-align : left; color : black;">${CLIENT_INFO.fax}</th>
-                            
-                        </tr>    
-                    </thead>
-                    </table>
-                </div>
-
-                <div style="display:flex; flex-direction : row; width : 100%;" >
-                    <div style="display:flex; flex-direction : column; width : 40%;" class="table-container">
-                        <div class="table_row">
-                            
-                            <div style="text-align : left; color : ${skyblue}; font-weight: bold;">일자</div>
-                            <div style="text-align : left;  ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${regdate}</div>
-                        </div>
-                        <div class="table_row">
-                            
-                            <div style="text-align : left; text-decoration : underline; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${data.user.customer_name}</div>
-                            <div style="text-align : left; text-decoration: underline; ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;귀하</div>
-
-                        </div>
-                    <div class="table_row">
-                            
-                        <div style="text-align : left; text-decoration : underline; color : ${skyblue}; font-weight: bold; font-size : 16px;">아래와 같이 거래합니다.</div>
-                    
-                    </div>
-
-                    <div class="table_row">
-                            
-                        <div style="text-align : left; color : ${skyblue}; font-weight: bold; font-size : 20px;">합계금</div>
-                        <div style="text-align : left;  font-weight: bold; font-size : 24px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${commaNumber(data.totalSupplyPrice)}</div>
-                    </div>
-                          
-                    </div>
-                    <div style="display:flex; flex-direction : row; justify-content: flex-end; width : 60%;" class="table-container">
-                    <div class="info-bottom-table-container">
-                       
-                    <table>
-                    <tbody>
-                <tr >
-                    <td  class="info-no-border" style="writing-mode: vertical-lr; letter-spacing: 30px;" rowspan="4">공급자</td>
-                    <td  class="info-top-border">등록번호</td>
-                    <td  class="info-top-border info-right-border info-left-border" colspan="3">${CLIENT_INFO.code}</td>
-                  </tr>
-                  <tr>
-                    <td  class="info-bottom-border info-top-border">상호</td>
-                    <td class="info-bottom-border info-top-border info-left-border">${CLIENT_INFO.company_name}</td>
-                    <td class="info-bottom-border info-right-border info-top-border info-left-border">성명</td>
-                    <td class="info-bottom-border info-top-border info-right-border">${CLIENT_INFO.name}</td>
-                  </tr>
-                  <tr>
-                    <td class="">사업장주소</td>
-                    <td class="info-left-border info-right-border" colspan="3">${CLIENT_INFO.address}</td>
-                  </tr>
-                  <tr>
-                    <td class="info-top-border info-bottom-border ">업태</td>
-                    <td class="info-top-border info-bottom-border info-left-border">${CLIENT_INFO.type}</td>
-                    <td class="info-top-border info-bottom-border info-left-border info-right-border">종목</td>
-                    <td class="info-top-border info-bottom-border info-right-border">${CLIENT_INFO.type2}</td>
-                  </tr>
-                    </tbody>
-                  </table>
-                       
-                    </div>
-                </div>
-              
-                
-                </div>
-
-
-
-
-
-
-
-
-                <div style="display:flex; flex-direction : row; width : 100%;" class="table-container">
-                <div class="info-bottom-sub-table-container">
-                   
-                <table>
-                <tbody>
-                <tr >
-                <td style="width : 40px; text-align:center; font-weight : 600" class="info-no-border">순 서</td>
-                <td style="width : 480px; text-align:center; font-weight : 600" class="info-bottom-border info-top-border">품 명</td>
-                <td style="width : 100px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">수 량</td>
-                <td style="width : 100px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">단 가</td>
-                <td style="width : 200px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border info-right-border">공 급 가 액</td>
-                
-                </tr>
-
-                ${productDetails}
-                ${tempDetails}
-                   
-                </tbody>
-               
-              </table>
-                
-              
-    
-                </div>
-            </div>
-
-            <div class="bottom_footer">
-            <span style="text-align : left;">공급가합 : ${commaNumber(data.totalSupplyPrice)}</span>
-    
-            
-         
-            <br/>
-           
-             
-            ${data.description}
-            </div>
-
-
-
-              
-            
-     </div>
-     </body>
-     </html>
-   `;
-   // 현재 창의 내용을 복제
-   const originalContent = document.body.innerHTML;
-
-   // 프린트 다이얼로그가 열리기 전에 현재 창의 내용을 변경하지 않도록
-   const printWindow : any = window.open('', '_blank');
-           
-
-
-   printWindow.document.write(content);
-   printWindow.document.close();
-
-
-   // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
-   printWindow.onload = () => {
-     document.body.innerHTML = originalContent;
-
-      
-     // 프린트 다이얼로그 호출
-     printWindow.print();
-   };
-
-   // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
-   printWindow.onafterprint = () => {
-      
-     printWindow.close();
-   };
-
-
-
-   // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
-  
-
-   // 프린트 다이얼로그 호출
-   printWindow.print();
-
-       
-    });
-
-
-   
-  };
-
-
-
-
-
-
-
-let table_data : any;
-table_state.subscribe((data : any) => {
-    table_data = data;
-  })
-  
 
 const LOGIN_ALERT = {
     type : 'success',
@@ -725,8 +81,7 @@ const DATA_SELECT_ALERT = {
 
 const MENU = {
     info : [
-        {url : "/info/product",name: '품목 관리', help: " 품목관리란, 취급하는 상품에 대한 관리 메뉴를 뜻합니다."},
-        {url : "/info/car",name: '차량 관리', help: " 차량관리란, 상품을 배송하는 차량에 대한 관리 메뉴를 뜻합니다."},
+        {url : "/info/item",name: '품목 관리', help: " 품목관리란, 취급하는 상품에 대한 관리 메뉴를 뜻합니다."},
     
       ],
 
@@ -736,10 +91,7 @@ const MENU = {
     
       ],
       sale : [
-        {url : "/sale/user_order",name: '주문 관리', help: " 주문관리란, 회원이 주문한 것에 대해 거래명세서 및 주문을 확인하는 메뉴를 뜻합니다."},
-        {url : "/sale/user_order_sub",name: '매입 현황', help: " 매입현황이란, 관리자가 매입한 품목의 현황을 확인하는 메뉴입니다."},
-        {url : "/sale/user_price_history",name: '상품단가 이력 조회', help: " 상품단가 이력조회란, 상품의 단가에 대한 현황을 볼 수 있는 메뉴를 뜻합니다."},
-    
+      
       ],
 }
 
@@ -753,17 +105,12 @@ const TOAST_SAMPLE = {
 
 
 const TABLE_FILTER : any = {
-    product : [
+    item : [
     {value : "all",name : "전체"},
     {value : "name", name : "상품명"},
     {value : "type", name : "분류"},
     {value : "company", name : "매입처"},
   
-    ],
-    
-    car : [
-        {value : "all",name : "전체"},
-        {value : "name", name : "차량번호"},
     ],
     company : [
         {value : "all",name : "전체"},
@@ -777,29 +124,10 @@ const TABLE_FILTER : any = {
     user : [
         {value : "all",name : "전체"},
         {value : "id", name : "ID"},
-        {value : "car", name : "지정차량"},
         {value : "code", name : "사업자번호"},
         {value : "name", name : "이름"},
         {value : "email", name : "이메일"},
         {value : "phone", name : "연락처"},
-    ],
-    user_order : [
-        {value : "all",name : "전체"},
-        {value : "code", name : "사업자번호"},
-        {value : "customer_name", name : "거래처명"},
-        {value : "order_status", name : "주문상태"},
-        {value : "price_status", name : "수금유무"},
-
-        {value : "car", name : "지정차량"},
-    ],
-    user_order_sub : [
-        {value : "all",name : "전체"},
-        {value : "company", name : "매입처명"},
-        {value : "name", name : "상품명"},
-        {value : "type", name : "분류명"},
-        {value : "car", name : "지정차량"},
-        {value : "order_status", name : "주문상태"},
-       
     ],
 }
 
@@ -813,7 +141,7 @@ const TABLE_HEADER_LIST_FILTER : any = {
 
 
 const EXCEL_CONFIG : any = {
-    product : [
+    item : [
     {header: '번호코드', key: 'uid', width: 30},
     {header: '분류', key: "type", width: 30},
     {header: '상품명', key: 'name', width: 30},
@@ -822,12 +150,7 @@ const EXCEL_CONFIG : any = {
     {header: '등록일', key: 'created', width: 30},
     ],
   
-   
-    car : [
-        {header: '번호코드', key: 'uid', width: 30},
-        {header: '차량번호', key: 'name', width: 30},
-        {header: '등록일', key: 'created', width: 30},
-    ],
+
     company : [
         {header: '번호코드', key: 'uid', width: 30},
         {header: '사업자등록번호', key: 'code', width: 30},
@@ -846,7 +169,7 @@ const EXCEL_CONFIG : any = {
         {header: '이메일', key: 'email', width: 30},
         {header: '등록일', key: 'created', width: 30},
     ],
-    user_product : [
+    user_item : [
         {header: '번호코드', key: 'uid', width: 30},
         {header: '분류', key: "type", width: 30},
         {header: '상품명', key: 'name', width: 150},
@@ -854,18 +177,12 @@ const EXCEL_CONFIG : any = {
 
         {header: '등록일', key: 'created', width: 30},
         ],
-        user_order_sub : [
-            {header: '매입처', key: 'company', width: 30},
-            {header: '상품명', key: 'name', width: 150},  
-            {header: '주문수량', key: 'qty', width: 30},  
-            {header: '차량명', key: 'car', width: 30},
-        
-            ],
+    
 }; 
 
 
 const TABLE_HEADER_CONFIG : any = {
-    product : [
+    item : [
         {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
         cellClick:function(e : any, cell:any){
             cell.getRow().toggleSelect()
@@ -882,7 +199,7 @@ const TABLE_HEADER_CONFIG : any = {
         cellClick:function(e : any, cell:any){
             let row = cell.getRow();
             if(row){
-                productModalOpen(row.getData(),"update");
+                itemModalOpen(row.getData(),"update");
             }else{
                 
             }
@@ -890,37 +207,6 @@ const TABLE_HEADER_CONFIG : any = {
         },
         
         {title:"매입처", field:"company.name", width:150, headerFilter:"input"},
-        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
-        formatter: function(cell : any, formatterParams: any, onRendered: any) {
-            // Luxon을 사용하여 datetime 값을 date로 변환
-            const datetimeValue = cell.getValue();
-            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
-            return date;
-        },
-    }],
-
-
-    car : [
-        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
-        cellClick:function(e : any, cell:any){
-            cell.getRow().toggleSelect()
-        }},
-        {title:"ID", field:"uid", width:150, headerFilter:"input"},
-        {title:"차량번호", field:"name", width:150, headerFilter:"input", 
-        formatter:function(cell : any){
-            var value = cell.getValue();
-        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
-         },
-
-        cellClick:function(e : any, cell:any){
-            let row = cell.getRow();
-           if(row){
-            carModalOpen(row.getData(),"update");
-           }else{
-          
-           }
-        }
-    },
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
         formatter: function(cell : any, formatterParams: any, onRendered: any) {
             // Luxon을 사용하여 datetime 값을 date로 변환
@@ -1020,7 +306,7 @@ const TABLE_HEADER_CONFIG : any = {
     
    ],
 
-   user_product : [
+   user_item : [
     {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:true, 
     cellClick:function(e : any, cell:any){
         cell.getRow().toggleSelect();
@@ -1041,194 +327,7 @@ const TABLE_HEADER_CONFIG : any = {
     },
     {title:"수량", field:"qty", width:150, editor : "input"},
 
-   ],
-
-   user_order : [
-    {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
-    cellClick:function(e : any, cell:any){
-        cell.getRow().toggleSelect()
-    }},
-    {title:"ID", field:"uid", width:150, headerFilter:"input"},
-    {title:"사업자번호", field:"user.code", width:150, headerFilter:"input",
-    formatter:function(cell : any){
-        var value = cell.getValue();
-    return businessNumber(value);
-     },
-    },
-    {title:"거래처명", field:"user.customer_name", width:500, headerFilter:"input", 
-    formatter:function(cell : any){
-        var value = cell.getValue();
-    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
-     },
-
-    cellClick:function(e : any, cell:any){
-        let row = cell.getRow();
-       if(row){
-        userOrderModalOpen(row.getData(),"update");
-       }else{
-      
-       }
-    }
-    },
-    {title:"배송희망일", field:"req_date", width:150, headerFilter:"input"},
-    {title:"주문상태", field:"order_status", width:150, headerFilter:"input"},
-    {title:"수금유무", field:"price_status", width:150, headerFilter:"input"},
-
-   
-
- 
-
-    {title:"주문총액", field:"totalSupplyPrice", width:150, editor : "input",formatter: "money",  
-    
-    formatterParams: {    
-        thousand:",",
-        symbol:"원",
-        symbolAfter:"p",
-        precision:false,
-    },
-    
-    
-    bottomCalc:"sum", bottomCalcFormatter: "money", // 합계 포매터 지정
-    bottomCalcFormatterParams: {
-        thousand: ",",
-        symbol: "원",
-        symbolAfter: "p",
-        precision: false,
-      },
-},
-
-        // {title:"인쇄", field:"print", width:150,  
-        // formatter:function(cell : any){
-           
-        // return "<span style='color:#1E90FF; font-weight:bold;'>인쇄</span>";
-        // },
-        // cellClick:function(e : any, cell:any){
-        //     let row = cell.getRow();
-        // if(row){
-        //     printContent(row.getData());
-        // }else{
-        
-        // }
-        // }
-        // },
-        // 용지 이슈로 잠시 주석처리함(2024-01-22)
-
-
-
-    {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
-        formatter: function(cell : any, formatterParams: any, onRendered: any) {
-            // Luxon을 사용하여 datetime 값을 date로 변환
-            const datetimeValue = cell.getValue();
-            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
-            return date;
-        },
-    },
-],
-
-    user_order_sub_list : [
-        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:true, 
-        cellClick:function(e : any, cell:any){
-            cell.getRow().toggleSelect();
-            console.log(cell.getRow());
-        }},
-        {title:"ID", field:"uid", width:150, headerFilter:"input"},
-        {title:"분류", field:"type", width:150, headerFilter:"input"},
-      
-        {title:"상품명", field:"name", width:500, headerFilter:"input", 
-        formatter:function(cell : any){
-            var value = cell.getValue();
-        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
-         },
-    
-      
-        },
-        {title:"수량", field:"qty", width:150, editor : "input",formatter: "money",  formatterParams: {
-          
-            thousand:",",
-            precision:false,
-
-        },cellEdited: updateSupplyPrice},
-        {title:"단가", field:"price", width:150, editor : "input",formatter: "money",  formatterParams: {
-            
-              thousand:",",
-              symbol:"원",
-            symbolAfter:"p",
-            precision:false,
-        },cellEdited: updateSupplyPrice},
-        {title:"매입단가", field:"buy_price", width:150, editor : "input",formatter: "money",  formatterParams: {
-            
-            thousand:",",
-            symbol:"원",
-          symbolAfter:"p",
-          precision:false,
-      }},
-
-
-        {title:"공급가액", field:"supply_price", width:150, editor : "input",formatter: "money",  formatterParams: {
-           
-            thousand:",",
-            symbol:"원",
-            symbolAfter:"p",
-            precision:false,
-        }},
-        
-
-    
-       ],
-
-       user_order_sub: [
-        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:true, 
-        cellClick:function(e : any, cell:any){
-            cell.getRow().toggleSelect();
-            console.log(cell.getRow());
-        }},
-       
-        {title:"분류", field:"product.type", width:150, headerFilter:"input"},
-      
-        {title:"상품명", field:"product.name", width:500, headerFilter:"input", 
-        formatter:function(cell : any){
-            var value = cell.getValue();
-        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
-         },
-    
-        },
-        {title:"매입처", field:"product.company.name", width:150, headerFilter:"input"},
-        {title:"지정차량", field:"userOrder.car.name", width:150, headerFilter:"input"},
-        {title:"수량", field:"qty", width:150, editor : "input",formatter: "money",  formatterParams: {
-          
-            thousand:",",
-            precision:false,
-
-        }},
-        {title:"단가", field:"price", width:150, editor : "input",formatter: "money",  formatterParams: {
-            
-              thousand:",",
-              symbol:"원",
-            symbolAfter:"p",
-            precision:false,
-        }},
-        {title:"매입단가", field:"buy_price", width:150, editor : "input",formatter: "money",  formatterParams: {
-            
-            thousand:",",
-            symbol:"원",
-          symbolAfter:"p",
-          precision:false,
-      }},
-
-
-        {title:"공급가액", field:"supply_price", width:150, editor : "input",formatter: "money",  formatterParams: {
-           
-            thousand:",",
-            symbol:"원",
-            symbolAfter:"p",
-            precision:false,
-        }},
-        
-
-    
-       ],
-
-
+   ]
 }
 
 

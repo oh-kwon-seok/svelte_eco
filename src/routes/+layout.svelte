@@ -25,11 +25,11 @@
 		// 기준정보 select용 데이터들을 호출한다.
 
 		
-		infoCallApi('company');
-		infoCallApi('department');
-		infoCallApi('position');
-		infoCallApi('factory');
-		infoCallApi('factory_sub');
+		// infoCallApi('company');
+		// infoCallApi('department');
+		// infoCallApi('position');
+		// infoCallApi('factory');
+		// infoCallApi('factory_sub');
 		
 	
 	});

@@ -118,12 +118,12 @@
 
                       <div class='m-5'>
 
-                        <!-- <Button  on:click={() => {userOrderModalOpen('','add')}}>
+                        <!-- <Button  on:click={() => {factoryModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-                        <Button  color='red' on:click={() => userOrderModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => factoryModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
@@ -133,7 +133,7 @@
                           엑셀다운
                       </Button>
 
-                      <Button  color='light' on:click={() => userOrderModalOpen('','print')}>
+                      <Button  color='light' on:click={() => factoryModalOpen('','print')}>
                         <Icon.PrintSolid class='mr-2' size="20" />
                         주문서 출력
                     </Button> -->

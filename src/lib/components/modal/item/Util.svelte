@@ -8,7 +8,7 @@
     
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
-    import {product_modal_state, product_form_state} from '$lib/store/item/state';
+    import {item_modal_state, item_form_state} from '$lib/store/item/state';
     import {common_alert_state, common_toast_state,common_company_state} from '$lib/store/common/state';
     
     import {save,modalClose} from '$lib/store/item/function';
@@ -43,7 +43,7 @@
 
  
 
-    <Modal title={`품목 ${label_title}`} permanent={true} color={color} bind:open={$product_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
+    <Modal title={`품목 ${label_title}`} permanent={true} color={color} bind:open={$item_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
         <form action="#">
@@ -52,7 +52,7 @@
         <div class="grid grid-cols-2 gap-4">
           <Label class="space-y-2">
             <span>분류</span>
-            <Select id="countries" class="mt-2" bind:value={$product_form_state['type']} placeholder="">
+            <Select id="countries" class="mt-2" bind:value={$item_form_state['type']} placeholder="">
               
               
               
@@ -67,9 +67,9 @@
           </Label>
           <Label class="space-y-2">
             <span>품명</span>
-            <Input type="text" id="last_name" placeholder="품명을 입력하세요" required bind:value={$product_form_state['name']}/>
+            <Input type="text" id="last_name" placeholder="품명을 입력하세요" required bind:value={$item_form_state['name']}/>
             
-            {#if $product_form_state['name'] === '' && $common_alert_state['value'] === true}
+            {#if $item_form_state['name'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
             {/if}
           </Label>
@@ -77,7 +77,7 @@
       
           <Label class="space-y-2">
             <span>매입처</span>
-            <Select id="countrie" class="mt-2" bind:value={$product_form_state['company']} placeholder="">
+            <Select id="countrie" class="mt-2" bind:value={$item_form_state['company']} placeholder="">
                 {#each $common_company_state as item}
                   <option value={item.uid}>{item.name}</option>
                 {/each}
@@ -85,10 +85,10 @@
           </Label>
     
         
-          {#if $product_modal_state['title'] === 'update'}
+          {#if $item_modal_state['title'] === 'update'}
             <Label class="space-y-2">
               <span>사용유무</span>
-              <Select id="countries" class="mt-2" bind:value={$product_form_state['used']} placeholder="">
+              <Select id="countries" class="mt-2" bind:value={$item_form_state['used']} placeholder="">
                     <option value={0}>{"사용안함"}</option>
                     <option value={1}>{"사용"}</option>
 
@@ -127,7 +127,7 @@
       
         </form>
    <svelte:fragment slot='footer'> 
-    <Button  color={title === 'add' || title === 'update'  ? 'blue' : 'red'}  class="w-1/2" on:click={save($product_form_state,title)}>{label_title}</Button>
+    <Button  color={title === 'add' || title === 'update'  ? 'blue' : 'red'}  class="w-1/2" on:click={save($item_form_state,title)}>{label_title}</Button>
     <Button  color='red'  class="w-1/2" on:click={modalClose(title)}>닫기</Button>
          
     {#if $common_alert_state['type'] === 'save' && $common_alert_state['value'] === true}

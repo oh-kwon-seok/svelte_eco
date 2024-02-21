@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_car_state,common_company_state,common_user_state,common_user_order_state,common_user_order_sub_state,table_list_state } from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state } from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -42,10 +42,6 @@ let car_data : any;
 let company_data : any;
 
 let user_data : any;
-
-let user_order_data : any;
-
-let user_order_sub_data : any;
 
 const workbook = new Excel.Workbook();
 
@@ -91,9 +87,6 @@ common_item_state.subscribe((data : any) => {
 })
 
 
-common_car_state.subscribe((data : any) => {
-  car_data = data;
-})
 
 common_company_state.subscribe((data) => {
   company_data = data;
@@ -105,13 +98,6 @@ common_user_state.subscribe((data) => {
 
 })
 
-common_user_order_state.subscribe((data : any) => {
-  user_order_data = data;
-})
-
-common_user_order_sub_state.subscribe((data : any) => {
-  user_order_sub_data = data;
-})
 
 
 const init_login_data : any = {
@@ -133,8 +119,7 @@ const infoCallApi = (title) => {
 
  
   const url = `${api}/${title}/info_select`; 
-  console.log();
-
+  
   const config = {
     headers:{
       "Content-Type": "application/json",
@@ -147,21 +132,14 @@ const infoCallApi = (title) => {
    
   
       if(res.data.length > 0){
-        if(title === 'car'){
-          car_data = res.data;
-          common_car_state.update(()=> car_data);
-        
-        }else if(title === 'user'){
+     if(title === 'user'){
           user_data = res.data;
           common_user_state.update(()=> user_data);
         
-        }else if(title === 'company'){
+      }else if(title === 'company'){
           company_data = res.data;
           common_company_state.update(()=> company_data);
-        
-        }
-      
-
+      }
       }else {
       
       }
@@ -184,7 +162,6 @@ const infoCallApi = (title) => {
     if (confirmLogout) {
         // 여기에 로그아웃 로직을 추가하세요.
         login_data = init_login_data;
-        console.log('init_login_data : ', init_login_data);
         removeCookie('my-cookie');
         removeCookie('password');
         removeCookie('autoSave');
@@ -211,7 +188,6 @@ const changeUrl = (obj) => {
   url_data['path'] =obj['path'];
   url_data['query'] =obj['query'];
 
-  console.log('url_data',url_data);
   
   url_state.update(()=> url_data);
 
@@ -252,13 +228,11 @@ const onChangeHandler = (e) => {
     login_data['token'] = token;
     login_state.update(()=> login_data);
   
-    console.log(login_data);
     }
 
 
   const handleToggle = (title) => {
    
-    console.log('title', title);
     
     menu_data[title] = !menu_data[title];
     menu_state.update(()=> menu_data);
@@ -276,7 +250,6 @@ const onSearchHandler = (e : any) => {
 
     search_data['search_text'] = e.target.value;
     
-    console.log('e.target.value',e.target.value);
     // if(search_data['type'] === 'all'){
     //   search_data['filteredItems'] = list_data.filter((item) => item['maker'].indexOf(search_data['search_text'].toLowerCase()) !== -1 || item['name'].indexOf(search_data['search_text'].toLowerCase()) !== -1)
     // }else {
@@ -356,7 +329,6 @@ const check_delete = (data, key,value) => {
 const excelDownload = (type,config) => {
   
       let data =  table_list_data[type].getSelectedData();
-      console.log('data  : ', table_list_data[type].getSelectedData());
       
       
       
@@ -639,11 +611,6 @@ const excelDownload = (type,config) => {
           }
         }
           axios.get(url,config).then(res=>{
-            console.log('url : ',url);
-            console.log('select_query : ',res);
-            console.log('table_list_data : ',table_list_data);
-            console.log('type : ', type);
-            console.log('params : ', params);
             
             table_list_data[type].setData(res.data);
             table_list_state.update(() => table_list_data);
@@ -689,9 +656,7 @@ const excelDownload = (type,config) => {
         }
           axios.get(url,config).then(res=>{
             
-            console.log('makeTable : ',res);
-            console.log('url : ',url);
-         
+           
            
             if(res.data.length > 0){
              
@@ -733,8 +698,7 @@ const excelDownload = (type,config) => {
          
              
               });
-              console.log('table_list_data  :', table_list_data);
-
+             
               table_list_state.update(()=> table_list_data);
 
           
@@ -777,8 +741,7 @@ const excelDownload = (type,config) => {
             
       
             });
-            console.log('table_list_data  :', table_list_data);
-
+            
             table_list_state.update(()=> table_list_data);
 
 
@@ -794,7 +757,6 @@ const excelDownload = (type,config) => {
    
       const url = `${api}/${type}/${select}`; 
 
-      console.log('url : ', url);
             
       search_data['filter'] = TABLE_FILTER[type];
       
@@ -804,8 +766,6 @@ const excelDownload = (type,config) => {
 
       let end_date = moment(search_data['end_date']).format('YYYY-MM-DDTHH:mm:ss');
 
-      console.log('start_date: ',start_date);
-      console.log('end_date: ',end_date);
       
       let search_text = search_data['search_text'];
       let filter_title = search_data['filter_title'];
@@ -828,7 +788,6 @@ const excelDownload = (type,config) => {
         }
       }
         axios.get(url,config).then(res=>{
-          console.log('res.data : ',res);
           
           table_list_data[type].setData(res.data);
           table_list_state.update(() => table_list_data);

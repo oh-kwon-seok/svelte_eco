@@ -12,7 +12,7 @@ import {common_alert_state, common_toast_state,common_search_state,login_state,t
 import moment from 'moment';
 
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
-import { businessNumber,phoneNumber,commaNumber, getDayOfWeek} from '$lib/module/common/function';
+import { businessNumber,phoneNumber,commaNumber} from '$lib/module/common/function';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER,CLIENT_INFO} from '$lib/module/common/constants';
 import { user_form_state } from '../user/state';

@@ -76,6 +76,9 @@ const url_state : any = writable({ path : '', query : ''});
 
 
 
+  
+  const common_user_state : any = writable([]);
+  const common_item_state : any = writable([]);
   const common_company_state : any = writable([]);
   const common_department_state : any = writable([]);
   const common_position_state : any = writable([]);
@@ -96,6 +99,8 @@ const url_state : any = writable({ path : '', query : ''});
     table_list_state,
     table_modal_state,
     common_toast_state,
+    common_user_state,
+    common_item_state,
     common_company_state,
     common_department_state,
     common_position_state,

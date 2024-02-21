@@ -9,7 +9,7 @@
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
     import {user_modal_state, user_form_state} from '$lib/store/user/state';
-    import {common_alert_state, common_toast_state,common_car_state,table_state} from '$lib/store/common/state';
+    import {common_alert_state, } from '$lib/store/common/state';
     
     import {save,userProductTable,modalClose} from '$lib/store/user/function';
 
@@ -43,17 +43,9 @@
 
     let color = title === 'add' || title === 'update'   ? 'blue' : 'red'; 
 
-    let tableComponent = "example-table-theme";
 
 
-      onMount(()=>{
-        userProductTable(table_state,"user_product",tableComponent);
-      });
 
-      afterUpdate(()=> {
-        userProductTable(table_state,"user_product",tableComponent);
-  
-      })
 
     </script>
 
@@ -143,17 +135,8 @@
 
 
 
-          <Label class="space-y-2">
-            <span>지정차량</span>
-            <Select id="countrie" class="mt-2" bind:value={$user_form_state['car']} placeholder="">
-                {#each $common_car_state as item}
-                  <option value={item.uid}>{item.name}</option>
-                {/each}
-              </Select>
-          </Label>
-       
-
-          
+        
+  
 
           {#if $user_modal_state['title'] === 'update'}
             <Label class="space-y-2">
@@ -175,9 +158,7 @@
 
         
 
-            <div id="example-table-theme" bind:this={tableComponent}></div>
          
-        
        
 
          {#if $common_alert_state['type'] === 'save' && $common_alert_state['value'] === true}

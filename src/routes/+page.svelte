@@ -76,6 +76,8 @@
 
 		
 			if(res.data['success'] === true){
+
+				console.log('res : data', res);
 					// 	// 쿠키 설정
 
 				setCookie('my-cookie', $login_state['id'], { expires: 3600 });
@@ -144,7 +146,7 @@
 		<Card  size="md"  img={login_url}   reverse={false} >	
 
 		<form class="flex flex-col space-y-6" >
-				<h3 class="text-xl font-medium text-gray-700 dark:text-white p-0 w-80">신선식품 유통 서비스</h3>
+				<h3 class="text-xl font-medium text-gray-700 dark:text-white p-0 w-80">에코바이오 MES</h3>
 				<Label class="space-y-2">
 					<span>ID</span>
 					<Input  type="text" name="id" placeholder="ID를 입력하세요" required bind:value={$login_state.id} />
