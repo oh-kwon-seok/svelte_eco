@@ -14,7 +14,7 @@
     import { Tabs, TabItem,  Button} from 'flowbite-svelte';
   
 
-    import Util from '$lib/components/modal/position/Util.svelte';
+    // import Util from '$lib/components/modal/position/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
@@ -129,13 +129,13 @@
 
                       
 
-                        {#if $position_modal_state['title'] === 'add'}
+                        <!-- {#if $position_modal_state['title'] === 'add'}
                           <Util title="add" />
                         {:else if $position_modal_state['title'] === 'update'}
                           <Util  title="update"/>
                           {:else if $position_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
-                        {/if}
+                        {/if} -->
                         
 
                       </div>

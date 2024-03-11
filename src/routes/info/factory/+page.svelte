@@ -16,7 +16,7 @@
 
 
 
-    import Util from '$lib/components/modal/factory/Util.svelte';
+    //import Util from '$lib/components/modal/factory/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
@@ -140,7 +140,7 @@
 
                       
 
-                        {#if $factory_modal_state['title'] === 'add'}
+                        <!-- {#if $factory_modal_state['title'] === 'add'}
                           <Util title="add" />
                         {:else if $factory_modal_state['title'] === 'update'}
                           <Util  title="update"/>
@@ -148,7 +148,7 @@
                           <Util  title="check_delete"/>
                           {:else if $factory_modal_state['title'] === 'print'}
                           <Util  title="print"/>
-                        {/if}
+                        {/if} -->
                         
 
                       </div>

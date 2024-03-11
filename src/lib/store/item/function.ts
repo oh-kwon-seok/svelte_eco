@@ -8,11 +8,16 @@ import {item_modal_state,item_form_state} from './state';
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
 import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,common_selected_state} from '$lib/store/common/state';
+import {loadChange} from '$lib/store/common/function';
+
+
 import moment from 'moment';
 import Excel from 'exceljs';
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
 
 const api = import.meta.env.VITE_API_BASE_URL;
+const restrict_api = import.meta.env.VITE_RESTRICT_COSMETIC_URL;
+const restrict_key = import.meta.env.VITE_RESTRICT_COSMETIC_KEY;
 
 
 
@@ -504,10 +509,96 @@ const save = (param,title) => {
 
   }
 
+  const restrictUpdate = async() => { // 사용제한 원료 업데이트
+    
+
+    if (!confirm("사용제한 원료를 업데이트하면 기존의 데이터가 전부 변경됩니다. 선택하시겠습니까? ")) {
+    } else { // 업데이트를 진행해야 한다면
+
+      loadChange(true);
+
+      // 확인
+      let page_row = 0;
+      let page_count = 0;
+  
+      let array = [];
+      
+    
+      const url = `${restrict_api}/CsmtcsUseRstrcInfoService/getCsmtcsUseRstrcInfoService`; 
+            
+      let params = 
+      {
+        serviceKey : restrict_key,
+        pageNo : 1,
+        numOfRows : 100,
+        type : 'json'
+  
+      };
+      const config = {
+        params : params,
+        headers:{
+          "Content-Type": "application/json",
+          
+        }
+      }
+        await axios.get(url,config).then(res=>{
+          console.log('res : ', res);
+          page_row = res.data.body.totalCount;
+          array = res.data.body.items; 
+  
+       })
+       
+       if(page_row > 0){
+        page_count = Math.ceil(page_row / 100);
+        console.log('array : ', array);
+  
+        if(page_count > 0){
+          let count = 2; 
+          for(let i=0; i<page_count-1; i++){
+            
+           
+            
+            let params = 
+            {
+              serviceKey : restrict_key,
+              pageNo : count,
+              numOfRows : 100,
+              type : 'json'
+        
+            };
+            const config = {
+              params : params,
+              headers:{
+                "Content-Type": "application/json",
+                
+              }
+            }
+              await axios.get(url,config).then(res=>{
+                console.log('res : ', res);
+                page_row = res.data.body.totalCount;
+                if(array.length > 0){
+                  array = array.concat(res.data.body.items);
+                }
+               
+        
+             })
+             count++;
+          }
+  
+        }
+  
+        console.log('array : ',array);
+        
+  
+       }
+       loadChange(false);
+    }
+  }
 
 
 
 
 
 
-export {itemModalOpen,save,itemExcelUpload,modalClose}
+
+export {itemModalOpen,save,itemExcelUpload,modalClose,restrictUpdate}

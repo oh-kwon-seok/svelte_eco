@@ -20,22 +20,22 @@
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {itemModalOpen,itemExcelUpload} from '$lib/store/item/function';
+    import {itemModalOpen,itemExcelUpload,restrictUpdate} from '$lib/store/item/function';
     import {excelDownload, excelUpload, fileButtonClick} from '$lib/store/common/function';
     
     import {item_form_state,item_modal_state} from '$lib/store/item/state';
 
-    import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
+    import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state,load_state} from '$lib/store/common/state';
     import {TABLE_COMPONENT,EXCEL_CONFIG} from '$lib/module/common/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
     
-    import {makeCustomTable,infoCallApi} from '$lib/store/common/function';
+    import {makeCustomTable,infoCallApi,loadChange} from '$lib/store/common/function';
     
 
 	import { afterUpdate, onMount } from 'svelte';
-
+  import Loading from '$lib/components/modal/Loading.svelte';
   
     // import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
@@ -117,6 +117,26 @@
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
+
+
+                        {#if $load_state === false}
+                          <Button  on:click={() => {restrictUpdate()}}>
+                            <Icon.FloppyDiskSolid class='mr-2' size="20" />
+                            사용제한 원료 업데이트
+                          </Button>
+
+                       
+                        {:else if $load_state === true}
+                        <Button  on:click={() => {restrictUpdate()}}>
+                          <Icon.FloppyDiskSolid class='mr-2' size="20" />
+                          사용제한 원료 업데이트
+                        </Button>
+                        
+                          <Loading title={"사용제한 원료 업데이트"} content={"업데이트중..."}/>
+                          
+                        {/if}
+
+
 
                         <Button  color='red' on:click={() => itemModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />

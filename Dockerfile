@@ -21,7 +21,7 @@ RUN npm run build
 
 
 # 포트 설정
-EXPOSE 3001
+EXPOSE 3002
 
 # 프로그램 실행
 CMD ["npm","run","preview","--","--host"]
