@@ -101,7 +101,7 @@ button:focus:not(:focus-visible) {
 	margin: 0;
 	overflow: hidden;
 	padding: 0;
-	position: absolute;
+	employment: absolute;
 	width: 1px;
 	white-space: nowrap;
 }

@@ -19,13 +19,14 @@ import {v4 as uuid} from 'uuid';
   const user_form_state : any = writable({
     uid : 0,
     id : '',
-    code : '',
-    customer_name : '',
-    name : '',
-    email : '',
-    phone : '',
+    company : '', // 사업장
+    employment : '',
+    department : '',
+
+    name : '', // 사용자이름
+    email : '', // 이메일
+    phone : '', // 연락처
     password : '1111',
-  
     auth:'',
     used : 1,
     

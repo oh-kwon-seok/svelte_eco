@@ -9,9 +9,9 @@
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
     import {user_modal_state, user_form_state} from '$lib/store/user/state';
-    import {common_alert_state, } from '$lib/store/common/state';
+    import {common_alert_state, common_company_filter_state,common_department_state,common_employment_state} from '$lib/store/common/state';
     
-    import {save,userProductTable,modalClose} from '$lib/store/user/function';
+    import {save,modalClose} from '$lib/store/user/function';
 
     
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
@@ -44,6 +44,41 @@
     let color = title === 'add' || title === 'update'   ? 'blue' : 'red'; 
 
 
+    let filteredEmployment = [];
+    let filteredDepartment = [];
+
+
+    const handleCompanyChange = (e) => {
+
+      console.log('e.target.value : ', e.target.value);
+      // 선택한 type_uid에 해당하는 회사 필터링
+      filteredEmployment = $common_employment_state.filter(item => item.company['uid'] == e.target.value);
+      filteredDepartment = $common_department_state.filter(item => item.company['uid'] == e.target.value);
+
+      console.log('filteredEmployment : ', filteredEmployment, $common_employment_state);
+      if(filteredEmployment.length > 0){
+        $user_form_state['employment'] = filteredEmployment[0]['uid'];
+
+      }else{
+       
+      }if(filteredDepartment.length > 0){
+        $user_form_state['department'] = filteredEmployment[0]['uid'];
+
+      }else{
+       
+      }
+      
+
+}
+    afterUpdate(()=>{
+      if($user_modal_state['title'] === 'update'){
+
+        filteredEmployment = $common_employment_state.filter(item => item.company['uid'] == $user_form_state['company']);
+        filteredDepartment = $common_department_state.filter(item => item.company['uid'] == $user_form_state['company']);
+
+      }
+      
+    })
 
 
 
@@ -51,7 +86,7 @@
 
  
 
-    <Modal title={`회원 ${label_title}`}  permanent={true} color={color} bind:open={$user_modal_state[title]['use']} size="xl" placement={ 'center'}   class="w-full">
+    <Modal title={`회원 ${label_title}`}  permanent={true} color={color} bind:open={$user_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
         <form action="#">
@@ -59,43 +94,41 @@
    
         <div class="grid grid-cols-2 gap-4">
           
-          {#if $user_modal_state['title'] === 'add'}
-          <Label class="space-y-2">
-            <span>사업자번호 {businessNumber($user_form_state.code)}</span>
-            <Input maxlength="10" type="text" placeholder="사업자번호를 입력하세요" required bind:value={$user_form_state['code']} on:input={businessNumber($user_form_state.code)}/>
-            
-            {#if $user_form_state['code'] === '' && $common_alert_state['value'] === true}
-            <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
-            {/if}
-          </Label>
-          {/if}
-
+      
 
           <Label class="space-y-2">
-            <span>상호</span>
-            <Input type="text" id="customer_name" placeholder="상호를 입력하세요" required bind:value={$user_form_state['customer_name']}/>
-            
-            {#if $user_form_state['customer_name'] === '' && $common_alert_state['value'] === true}
-            <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
-            {/if}
+            <span>사업장</span>
+            <Select id="countrie" class="mt-2" bind:value={$user_form_state['company']} placeholder="" on:change={handleCompanyChange}>
+                {#each $common_company_filter_state as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
           </Label>
 
           <Label class="space-y-2">
-            <span>대표자</span>
-            <Input type="text" id="name" placeholder="대표자를 입력하세요" required bind:value={$user_form_state['name']}/>
-            
-            {#if $user_form_state['name'] === '' && $common_alert_state['value'] === true}
-            <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
-            {/if}
+            <span>직급</span>
+            <Select id="countrie" class="mt-2" bind:value={$user_form_state['employment']} placeholder="" >
+                {#each filteredEmployment as item}
+                  <option value={item.uid}>{item.name}{item.name2 !== '' ? "[" + item.name2 + "]" : ""}</option>
+                {/each}
+              </Select>
           </Label>
 
-          
+          <Label class="space-y-2">
+            <span>부서</span>
+            <Select id="countrie" class="mt-2" bind:value={$user_form_state['department']} placeholder="" >
+                {#each filteredDepartment as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
+          </Label>
 
+        
           <!-- 사업장 ID는 사업자등록번호로 연결시켜놓음 -->
           {#if $user_modal_state['title'] === 'add'}
           <Label class="space-y-2"> 
             <span>ID</span>
-            <Input type="text" id="id" readOnly placeholder="ID를 입력하세요" required bind:value={$user_form_state['code']}/>
+            <Input type="text" id="id"  placeholder="ID를 입력하세요" required bind:value={$user_form_state['id']}/>
 
             {#if $user_form_state['code'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
@@ -125,6 +158,17 @@
               {/if}
 
               <Label class="space-y-2">
+                <span>이름</span>
+                <Input type="text" id="name" placeholder="이름을 입력하세요" required bind:value={$user_form_state['name']}/>
+                
+                {#if $user_form_state['name'] === '' && $common_alert_state['value'] === true}
+                <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
+                {/if}
+              </Label>
+
+
+
+              <Label class="space-y-2">
                 <span>연락처 {phoneNumber($user_form_state.phone)}</span>
                 <Input maxlength="11" type="text" placeholder="연락처를 입력하세요" required bind:value={$user_form_state['phone']} on:input={phoneNumber($user_form_state.phone)}/>
               </Label>
@@ -151,11 +195,7 @@
           </div>
          
 
-          <div class="grid grid-cols-1 gap-4">
-                <Hr class="my-8 bg-slate-300 "  height="h-1"></Hr>
-                <p class="mb-4 font-semibold text-xl dark:text-white">취급품목</p>
-          </div>
-
+      
         
 
          

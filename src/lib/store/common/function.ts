@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state } from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state } from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -32,14 +32,17 @@ let search_data : any;
 let list_data : any;
 let login_data : any;
 let url_data : any;
-
+let table_data : any;
 let table_list_data : any;
 
 let item_data : any;
 
-let car_data : any;
+let employment_data : any;
+let department_data : any;
+
 
 let company_data : any;
+let company_filter_data : any;
 
 let user_data : any;
 
@@ -86,10 +89,24 @@ common_item_state.subscribe((data : any) => {
   item_data = data;
 })
 
+common_department_state.subscribe((data) => {
+  department_data = data;
+
+})
+common_employment_state.subscribe((data) => {
+  employment_data = data;
+
+})
+
+
 
 
 common_company_state.subscribe((data) => {
   company_data = data;
+
+})
+common_company_filter_state.subscribe((data) => {
+  company_filter_data = data;
 
 })
 
@@ -139,6 +156,18 @@ const infoCallApi = (title) => {
       }else if(title === 'company'){
           company_data = res.data;
           common_company_state.update(()=> company_data);
+          if(company_data.length > 0){
+            company_filter_data = company_data.filter(item => item.type === "사업장");
+            common_company_filter_state.update(()=>company_filter_data);
+          }
+      }else if(title === 'employment'){
+          employment_data = res.data;
+          console.log('employment_dat : ', res.data);
+          common_employment_state.update(()=> employment_data);
+      }else if(title === 'department'){
+          department_data = res.data;
+          console.log('depart : ', res.data);
+          common_department_state.update(()=> department_data);
       }
       }else {
       
@@ -328,112 +357,125 @@ const check_delete = (data, key,value) => {
 
 const excelDownload = (type,config) => {
   
-      let data =  table_list_data[type].getSelectedData();
-      
-      
-      
-      if(data.length > 0){
-        // 모든 객체에서 공통된 키(key) 이름을 찾기 위한 반복문
-        for (let i = 0; i <  data.length; i++) {
-          let currentObject =  data[i];
-
-          Object.keys(currentObject).map((key)=> {    
-          
-            if(typeof currentObject[key] === "object"){
-              data[i][key] = data[i][key]['name'];
-            }
-          
-          }); 
-        }
-
-        try {
-
-          let text_title : any= '';
-          switch(type){
-              case 'item': 
-                  text_title = '품목 관리';
-              break;
-              
-              default:
-                  text_title = '제목 없음';
-              break;
-        }
-
-        const workbook = new Excel.Workbook();
-          // 엑셀 생성
-    
-          // 생성자
-          workbook.creator = '작성자';
-         
-          // 최종 수정자
-          workbook.lastModifiedBy = '최종 수정자';
-         
-          // 생성일(현재 일자로 처리)
-          workbook.created = new Date();
-         
-          // 수정일(현재 일자로 처리)
-          workbook.modified = new Date();
-
-          let file_name = text_title + moment().format('YYYY-MM-DD HH:mm:ss') + '.xlsx';
-          let sheet_name = moment().format('YYYYMMDDHH:mm:ss');
-       
-        
-          workbook.addWorksheet(text_title);
-             
+  let data =  table_list_data[type].getSelectedData();
+  console.log('data  : ', table_list_data[type].getSelectedData());
   
-          const sheetOne = workbook.getWorksheet(text_title);
-               
-               
-                
-          // 컬럼 설정
-          // header: 엑셀에 표기되는 이름
-          // key: 컬럼을 접근하기 위한 key
-          // hidden: 숨김 여부
-          // width: 컬럼 넓이
-          sheetOne.columns = config;
-       
-          const sampleData = data;
-          const borderStyle = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-          };
-         
-          sampleData.map((item, index) => {
-            sheetOne.addRow(item);
-         
-            // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
-            
-            for(let loop = 1; loop <= 6; loop++) {
-              const col = sheetOne.getRow(index + 2).getCell(loop);
-              col.border = borderStyle;
-              col.font = {name: 'Arial Black', size: 10};
-            }
-          
-        });
-    
-    
-            
-       
-          workbook.xlsx.writeBuffer().then((data) => {
-            const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-            const url = window.URL.createObjectURL(blob);
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.download = file_name;
-            anchor.click();
-            window.URL.revokeObjectURL(url);
-          })
-        } catch(error) {
-          console.error(error);
+  
+  
+  if(data.length > 0){
+    // 모든 객체에서 공통된 키(key) 이름을 찾기 위한 반복문
+    for (let i = 0; i <  data.length; i++) {
+      let currentObject =  data[i];
+
+      Object.keys(currentObject).map((key)=> {    
+
+        if(typeof currentObject[key] === 'object' && currentObject[key] !== null){
+        
+          data[i][key] = currentObject[key]['name'];
         }
 
-      }else{
-        alert('데이터를 선택해주세요');
-      }
+        // console.log(typeof currentObject[key], key,currentObject[key]);
+
+        // if(typeof currentObject[key] === "object"){
+        //   console.log('currentObject : ',currentObject[key]);
+        //   data[i][key] = currentObject[key]['name'];
+        // }
+      
+      }); 
+    }
+
+    try {
+
+      let text_title : any= '';
+      switch(type){
+          case 'item': 
+              text_title = '품목 관리';
+          break;
+          case 'company': 
+              text_title = '거래처 관리';
+          break;
+          
+          default:
+              text_title = '제목 없음';
+          break;
+    }
+
+    const workbook = new Excel.Workbook();
+      // 엑셀 생성
+
+      // 생성자
+      workbook.creator = '작성자';
+     
+      // 최종 수정자
+      workbook.lastModifiedBy = '최종 수정자';
+     
+      // 생성일(현재 일자로 처리)
+      workbook.created = new Date();
+     
+      // 수정일(현재 일자로 처리)
+      workbook.modified = new Date();
+
+      let file_name = text_title + moment().format('YYYY-MM-DD HH:mm:ss') + '.xlsx';
+      let sheet_name = moment().format('YYYYMMDDHH:mm:ss');
    
+    
+      workbook.addWorksheet(text_title);
+         
+
+      const sheetOne = workbook.getWorksheet(text_title);
+           
+           
+            
+      // 컬럼 설정
+      // header: 엑셀에 표기되는 이름
+      // key: 컬럼을 접근하기 위한 key
+      // hidden: 숨김 여부
+      // width: 컬럼 넓이
+      sheetOne.columns = config;
+   
+      const sampleData = data;
+      const borderStyle = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+     
+      sampleData.map((item, index) => {
+        sheetOne.addRow(item);
+     
+        // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
+        
+        for(let loop = 1; loop <= 6; loop++) {
+          const col = sheetOne.getRow(index + 2).getCell(loop);
+          col.border = borderStyle;
+          col.font = {name: 'Arial Black', size: 10};
+        }
+      
+    });
+
+
+        
+   
+      workbook.xlsx.writeBuffer().then((data) => {
+        const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = file_name;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      })
+    } catch(error) {
+      console.error(error);
+    }
+
+  }else{
+    alert('데이터를 선택해주세요');
   }
+
+}
+
 
 
   const fileButtonClick = (id) => {
@@ -656,7 +698,7 @@ const excelDownload = (type,config) => {
         }
           axios.get(url,config).then(res=>{
             
-           
+            console.log('res : ', res.data);
            
             if(res.data.length > 0){
              

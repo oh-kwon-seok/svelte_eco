@@ -35,7 +35,7 @@ let table_list_data : any;
 let selected_data : any;
 
 
-let init_form_data = {
+const init_form_data:any = {
   uid : 0,
   name : '',
   status : '',

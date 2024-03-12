@@ -16,6 +16,11 @@ import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from './func
 import { userModalOpen} from '$lib/store/user/function';
 
 import { factoryModalOpen} from '$lib/store/factory/function';
+import { employmentModalOpen} from '$lib/store/employment/function';
+
+import { departmentModalOpen} from '$lib/store/department/function';
+
+
 import moment from 'moment';
 
 import axios from 'axios'
@@ -82,13 +87,13 @@ const DATA_SELECT_ALERT = {
 const MENU = {
     info : [
         {url : "/info/item",name: '품목 관리', help: " 품목관리란, 취급하는 상품에 대한 관리 메뉴를 뜻합니다."},
-    
+        {url : "/info/user",name: '회원 관리', help: " 회원관리란, 프로그램 사용자 정보를 관리하는 메뉴를 뜻합니다."},
+        {url : "/info/company",name: '거래처 관리', help: " 거래처 관리란, 거래처 정보를 관리하는 메뉴를 뜻합니다."},
+
       ],
 
       customer : [
-        {url : "/customer/company",name: '매입처 관리', help: " 매입처 관리란, 매입하는 상품에 대한 매입처 관리 메뉴를 뜻합니다. 품목별 관리메뉴에도 관여합니다."},
-        {url : "/customer/user",name: '회원 관리', help: " 회원관리란, 주문자에 대한 회원정보를 관리하는 메뉴이며, 선호하는 품목을 사전에 즐겨찾기로 설정하는 메뉴입니다."},
-    
+      
       ],
       sale : [
       
@@ -116,15 +121,31 @@ const TABLE_FILTER : any = {
         {value : "all",name : "전체"},
         {value : "code", name : "사업자등록번호"},
         {value : "name", name : "매입처명"},
-        {value : "phone", name : "연락처"},
-        {value : "email", name : "이메일"},
+        {value : "owner_name", name : "대표자명"},
 
+        {value : "emp_name", name : "담당자명"},
+
+        {value : "email", name : "이메일"},
+    ],
+    employment : [
+        {value : "all",name : "전체"},
+        {value : "name", name : "직급"},
+        {value : "name2", name : "직책"},
+        {value : "company", name : "사업장"},
+        
+    ], department : [
+        {value : "all",name : "전체"},
+        {value : "name", name : "부서명"},
+        {value : "company", name : "사업장"},
         
     ],
     user : [
         {value : "all",name : "전체"},
         {value : "id", name : "ID"},
-        {value : "code", name : "사업자번호"},
+        {value : "company", name : "사업장"},
+        {value : "employment", name : "직급"},
+        {value : "department", name : "부서"},
+    
         {value : "name", name : "이름"},
         {value : "email", name : "이메일"},
         {value : "phone", name : "연락처"},
@@ -155,7 +176,13 @@ const EXCEL_CONFIG : any = {
         {header: '번호코드', key: 'uid', width: 30},
         {header: '사업자등록번호', key: 'code', width: 30},
         {header: '회사명', key: 'name', width: 30},
-        {header: '연락처', key: 'phone', width: 30},
+        {header: '대표자', key: 'owner_name', width: 30},
+        {header: '대표자 연락처', key: 'owner_phone', width: 30},
+        {header: '담당자', key: 'emp_name', width: 30},
+        {header: '담당자 연락처', key: 'emp_phone', width: 30},
+        {header: 'Fax', key: 'fax', width: 30},
+        
+
         {header: '이메일', key: 'email', width: 30},
         {header: '등록일', key: 'created', width: 30},
     ],
@@ -215,6 +242,70 @@ const TABLE_HEADER_CONFIG : any = {
             return date;
         },
     }],
+    employment : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        { title: "ID", formatter: "rownum", align: "center", width: 70,}, 
+        {title:"직급", field:"name", width:150, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                employmentModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+        {title:"직책", field:"name2", width:150, headerFilter:"input"},
+        
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+    department : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        { title: "ID", formatter: "rownum", align: "center", width: 70,}, 
+        {title:"부서명", field:"name", width:150, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                departmentModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+      
+      
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
 
     company : [
         {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
@@ -245,7 +336,11 @@ const TABLE_HEADER_CONFIG : any = {
         }
     },
         
-    {title:"연락처", field:"phone", width:150, headerFilter:"input", formatter:function(cell : any){
+    {title:"대표자 연락처", field:"owner_phone", width:150, headerFilter:"input", formatter:function(cell : any){
+        var value = cell.getValue();
+    return phoneNumber(value);
+     }},
+     {title:"담당자 연락처", field:"emp_phone", width:150, headerFilter:"input", formatter:function(cell : any){
         var value = cell.getValue();
     return phoneNumber(value);
      }},
@@ -265,14 +360,12 @@ const TABLE_HEADER_CONFIG : any = {
         cellClick:function(e : any, cell:any){
             cell.getRow().toggleSelect()
         }},
+        
         {title:"ID", field:"id", width:150, headerFilter:"input"},
-        {title:"사업자번호", field:"code", width:150, headerFilter:"input",
-        formatter:function(cell : any){
-            var value = cell.getValue();
-        return businessNumber(value);
-         },
-        },
-        {title:"상호명", field:"customer_name", width:500, headerFilter:"input", 
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+        {title:"부서", field:"department.name", width:150, headerFilter:"input"},
+        {title:"직급", field:"employment.name", width:150, headerFilter:"input"},
+        {title:"이름", field:"name", width:500, headerFilter:"input", 
         formatter:function(cell : any){
             var value = cell.getValue();
             
@@ -288,7 +381,6 @@ const TABLE_HEADER_CONFIG : any = {
            }
         }
         },
-        {title:"지정차량", field:"car.name", width:150, headerFilter:"input"},
         {title:"연락처", field:"phone", width:150, headerFilter:"input", formatter:function(cell : any){
             var value = cell.getValue();
         return phoneNumber(value);

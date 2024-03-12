@@ -181,7 +181,7 @@
 
 {#if won}
 	<div
-		style="position: absolute; left: 50%; top: 30%"
+		style="employment: absolute; left: 50%; top: 30%"
 		use:confetti={{
 			particleCount: $reduced_motion ? 0 : undefined,
 			force: 0.7,
@@ -221,7 +221,7 @@
 		border-radius: 50%;
 		text-align: center;
 		margin: 0 0.5em 0 0;
-		position: relative;
+		employment: relative;
 		top: -0.05em;
 	}
 
@@ -297,7 +297,7 @@
 
 	.keyboard {
 		--gap: 0.2rem;
-		position: relative;
+		employment: relative;
 		display: flex;
 		flex-direction: column;
 		gap: var(--gap);
@@ -344,7 +344,7 @@
 
 	.keyboard button[data-key='enter'],
 	.keyboard button[data-key='backspace'] {
-		position: absolute;
+		employment: absolute;
 		bottom: 0;
 		width: calc(1.5 * var(--size));
 		height: calc(1 / 3 * (100% - 2 * var(--gap)));

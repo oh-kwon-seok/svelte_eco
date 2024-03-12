@@ -14,15 +14,15 @@
     import { Tabs, TabItem,  Button} from 'flowbite-svelte';
   
 
-    // import Util from '$lib/components/modal/position/Util.svelte';
+    import Util from '$lib/components/modal/employment/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {positionModalOpen} from '$lib/store/position/function';
+    import {employmentModalOpen} from '$lib/store/employment/function';
     import {excelDownload} from '$lib/store/common/function';
     
-    import {position_modal_state} from '$lib/store/position/state';
+    import {employment_modal_state} from '$lib/store/employment/state';
 
     import {url_state,table_list_state,common_toast_state} from '$lib/store/common/state';
     import {EXCEL_CONFIG} from '$lib/module/common/constants';
@@ -51,7 +51,7 @@
     onMount(()=>{
         console.log('시점');
        
-        makeCustomTable(table_list_state,"position",tableComponent,"select");
+        makeCustomTable(table_list_state,"employment",tableComponent,"select");
 
     });
 
@@ -60,9 +60,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/info/position'){
+        }else if($url_state['path'] === '/info/employment'){
          
-          makeCustomTable(table_list_state,"position",tableComponent,"select");
+          makeCustomTable(table_list_state,"employment",tableComponent,"select");
         }
       
     })
@@ -107,35 +107,35 @@
                       <span slot="title">매입처 관리</span>
 
                 
-                      <SearchBar title="position"/>
+                      <SearchBar title="employment"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {positionModalOpen('','add')}}>
+                        <Button  on:click={() => {employmentModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-                        <Button  color='red' on:click={() => positionModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => employmentModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('position',EXCEL_CONFIG['position'])}>
+                        <Button  color='green' on:click={() =>excelDownload('employment',EXCEL_CONFIG['employment'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀다운
                       </Button>
 
                       
 
-                        <!-- {#if $position_modal_state['title'] === 'add'}
+                        {#if $employment_modal_state['title'] === 'add'}
                           <Util title="add" />
-                        {:else if $position_modal_state['title'] === 'update'}
+                        {:else if $employment_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $position_modal_state['title'] === 'check_delete'}
+                          {:else if $employment_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
-                        {/if} -->
+                        {/if}
                         
 
                       </div>

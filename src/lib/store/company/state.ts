@@ -19,10 +19,15 @@ import {v4 as uuid} from 'uuid';
     uid : 0,
     code : '',
     name : '',
-    phone : '',
+    owner_name : '',
+    owner_phone : '',
+    emp_name : '',
+    emp_phone : '',
+    fax : '', 
     email : '',
+    type : '매출',
     used : 1,
-
+  
   })
   
 

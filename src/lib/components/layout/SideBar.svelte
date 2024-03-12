@@ -65,8 +65,14 @@
                 <svelte:fragment slot="icon">
                     <Icon.DatabaseSolid size="20"/>
                 </svelte:fragment>
-              <SidebarDropdownItem class={text_style} label="품목 관리" href='/info/product' active={activeUrl === '/info/product'} on:click={handleToggle('product')} />
-            
+                <SidebarDropdownItem class={text_style} label="직급  관리" href='/info/employment' active={activeUrl === '/info/employment'} on:click={handleToggle('employment')}/>
+                <SidebarDropdownItem class={text_style} label="부서  관리" href='/info/department' active={activeUrl === '/info/department'} on:click={handleToggle('department')}/>
+             
+                <SidebarDropdownItem class={text_style} label="회원 관리" href='/info/user' active={activeUrl === '/info/user'} on:click={handleToggle('user')}/>
+
+              <SidebarDropdownItem class={text_style} label="품목 관리" href='/info/item' active={activeUrl === '/info/item'} on:click={handleToggle('item')} />
+              <SidebarDropdownItem class={text_style} label="거래처 관리" href='/info/company' active={activeUrl === '/info/company'} on:click={handleToggle('company')}/>
+
             </SidebarDropdownWrapper>
  
           </SidebarGroup>
@@ -76,9 +82,7 @@
               <svelte:fragment slot="icon">
                 <Icon.StoreSolid size="20"/>
             </svelte:fragment>
-            <SidebarDropdownItem class={text_style} label="매입처 관리" href='/customer/company' active={activeUrl === '/customer/company'} on:click={handleToggle('company')}/>
-            <SidebarDropdownItem class={text_style} label="회원 관리" href='/customer/user' active={activeUrl === '/customer/user'} on:click={handleToggle('user')}/>
-            
+        
             </SidebarDropdownWrapper>
           </SidebarGroup>
        

@@ -85,7 +85,7 @@
 	}
 
 	p span {
-		position: relative;
+		employment: relative;
 		border-width: 1px;
 		border-radius: 1px;
 		font-size: 0.4em;

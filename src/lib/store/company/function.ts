@@ -12,9 +12,9 @@ import moment from 'moment';
 import {select_query} from '$lib/store/common/function';
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
 
+import Excel from 'exceljs';
+
 const api = import.meta.env.VITE_API_BASE_URL;
-
-
 
 
 let update_modal : any;
@@ -27,14 +27,20 @@ let login_data : any;
 let table_list_data : any;
 
 let selected_data : any;
+let company_upload_data : any;
 
 
-let init_form_data = {
+const init_form_data : any = {
   uid : 0,
   code : '',
   name : '',
-  phone : '',
+  owner_name : '',
+  owner_phone : '',
+  emp_name : '',
+  emp_phone : '',
+  fax : '', 
   email : '',
+  type : '매출',
   used : 1,
 
 }
@@ -91,7 +97,8 @@ const companyModalOpen = (data : any, title : any) => {
     console.log('update_modal : ', update_modal);
 
     if(title === 'add'){
-      company_form_state.update(() => init_form_data);
+      update_form = init_form_data;
+      company_form_state.update(() => update_form);
      
     }
     if(title === 'update' ){
@@ -137,7 +144,7 @@ const save = (param,title) => {
  
     if(title === 'add'){
     
-      if(param['name'] === '' || param['code'] === ''){
+      if(param['name'] === '' || param['code'] === '' || param['type'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
@@ -152,9 +159,15 @@ const save = (param,title) => {
   
           let params = {
             code : param.code,
-            phone : param.phone,
             name : param.name,
+            owner_name : param.owner_name,
+            owner_phone : param.owner_phone,
+            emp_name : param.emp_name,
+            emp_phone : param.emp_phone,
+            fax : param.fax,
+          
             email : param.email,
+            type : param.type,
             used : param.used,
             token : login_data['token'],
           };
@@ -170,9 +183,10 @@ const save = (param,title) => {
             toast['value'] = true;
             update_modal['title'] = '';
             update_modal['add']['use'] = !update_modal['add']['use'];
-        
+
+            update_form = init_form_data;
             company_modal_state.update(() => update_modal);
-            company_form_state.update(()=> init_form_data);
+            company_form_state.update(()=> update_form);
             select_query('company');
             return common_toast_state.update(() => toast);
 
@@ -197,10 +211,15 @@ const save = (param,title) => {
         let params = {
           uid : param.uid,
           code : param.code,
-          phone : param.phone,
           name : param.name,
+          owner_name : param.owner_name,
+          owner_phone : param.owner_phone,
+          emp_name : param.emp_name,
+          emp_phone : param.emp_phone,
+          fax : param.fax,
+
           email : param.email,
-      
+          type : param.type,
           used : param.used,
           token : login_data['token'],
         };
@@ -300,76 +319,226 @@ const save = (param,title) => {
 
   
   }
-  // const bomRowUtil = (title) => {
-  //   if(title === 'add'){
-  //     let new_id = update_form['child'].length + 1;
-  //     let new_bom_data = {
-       
-  //       id : new_id,
-  //       maker : update_form['maker'],
-  //       code : '',
-  //       name : '',
-  //       company : 'BOX',
-  //       type : '완제품',
-  //       check : false,
-  //       use_qty : 0,
-
-  //     };
+  const companyExcelUpload = (e) => {
   
-  //     update_form['child'].push(new_bom_data);
-  //   }else if(title === 'check_delete'){
-  //     alert = {type : 'select', value : false}
-      
-  //     console.log('alert : ', alert);
-
- 
-  //     let delete_count = update_form['child'].filter(data => data.check === true).length;
-  //     update_form['child'] = update_form['child'].filter(data => data.check === false) 
-
-
-
-  //     console.log('child : ',delete_count);
-  //     if(delete_count === 0 || delete_count === undefined){
-  //       alert = {type : 'select', value : true}
-
-  //       common_alert_state.update(() => alert);
-       
-
-  //     }
-
-      
-      
-
-  //   }else {
-  //     update_form['child'].pop();
-  //   }
+    const company_config : any = [
+      {header: '사업자번호', key: 'code', width: 30},
+      {header: '회사명', key: 'name', width: 30},
+      {header: '대표자명', key: 'owner_name', width: 30},
+      {header: '대표 번호', key: 'owner_phone', width: 30},
+      {header: '담당자명', key: 'emp_name', width: 30},
+      {header: '담당자 번호', key: 'emp_phone', width: 30},
+      {header: '팩스 번호', key: 'fax', width: 30},
+      {header: '이메일', key: 'email', width: 30},
+      {header: '구분', key: 'type', width: 30},
   
-  //   company_form_state.update(() => update_form);
-    
-  // }
+
+    ]; 
 
 
-  // const bomRowCellClick = (title,id) => {
-  //   if(title === 'check' ){
-  //     for(let i =0; i<update_form['child'].length; i++){
-  //       if(id === update_form['child'][i]['id']){
+    const wb = new Excel.Workbook();
+    const reader = new FileReader()
+
+    let file = e.target.files[0];
+
+    reader.readAsArrayBuffer(file)
+    reader.onload = () => {
+     let change_data = [];
+     
+      const buffer = reader.result;
+      wb.xlsx.load(buffer).then(workbook => {
+        console.log(workbook, 'workbook instance')
+        workbook.eachSheet((sheet, id) => {
+          sheet.eachRow((row, rowIndex) => {
           
-  //         update_form['child'][i][title] = !update_form['child'][i][title];
-  //         break;
-  //       }
-  //     }
+            if(rowIndex > 1){
+            let obj = {
+
+            };
+            for(let i=0; i<company_config.length; i++){
+              obj[company_config[i].key] = row.values[i+1] !== '' ?  row.values[i+1] : "";
+
+            }
+            change_data.push(obj);
+            
+            company_upload_data = change_data;
+
+          
+          }else {
+
+          }
+          });
+
+          return console.log('company_upload_data',company_upload_data);
+
+          
   
-  //   }
+
+        })
+
+        const url = `${api}/company/excel_upload`
+        try {
+  
+          let params = {
+            data :  company_upload_data,
+            
+          };
+        axios.post(url,
+          params,
+        ).then(res => {
+          console.log('res',res);
+          if(res.data !== undefined && res.data !== null && res.data !== '' ){
+            console.log('실행');
+            console.log('res:data', res.data);
+            
+            toast['type'] = 'success';
+            toast['value'] = true;
+            update_modal['title'] = '';
+            update_modal['update']['use'] = false;
+            select_query('company');
+            return common_toast_state.update(() => toast);
+  
+          }else{
+          
+            return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+          }
+        })
+        }catch (e:any){
+          return console.log('에러 : ',e);
+        };
+
+
+      })
+
+    }
+
+  }
+
+
+  const companyExcelFormDownload = () => {
+
+    const data = [{
+
+      code : "1104421111",
+      name : "주식회사 원플",
+      owner_name : "이락규",
+      owner_phone : "01022221155",
+      emp_name : "오권석",
+      emp_phone : "01022221111",
+      fax  : "0421123545",
+      email  : "sale@wonpl.co.kr",
+      type  : "사업장",
+    },{
+
+      code : "11044212222",
+      name : "주식회사 에코바이오의학연구소",
+      owner_name : "구태규",
+      owner_phone : "01022221155",
+      emp_name : "금정섭",
+      emp_phone : "01055551111",
+      fax  : "0421123545",
+      email  : "psforyou@naver.com",
+      type  : "매입/매출",
+    },
     
-  //   company_form_state.update(() => update_form);
+  ]; 
+
+
+  
+    const config : any = [
+      {header: '사업자번호', key: 'code', width: 30},
+      {header: '회사명', key: 'name', width: 30},
+      {header: '대표자명', key: 'owner_name', width: 30},
+      {header: '대표 번호', key: 'owner_phone', width: 30},
+      {header: '담당자명', key: 'emp_name', width: 30},
+      {header: '담당자 번호', key: 'emp_phone', width: 30},
+      {header: '팩스 번호', key: 'fax', width: 30},
+      {header: '이메일', key: 'email', width: 30},
+      {header: '구분', key: 'type', width: 30},
     
+    ]; 
 
 
-  // }
+      try {
+
+        let text_title : any= '거래처 업로드 형식';
+       
+
+      const workbook = new Excel.Workbook();
+        // 엑셀 생성
+  
+        // 생성자
+        workbook.creator = '작성자';
+       
+        // 최종 수정자
+        workbook.lastModifiedBy = '최종 수정자';
+       
+        // 생성일(현재 일자로 처리)
+        workbook.created = new Date();
+       
+        // 수정일(현재 일자로 처리)
+        workbook.modified = new Date();
+
+        let file_name = text_title + moment().format('YYYY-MM-DD HH:mm:ss') + '.xlsx';
+        let sheet_name = moment().format('YYYYMMDDHH:mm:ss');
+     
+      
+        workbook.addWorksheet(text_title);
+           
+
+        const sheetOne = workbook.getWorksheet(text_title);
+             
+             
+              
+        // 컬럼 설정
+        // header: 엑셀에 표기되는 이름
+        // key: 컬럼을 접근하기 위한 key
+        // hidden: 숨김 여부
+        // width: 컬럼 넓이
+        sheetOne.columns = config;
+     
+        const sampleData = data;
+        const borderStyle = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+       
+        sampleData.map((item, index) => {
+          sheetOne.addRow(item);
+       
+          // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
+          
+          for(let loop = 1; loop <= 9; loop++) {
+            const col = sheetOne.getRow(index + 2).getCell(loop);
+            col.border = borderStyle;
+            col.font = {name: 'Arial Black', size: 10};
+          }
+        
+      });
+  
+  
+          
+     
+        workbook.xlsx.writeBuffer().then((data) => {
+          const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          const url = window.URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = file_name;
+          anchor.click();
+          window.URL.revokeObjectURL(url);
+        })
+      } catch(error) {
+        console.error(error);
+      }
+
+   
+}
 
 
 
 
 
-
-export {companyModalOpen,save,modalClose}
+export {companyModalOpen,save,modalClose,companyExcelFormDownload, companyExcelUpload}

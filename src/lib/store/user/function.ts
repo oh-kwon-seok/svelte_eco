@@ -32,18 +32,19 @@ let user_data : any;
 let selected_data : any;
 
 
-let init_form_data = {
+const init_form_data:any = {
   uid : 0,
-    id : '',
-    code : '',
-    customer_name : '',
-    name : '',
-    email : '',
-    phone : '',
-    password : '1111',
-   
-    used : 1,
-    auth:'',
+  id : '',
+  company : '', // 사업장
+  employment : '',
+  department : '',
+
+  name : '', // 사용자이름
+  email : '', // 이메일
+  phone : '', // 연락처
+  password : '1111',
+  auth:'',
+  used : 1,
 
 
 }
@@ -108,8 +109,10 @@ const userModalOpen = (data : any, title : any) => {
     }
     if(title === 'update' ){
 
+
+
         Object.keys(update_form).map((item)=> {    
-            if(item === 'car'){
+            if(item === 'company' || item === 'employment' || item === 'department'){
               update_form[item] = data[item]['uid'];
             }else if(item === 'auth'){
               update_form[item] = data[item][0];
@@ -197,7 +200,7 @@ const save = (param,title) => {
     if(title === 'add'){
   
     
-      if( param['code'] === '' || param['car'] === ''){
+      if( param['id'] === '' || param['password'] === '' || param['company'] === '' || param['employment'] === '' || param['department'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
@@ -212,14 +215,14 @@ const save = (param,title) => {
   
           
           let params = {
-            id : param.code,
-            code : param.code,
+            id : param.id,
+            company_uid : param.company,
+            employment_uid : param.employment,
+            department_uid : param.department,
             name : param.name,
-            customer_name : param.customer_name,
             email : param.email,
             phone : param.phone,
             password : param.password,
-            car_uid : param.car,
             used : param.used,
             auth : 'user',
             token : login_data['token'],
@@ -268,12 +271,7 @@ const save = (param,title) => {
         auth = 'user';
       }
       
-      let data =  table_list_data['user_item'].getSelectedData();
-
-      let checked_data = data.filter(item => {
-        return parseInt(item.qty) > 0 && item.qty !== undefined 
-      })
-
+    
      
      
       try {
@@ -281,18 +279,19 @@ const save = (param,title) => {
       
         let params = {
           id : param.id,
-          code : param.code,
+          company_uid : param.company,
+          employment_uid : param.employment,
+          department_uid : param.department,
           name : param.name,
           password : param.password,
-          customer_name : param.customer_name,
           email : param.email,
           phone : param.phone,
           
-          car_uid : param.car,
+         
           used : param.used,
           auth : auth,
           token : login_data['token'],
-          user_item : checked_data,
+          
 
         };
       axios.post(url,

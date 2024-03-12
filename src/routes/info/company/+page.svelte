@@ -19,8 +19,8 @@
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {companyModalOpen} from '$lib/store/company/function';
-    import {excelDownload} from '$lib/store/common/function';
+    import {companyModalOpen,companyExcelFormDownload,companyExcelUpload} from '$lib/store/company/function';
+    import {excelDownload,fileButtonClick} from '$lib/store/common/function';
     
     import {company_modal_state} from '$lib/store/company/state';
 
@@ -124,8 +124,27 @@
 
                         <Button  color='green' on:click={() =>excelDownload('company',EXCEL_CONFIG['company'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
-                          엑셀다운
+                          엑셀 다운로드
                       </Button>
+
+                     
+
+                      <Button  color='green' on:click={(e)=> fileButtonClick('upload')}>
+                        <Icon.UploadSolid class='mr-2' size="20" />
+                          엑셀 업로드
+                        <input 
+                        hidden  
+                        id = 'upload' 
+                        type='file' 
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+                        on:change={(e)=> companyExcelUpload(e)}
+                  
+                        />
+                    </Button>
+                    <Button  color="light" on:click={() => companyExcelFormDownload()}>
+                      <Icon.FileExportSolid class='mr-2' size="20" />
+                      업로드 양식 다운
+                    </Button>
 
                       
 

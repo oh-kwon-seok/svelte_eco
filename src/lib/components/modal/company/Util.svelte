@@ -39,7 +39,7 @@
 
  
 
-    <Modal title={`매입처 ${label_title}`} permanent={true} color={color} bind:open={$company_modal_state[title]['use']} size="xl" placement={title === 'add' || title === 'check_delete'  ? 'center' : 'center-right'}   class="w-full">
+    <Modal title={`거래처 ${label_title}`} permanent={true} color={color} bind:open={$company_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
         <form action="#">
@@ -49,7 +49,7 @@
           
           <Label class="space-y-2">
             <span>사업자번호 {businessNumber($company_form_state.code)}</span>
-            <Input maxlength="10" type="text" placeholder="매입처를 입력하세요" required bind:value={$company_form_state['code']} on:input={businessNumber($company_form_state.code)}/>
+            <Input maxlength="10" type="text" placeholder="거래처명을 입력하세요" required bind:value={$company_form_state['code']} on:input={businessNumber($company_form_state.code)}/>
             
             {#if $company_form_state['code'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
@@ -58,21 +58,62 @@
 
          
           <Label class="space-y-2">
-            <span>매입처</span>
+            <span>거래처</span>
             <Input type="text" id="last_name" placeholder="매입처를 입력하세요" required bind:value={$company_form_state['name']}/>
             
             {#if $company_form_state['name'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
             {/if}
           </Label>
+
           <Label class="space-y-2">
-            <span>연락처 {phoneNumber($company_form_state.phone)}</span>
-            <Input maxlength="11" type="text" placeholder="연락처를 입력하세요" required bind:value={$company_form_state['phone']} on:input={phoneNumber($company_form_state.phone)}/>
+            <span>대표자</span>
+            <Input type="text" id="last_name" placeholder="대표자를 입력하세요" required bind:value={$company_form_state['owner_name']}/>
+         
+          </Label>
+        
+          <Label class="space-y-2">
+            <span>대표자 연락처 {phoneNumber($company_form_state.owner_phone)}</span>
+            <Input maxlength="11" type="text" placeholder="연락처를 입력하세요" required bind:value={$company_form_state['owner_phone']} on:input={phoneNumber($company_form_state.owner_phone)}/>
           </Label>
           <Label class="space-y-2">
-            <span>이메일 {validEmail($company_form_state.email) ? 'OK' : '형식이 맞지 않습니다.'}</span>
-            <Input maxlength="50" type="text" placeholder="이메일을 입력하세요" required bind:value={$company_form_state['email']} on:input={validEmail($company_form_state.email)}/>
+            <span>담당자</span>
+            <Input type="text" id="last_name" placeholder="담당자를 입력하세요" required bind:value={$company_form_state['emp_name']}/>
+         
           </Label>
+          <Label class="space-y-2">
+            <span>담당자 연락처 {phoneNumber($company_form_state.emp_phone)}</span>
+            <Input maxlength="11" type="text" placeholder="연락처를 입력하세요" required bind:value={$company_form_state['emp_phone']} on:input={phoneNumber($company_form_state.emp_phone)}/>
+          </Label>
+
+          <Label class="space-y-2">
+            <span>담당자 연락처 {phoneNumber($company_form_state.emp_phone)}</span>
+            <Input maxlength="11" type="text" placeholder="연락처를 입력하세요" required bind:value={$company_form_state['emp_phone']} on:input={phoneNumber($company_form_state.emp_phone)}/>
+          </Label>
+
+
+          <Label class="space-y-2">
+            <span>Fax 번호 {phoneNumber($company_form_state.fax)}</span>
+            <Input maxlength="11" type="text" placeholder="Fax 번호를 입력하세요" required bind:value={$company_form_state['fax']} on:input={phoneNumber($company_form_state.fax)}/>
+          </Label>
+
+        
+
+
+         
+          <Label class="space-y-2">
+            <span>구분</span>
+            <Select id="countries" class="mt-2" bind:value={$company_form_state['type']} placeholder="">
+              <option value={"매입"}>{"매입"}</option>    
+              <option value={"매출"}>{"매출"}</option>
+              <option value={"매입/매출"}>{"매입/매출"}</option>
+              <option value={"사업장"}>{"사업장"}</option>
+              
+
+            </Select>
+          </Label>
+    
+
 
 
     

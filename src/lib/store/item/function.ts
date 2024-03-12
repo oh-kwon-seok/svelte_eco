@@ -35,7 +35,7 @@ let item_upload_data : any;
 let selected_data : any;
 
 
-let init_form_data = {
+const init_form_data:any = {
   uid : 0,
   name : '',
   type : '기타',

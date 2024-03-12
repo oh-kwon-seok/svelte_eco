@@ -29,10 +29,10 @@ let table_list_data : any;
 let selected_data : any;
 
 
-let init_form_data = {
+const init_form_data:any = {
   uid : 0,
   name : '',
-
+  company : '',
   used : 1,
  
 
@@ -90,14 +90,18 @@ const departmentModalOpen = (data : any, title : any) => {
     console.log('update_modal : ', update_modal);
 
     if(title === 'add'){
-      department_form_state.update(() => init_form_data);
+      update_form = init_form_data;
+      department_form_state.update(() => update_form);
      
     }
     if(title === 'update' ){
-          Object.keys(update_form).map((item)=> {    
-            
-            update_form[item] = data[item];
-        
+        Object.keys(update_form).map((item)=> {    
+            if(item === 'company'  ){
+              update_form[item] = data[item]['uid'];
+            }else{
+              update_form[item] = data[item];
+            }
+          
           }); 
             department_form_state.update(() => update_form);
             department_modal_state.update(() => update_modal);
@@ -136,10 +140,11 @@ const save = (param,title) => {
  
     if(title === 'add'){
     
-      if(param['name'] === '' || param['code'] === ''){
+      if(param['name'] === '' || param['company'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
+
         department_modal_state.update(() => update_modal);
  
         return common_alert_state.update(() => alert);
@@ -150,10 +155,8 @@ const save = (param,title) => {
         try {
   
           let params = {
-            code : param.code,
-            phone : param.phone,
+            company_uid : param.company,
             name : param.name,
-            email : param.email,
             used : param.used,
             token : login_data['token'],
           };
@@ -195,10 +198,8 @@ const save = (param,title) => {
 
         let params = {
           uid : param.uid,
-          code : param.code,
-          phone : param.phone,
+          company_uid : param.company,
           name : param.name,
-          email : param.email,
       
           used : param.used,
           token : login_data['token'],
@@ -215,8 +216,9 @@ const save = (param,title) => {
           toast['value'] = true;
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
+          update_form = init_form_data;
           department_modal_state.update(() => update_modal);
-          department_form_state.update(()=> init_form_data);
+          department_form_state.update(()=> update_form);
           select_query('department');
           return common_toast_state.update(() => toast);
 

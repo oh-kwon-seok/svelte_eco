@@ -14,7 +14,7 @@
     import { Tabs, TabItem,  Button} from 'flowbite-svelte';
   
 
-    //import Util from '$lib/components/modal/department/Util.svelte';
+    import Util from '$lib/components/modal/department/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
@@ -94,7 +94,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='거래처 관리' subtitle='매입처 관리'/>
+              <Title title='거래처 관리' subtitle='부서 관리'/>
             </div>
 
           
@@ -104,7 +104,7 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">매입처 관리</span>
+                      <span slot="title">부서 관리</span>
 
                 
                       <SearchBar title="department"/>
@@ -114,7 +114,7 @@
 
                         <Button  on:click={() => {departmentModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
-                          추가
+                          추가{$department_modal_state['title']}
                         </Button>
 
                         <Button  color='red' on:click={() => departmentModalOpen('','check_delete')}>
@@ -129,13 +129,13 @@
 
                       
 
-                        <!-- {#if $department_modal_state['title'] === 'add'}
+                        {#if $department_modal_state['title'] === 'add'}
                           <Util title="add" />
                         {:else if $department_modal_state['title'] === 'update'}
                           <Util  title="update"/>
                           {:else if $department_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
-                        {/if} -->
+                        {/if}
                         
 
                       </div>

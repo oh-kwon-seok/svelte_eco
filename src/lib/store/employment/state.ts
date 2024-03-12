@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid';
 
 
 
-  const position_modal_state : any = writable( {
+  const employment_modal_state : any = writable( {
     title : 'add',
     add : { use : false, title: ''},
     update : { use : false, title: ''},
@@ -15,13 +15,14 @@ import {v4 as uuid} from 'uuid';
      
    });
 
-  const position_form_state : any = writable({
+  const employment_form_state : any = writable({
     uid : 0,
     name : '',
     name2 : '',
+    company : '',
     used : 1,
 
   })
   
 
-  export {position_modal_state,position_form_state};
+  export {employment_modal_state,employment_form_state};
