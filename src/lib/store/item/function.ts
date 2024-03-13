@@ -523,8 +523,12 @@ const save = (param,title) => {
   
       let array = [];
       
-    
+      
+
+      // 화장품 사용제한 원료정보 조회
+      // https://www.data.go.kr/data/15111772/openapi.do#/API%20%EB%AA%A9%EB%A1%9D/getCsmtcsUseRstrcInfoService
       const url = `${restrict_api}/CsmtcsUseRstrcInfoService/getCsmtcsUseRstrcInfoService`; 
+
             
       let params = 
       {
@@ -587,8 +591,47 @@ const save = (param,title) => {
   
         }
   
-        console.log('array : ',array);
+      
+        var filteredData = array.filter(function(obj) {
+          return obj.COUNTRY_NAME !== null && obj.REGULATE_TYPE !== null;
+        });
+
+        console.log('filteredData : ', filteredData);
+
+
+      //   const url = `${api}/restric_material/update`
+      //   try {       
+      //     let params = {
+      //       data : filteredData,
+      //       token : login_data['token'],
+      //     };
+      //   axios.post(url,
+      //     params,
+      //   ).then(res => {
+      //     if(res.data !== undefined && res.data !== null && res.data !== '' ){
+            
+      //       toast['type'] = 'success';
+      //       toast['value'] = true;
+      //       update_modal['title'] = '';
+      //       update_modal['add']['use'] = !update_modal['add']['use'];
+      //       // factory_modal_state.update(() => update_modal);
+      //       // select_query('factory');
+            
+
+      //       return common_toast_state.update(() => toast);
+
+      //     }else{
+          
+      //       return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+      //     }
+      //   })
+      //   }catch (e:any){
+      //     return console.log('에러 : ',e);
+      //   };
         
+
+
+      
   
        }
        loadChange(false);

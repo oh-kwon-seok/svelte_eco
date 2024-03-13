@@ -37,9 +37,12 @@ let selected_data : any;
 
 const init_form_data:any = {
   uid : 0,
+    
   name : '',
   status : '',
   description : '',
+  company : '',
+  factory_sub_array : [],
   used : 1,
 
 }
@@ -93,14 +96,22 @@ const factoryModalOpen = (data : any, title : any) => {
 
     
     if(title === 'add'){
+      update_form = init_form_data;
       factory_form_state.update(() => init_form_data);
      
     }
     if(title === 'update' ){
 
         Object.keys(update_form).map((item)=> {    
-            if(item === 'factory_sub'){
-              update_form[item] = data[item]['uid'];
+          if(item === 'company'  ){
+            update_form[item] = data[item]['uid'];
+          }
+            else if(item === 'factory_sub_array'){
+              if(data[item] !== null){
+                update_form[item] = JSON.parse(data[item]);
+              }else{
+                update_form[item] = [];
+              }
             }else{
               update_form[item] = data[item];
             }
@@ -176,34 +187,21 @@ const save = (param,title) => {
   
    
     if(title === 'add'){
-      let data;
-      if(table_list_data['factory_sub_list']){
-        data = table_list_data['factory_sub_list'].getSelectedData();
-      }else{
-        alert['type'] = 'save';
-        alert['value'] = true;
-
-        return common_alert_state.update(() => alert);
-      }
-    
+      let checked_data;
    
-
-      for(let i=0; i<data.length; i++){
-        Object.keys(data[i]).map((item)=> {    
-          if(data[i][item] === undefined){
-            data[i][item] = 0;
-          }
-        }); 
+    
+      if(param.factory_sub_array.length > 0){
+        
+        checked_data = param.factory_sub_array.filter(item => {
+          return item.name !== "" && item.name !== undefined && item.name !== null 
+        })
 
       }
-
-      let checked_data = data.filter(item => {
-        return parseInt(item.qty) > 0 && item.qty !== undefined 
-      })
-      console.log('checked_data : ', checked_data);
+     
+      
 
     
-      if( param['user'] === '' || param['car'] === '' || checked_data.length === 0 || checked_data.length === undefined ){
+      if( param['company'] === '' || param['name'] === ''   ){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
@@ -220,16 +218,12 @@ const save = (param,title) => {
   
           
           let params = {
-            
-            order_status : param.order_status,
-            price_status : param.price_status,
+            company_uid : param.company,
+            name : param.name,
+            status : param.status,
             description : param.description,
-            user_id : param.user,
-            car_uid : param.car,
             used : param.used,
-            auth : 'user',
-            req_date : param.req_date,
-            req_des : param.req_des,
+            factory_sub_array : JSON.stringify(checked_data),
             factory_sub : checked_data,
             token : login_data['token'],
           };
@@ -266,39 +260,30 @@ const save = (param,title) => {
       const url = `${api}/factory/update`
       
     
-      let data =  table_list_data['factory_sub_list'].getSelectedData();
+      let checked_data;
+   
+    
+      if(param.factory_sub_array.length > 0){
+        
+        checked_data = param.factory_sub_array.filter(item => {
+          return item.name !== "" && item.name !== undefined && item.name !== null 
+        })
 
-      let checked_data = data.filter(item => {
-        if(item['buy_price'] === "" || item['buy_price'] === undefined || item['buy_price'] === null){
-          item['buy_price'] = 0; 
-
-        }
-        return parseInt(item.qty) > 0 && item.qty !== undefined 
-      })
-
-     
-      console.log('param  : ', param );
-      
+      }
 
         
         let params = {
 
           uid : param.uid,
-          order_status : param.order_status,
-          price_status : param.price_status,
+          company_uid : param.company,
+          name : param.name,
+          status : param.status,
           description : param.description,
-          req_date : param.req_date,
-          req_des : param.req_des,
-
-          ship_image_url : param['ship_image_url'],  
-          user_id : param.user,
-          car_uid : param.car,
           used : param.used,
-          auth : 'user',
+          factory_sub_array : JSON.stringify(checked_data),
           factory_sub : checked_data,
           token : login_data['token'],
 
-        
         };
 
         console.log('param : ', param);
@@ -510,4 +495,45 @@ const factoryExcelDownload = (type,config) => {
 }
 
 
-export {factoryModalOpen,factoryExcelDownload,save}
+const factorySubAddRow = () => {
+  let new_obj = {
+    uid : parseInt(update_form['factory_sub_array'].length) + 1, 
+    name : '',
+    status : '',
+    description : '',
+  }
+
+
+  update_form['factory_sub_array'].push(new_obj);
+  console.log('update_form : ', update_form);
+  user_form_state.update(()=> update_form);
+
+}
+const factorySubDeleteRow = () => {
+  console.log('눌림');
+
+  update_form['factory_sub_array'].pop();
+
+  user_form_state.update(()=> update_form);
+
+}
+const factorySubAllDeleteRow = () => {
+ 
+
+  update_form['factory_sub_array'] = [];
+
+  user_form_state.update(()=> update_form);
+
+}
+const factorySubSelectDeleteRow = (index) => {
+  
+
+
+  update_form['factory_sub_array'].splice(index,1);
+  
+  user_form_state.update(()=> update_form);
+
+}
+
+
+export {factoryModalOpen,modalClose,factoryExcelDownload,save,factorySubAddRow,factorySubDeleteRow,factorySubAllDeleteRow,factorySubSelectDeleteRow}

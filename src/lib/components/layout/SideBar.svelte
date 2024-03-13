@@ -72,13 +72,13 @@
 
               <SidebarDropdownItem class={text_style} label="품목 관리" href='/info/item' active={activeUrl === '/info/item'} on:click={handleToggle('item')} />
               <SidebarDropdownItem class={text_style} label="거래처 관리" href='/info/company' active={activeUrl === '/info/company'} on:click={handleToggle('company')}/>
-
+              <SidebarDropdownItem class={text_style} label="공장 관리" href='/info/factory' active={activeUrl === '/info/factory'} on:click={handleToggle('factory')}/>
             </SidebarDropdownWrapper>
  
           </SidebarGroup>
 
           <SidebarGroup border>
-            <SidebarDropdownWrapper class={text_style} label="거래처 관리" isOpen={mainPath ==='customer' ? true : false} transitionType="fly" {transitionParams} >
+            <SidebarDropdownWrapper class={text_style} label="영업 관리" isOpen={mainPath ==='sale' ? true : false} transitionType="fly" {transitionParams} >
               <svelte:fragment slot="icon">
                 <Icon.StoreSolid size="20"/>
             </svelte:fragment>

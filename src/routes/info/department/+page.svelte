@@ -114,7 +114,7 @@
 
                         <Button  on:click={() => {departmentModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
-                          추가{$department_modal_state['title']}
+                          추가
                         </Button>
 
                         <Button  color='red' on:click={() => departmentModalOpen('','check_delete')}>

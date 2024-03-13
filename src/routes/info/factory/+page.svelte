@@ -12,11 +12,11 @@
     import Title from '$lib/components/layout/Title.svelte';
     
 
-    import { Tabs, TabItem} from 'flowbite-svelte';
+    import { Tabs, TabItem,Button} from 'flowbite-svelte';
 
 
 
-    //import Util from '$lib/components/modal/factory/Util.svelte';
+    import Util from '$lib/components/modal/factory/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
@@ -32,6 +32,8 @@
     import Toast from '$lib/components/toast/Toast.svelte'
     
     import {makeCustomTable,infoCallApi} from '$lib/store/common/function';
+    import {factoryModalOpen} from '$lib/store/factory/function';
+    
     
 
 	import { afterUpdate, onMount } from 'svelte';
@@ -42,12 +44,6 @@
 
     export let data;
 
-  let table_list_data;
-
-    // @ts-ignore
-    table_list_state.subscribe((item) => {
-      table_list_data = item;
-  });
 
 
  
@@ -118,7 +114,7 @@
 
                       <div class='m-5'>
 
-                        <!-- <Button  on:click={() => {factoryModalOpen('','add')}}>
+                        <Button  on:click={() => {factoryModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
@@ -128,27 +124,19 @@
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('factory',EXCEL_CONFIG['factory'])}>
-                          <Icon.FileCsvSolid class='mr-2' size="20" />
-                          엑셀다운
-                      </Button>
-
-                      <Button  color='light' on:click={() => factoryModalOpen('','print')}>
-                        <Icon.PrintSolid class='mr-2' size="20" />
-                        주문서 출력
-                    </Button> -->
+                       
+                     
 
                       
 
-                        <!-- {#if $factory_modal_state['title'] === 'add'}
+                        {#if $factory_modal_state['title'] === 'add'}
                           <Util title="add" />
                         {:else if $factory_modal_state['title'] === 'update'}
                           <Util  title="update"/>
                           {:else if $factory_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
-                          {:else if $factory_modal_state['title'] === 'print'}
-                          <Util  title="print"/>
-                        {/if} -->
+                        
+                        {/if}
                         
 
                       </div>

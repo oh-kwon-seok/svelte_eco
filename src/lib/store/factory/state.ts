@@ -22,6 +22,8 @@ import {v4 as uuid} from 'uuid';
     name : '',
     status : '',
     description : '',
+    company : '',
+    factory_sub_array : [],
     used : 1,
   })
   

@@ -13,7 +13,7 @@ import moment from 'moment';
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER} from '$lib/module/common/constants';
-
+import Excel from 'exceljs';
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -28,7 +28,7 @@ let search_state : any;
 let login_data : any;
 let table_list_data : any;
 let user_data : any;
-
+let user_upload_data : any;
 let selected_data : any;
 
 
@@ -384,10 +384,228 @@ const save = (param,title) => {
   }
 
 
+  const userExcelUpload = (e) => {
+  
+    const config : any = [
+      {header: '사업장', key: 'company_code', width: 30},
+      {header: '부서', key: 'department_name', width: 30},
+      {header: '직급', key: 'employment_name', width: 30},
+      {header: '아이디', key: 'id', width: 30},
+      {header: '비밀번호', key: 'password', width: 30},
+      {header: '이름', key: 'name', width: 30},
+      {header: '연락처', key: 'phone', width: 30},
+      {header: '이메일', key: 'email', width: 30},
+  
+
+    ]; 
+
+
+    const wb = new Excel.Workbook();
+    const reader = new FileReader()
+
+    let file = e.target.files[0];
+
+    reader.readAsArrayBuffer(file)
+    reader.onload = () => {
+     let change_data = [];
+     
+      const buffer = reader.result;
+      wb.xlsx.load(buffer).then(workbook => {
+        console.log(workbook, 'workbook instance')
+        workbook.eachSheet((sheet, id) => {
+          sheet.eachRow((row, rowIndex) => {
+          
+            if(rowIndex > 1){
+            let obj = {
+
+            };
+            for(let i=0; i<config.length; i++){
+              obj[config[i].key] = row.values[i+1] !== '' ?  row.values[i+1] : "";
+
+            }
+            change_data.push(obj);
+            
+            user_upload_data = change_data;
+
+          
+          }else {
+
+          }
+          });
+
+          return console.log('user_upload_data',user_upload_data);
+
+          
+  
+
+        })
+
+        const url = `${api}/user/excel_upload`
+        try {
+  
+          let params = {
+            data :  user_upload_data,
+            
+          };
+        axios.post(url,
+          params,
+        ).then(res => {
+          console.log('res',res);
+          if(res.data !== undefined && res.data !== null && res.data !== '' ){
+            console.log('실행');
+            console.log('res:data', res.data);
+            
+            toast['type'] = 'success';
+            toast['value'] = true;
+            update_modal['title'] = '';
+            update_modal['update']['use'] = false;
+            select_query('user');
+            return common_toast_state.update(() => toast);
+  
+          }else{
+          
+            return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+          }
+        })
+        }catch (e:any){
+          return console.log('에러 : ',e);
+        };
+
+
+      })
+
+    }
+
+  }
+
+
+  const userExcelFormDownload = () => {
+
+    const data = [{
+
+      company_code : "1112223345",
+      department_name : "생산팀",
+      employment_name : "차장",
+      id : "ohjin333",
+      password : "1111",
+      name : "김나영",
+      phone : "01022221111",
+      email  : "sale@wonpl.co.kr",
+    },{
+      company_code : "2225553345",
+      department_name : "영업팀",
+      employment_name : "과장",
+      id : "psforyou",
+      password : "1111",
+      name : "류인국",
+      phone : "01055552222",
+      email  : "nglee@gmail.co.kr",
+    },
+    
+  ]; 
+
+
+  
+    const config : any = [
+      {header: '사업장', key: 'company_code', width: 30},
+      {header: '부서', key: 'department_name', width: 30},
+      {header: '직급', key: 'employment_name', width: 30},
+      {header: '아이디', key: 'id', width: 30},
+      {header: '비밀번호', key: 'password', width: 30},
+      {header: '이름', key: 'name', width: 30},
+      {header: '연락처', key: 'phone', width: 30},
+      {header: '이메일', key: 'email', width: 30},
+    
+    
+    ]; 
+
+
+      try {
+
+        let text_title : any= '회원 업로드 형식';
+       
+
+      const workbook = new Excel.Workbook();
+        // 엑셀 생성
+  
+        // 생성자
+        workbook.creator = '작성자';
+       
+        // 최종 수정자
+        workbook.lastModifiedBy = '최종 수정자';
+       
+        // 생성일(현재 일자로 처리)
+        workbook.created = new Date();
+       
+        // 수정일(현재 일자로 처리)
+        workbook.modified = new Date();
+
+        let file_name = text_title + moment().format('YYYY-MM-DD HH:mm:ss') + '.xlsx';
+        let sheet_name = moment().format('YYYYMMDDHH:mm:ss');
+     
+      
+        workbook.addWorksheet(text_title);
+           
+
+        const sheetOne = workbook.getWorksheet(text_title);
+             
+             
+              
+        // 컬럼 설정
+        // header: 엑셀에 표기되는 이름
+        // key: 컬럼을 접근하기 위한 key
+        // hidden: 숨김 여부
+        // width: 컬럼 넓이
+        sheetOne.columns = config;
+     
+        const sampleData = data;
+        const borderStyle = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+       
+        sampleData.map((item, index) => {
+          sheetOne.addRow(item);
+       
+          // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
+          
+          for(let loop = 1; loop <= 8; loop++) {
+            const col = sheetOne.getRow(index + 2).getCell(loop);
+            col.border = borderStyle;
+            col.font = {name: 'Arial Black', size: 10};
+          }
+        
+      });
+  
+  
+          
+     
+        workbook.xlsx.writeBuffer().then((data) => {
+          const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          const url = window.URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = file_name;
+          anchor.click();
+          window.URL.revokeObjectURL(url);
+        })
+      } catch(error) {
+        console.error(error);
+      }
+
+   
+}
+
+
+
+
+
   
 
 
 
 
 
-export {userModalOpen,save,modalClose}
+export {userModalOpen,save,modalClose,userExcelFormDownload,userExcelUpload}

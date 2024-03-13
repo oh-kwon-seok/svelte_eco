@@ -137,7 +137,15 @@ const TABLE_FILTER : any = {
         {value : "all",name : "전체"},
         {value : "name", name : "부서명"},
         {value : "company", name : "사업장"},
+     
         
+    ],
+    factory : [
+        {value : "all",name : "전체"},
+        {value : "name", name : "공장명"},
+        {value : "status", name : "용도"},
+        {value : "company", name : "사업장"},
+       
     ],
     user : [
         {value : "all",name : "전체"},
@@ -186,6 +194,7 @@ const EXCEL_CONFIG : any = {
         {header: '이메일', key: 'email', width: 30},
         {header: '등록일', key: 'created', width: 30},
     ],
+   
     user : [
         {header: 'ID', key: 'id', width: 30},
         {header: '지정차량', key: 'car', width: 30},
@@ -346,6 +355,37 @@ const TABLE_HEADER_CONFIG : any = {
      }},
     {title:"이메일", field:"email", width:150, headerFilter:"input"},
 
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+    factory : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        { title: "ID", formatter: "rownum", align: "center", width: 70,}, 
+        {title:"공장명", field:"name", width:150, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                factoryModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+        {title:"용도", field:"status", width:150, headerFilter:"input"},
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
         formatter: function(cell : any, formatterParams: any, onRendered: any) {
             // Luxon을 사용하여 datetime 값을 date로 변환
