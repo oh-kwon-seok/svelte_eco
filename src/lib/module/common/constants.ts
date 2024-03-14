@@ -19,8 +19,8 @@ import { factoryModalOpen} from '$lib/store/factory/function';
 import { employmentModalOpen} from '$lib/store/employment/function';
 
 import { departmentModalOpen} from '$lib/store/department/function';
-
-
+import { restricMaterialModalOpen } from '$lib/store/restric_material/function';
+import { restricMaterialCountryModalOpen } from '$lib/store/restric_material_country/function';
 import moment from 'moment';
 
 import axios from 'axios'
@@ -158,6 +158,30 @@ const TABLE_FILTER : any = {
         {value : "email", name : "이메일"},
         {value : "phone", name : "연락처"},
     ],
+    restric_material : [
+        {value : "all",name : "전체"},
+        {value : "regulate_type", name : "구분"},
+        {value : "ingr_std_name", name : "표준명"},
+        {value : "ingr_eng_name", name : "영문명"},
+        {value : "cas_no", name : "CasNO"},
+        {value : "ingr_synonym", name : "이명"},
+        {value : "country_name", name : "배합제한국가"},
+        {value : "notice_ingr_name", name : "고시원료명"},
+        {value : "provis_atrcl", name : "단서조항"},
+        {value : "limit_cond", name : "제한사항"},
+        
+    ], 
+    restric_material_country : [
+        {value : "all",name : "전체"},
+        {value : "regulate_type", name : "구분"},
+        {value : "regl_code", name : "규제코드"},
+        {value : "ingr_code", name : "성분코드"},
+        {value : "country_name", name : "배합제한국가"},
+        {value : "notice_ingr_name", name : "고시원료명"},
+        {value : "provis_atrcl", name : "단서조항"},
+        {value : "limit_cond", name : "제한사항"},
+        
+    ],
 }
 
 
@@ -212,6 +236,31 @@ const EXCEL_CONFIG : any = {
         {header: '개수', key: 'qty', width: 30},
 
         {header: '등록일', key: 'created', width: 30},
+        ],
+
+        restric_material : [
+        
+            {key : "regulate_type", header : "구분", width: 30},
+            {key : "ingr_std_name", header : "표준명", width: 30},
+            {key : "ingr_eng_name", header : "영문명", width: 30},
+            {key : "cas_no", header : "CasNO", width: 30},
+            {key : "ingr_synonym", header : "이명", width: 30},
+            {key : "country_name", header : "배합제한국가", width: 30},
+            {key : "notice_ingr_name", header : "고시원료명", width: 30},
+            {key : "provis_atrcl", header : "단서조항", width: 30},
+            {key : "limit_cond", header : "제한사항", width: 30},
+            
+        ],
+        restric_material_country : [
+        
+            {key : "regulate_type", header : "구분", width: 30},
+            {key : "regl_code", header : "규제코드", width: 30},
+            {key : "ingr_code", header : "성분명", width: 30},
+            {key : "country_name", header : "배합제한국가", width: 30},
+            {key : "notice_ingr_name", header : "고시성분명", width: 30},
+            {key : "provis_atrcl", header : "단서조항", width: 30},
+            {key : "limit_cond", header : "제한사항", width: 30},
+            
         ],
     
 }; 
@@ -321,7 +370,7 @@ const TABLE_HEADER_CONFIG : any = {
         cellClick:function(e : any, cell:any){
             cell.getRow().toggleSelect()
         }},
-        {title:"ID", field:"uid", width:150, headerFilter:"input"},
+        {title:"ID",  formatter: "rownum", width:150, headerFilter:"input"},
         {title:"사업자번호", field:"code", width:150, headerFilter:"input",
         formatter:function(cell : any){
             var value = cell.getValue();
@@ -444,7 +493,7 @@ const TABLE_HEADER_CONFIG : any = {
         cell.getRow().toggleSelect();
         console.log(cell.getRow());
     }},
-    {title:"ID", field:"uid", width:150, headerFilter:"input"},
+    {title:"ID",  formatter: "rownum", width:150, headerFilter:"input"},
     {title:"분류", field:"type", width:150, headerFilter:"input", 
     formatter:function(cell : any){
         var value = cell.getValue();
@@ -459,7 +508,76 @@ const TABLE_HEADER_CONFIG : any = {
     },
     {title:"수량", field:"qty", width:150, editor : "input"},
 
-   ]
+   ],
+
+   restric_material : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID",  formatter: "rownum", width:150, headerFilter:"input"},
+        {title:"구분", field:"regulate_type", width:150, headerFilter:"input"},
+        
+        {title:"표준명", field:"ingr_std_name", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+        if(row){
+            restricMaterialModalOpen(row.getData(),"update");
+        }else{
+        
+        }
+        }
+    },
+    {title:"CasNO", field:"cas_no", width:150, headerFilter:"input"},
+    {title:"배합제한국가", field:"country_name", width:150, headerFilter:"input"},
+    {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+    formatter: function(cell : any, formatterParams: any, onRendered: any) {
+        // Luxon을 사용하여 datetime 값을 date로 변환
+        const datetimeValue = cell.getValue();
+        const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+        return date;
+    }},   
+    
+ ],
+ restric_material_country : [
+    {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+    cellClick:function(e : any, cell:any){
+        cell.getRow().toggleSelect()
+    }},
+    {title:"ID",  formatter: "rownum", width:150, headerFilter:"input"},
+    {title:"구분", field:"regulate_type", width:150, headerFilter:"input"},
+    {title:"규제코드", field:"regl_code", width:150, headerFilter:"input"},
+    
+    {title:"성분코드", field:"ingr_code", width:500, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+    },
+
+    cellClick:function(e : any, cell:any){
+        let row = cell.getRow();
+    if(row){
+        restricMaterialCountryModalOpen(row.getData(),"update");
+    }else{
+    
+    }
+    }
+},
+{title:"배합제한국가", field:"country_name", width:150, headerFilter:"input"},
+{title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+formatter: function(cell : any, formatterParams: any, onRendered: any) {
+    // Luxon을 사용하여 datetime 값을 date로 변환
+    const datetimeValue = cell.getValue();
+    const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+    return date;
+}},   
+
+],
 }
 
 

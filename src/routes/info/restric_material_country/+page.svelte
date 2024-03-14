@@ -11,36 +11,36 @@
     import Title from '$lib/components/layout/Title.svelte';
     
 
-    import { Tabs, TabItem, Timeline, TimelineItem, Button,ButtonGroup,Dropdown,DropdownItem,Input,Label,Select,Search} from 'flowbite-svelte';
-    import { ChevronDownSolid, SearchOutline } from 'flowbite-svelte-icons';
+    import { Tabs, TabItem,  Button} from 'flowbite-svelte';
+  
 
-
-    import Util from '$lib/components/modal/item/Util.svelte';
+    import Util from '$lib/components/modal/restric_material_country/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {itemModalOpen,itemExcelUpload} from '$lib/store/item/function';
-    import {excelDownload, excelUpload, fileButtonClick} from '$lib/store/common/function';
+    import {restricMaterialCountryModalOpen,restrictUpdate} from '$lib/store/restric_material_country/function';
+    import {excelDownload} from '$lib/store/common/function';
     
-    import {item_form_state,item_modal_state} from '$lib/store/item/state';
+    import {restric_material_country_modal_state} from '$lib/store/restric_material_country/state';
 
-    import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state,load_state} from '$lib/store/common/state';
-    import {TABLE_COMPONENT,EXCEL_CONFIG} from '$lib/module/common/constants';
+    import {url_state,table_list_state,common_toast_state, load_state} from '$lib/store/common/state';
+    import {EXCEL_CONFIG} from '$lib/module/common/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
     
-    import {makeCustomTable,infoCallApi,loadChange} from '$lib/store/common/function';
+    import {makeCustomTable,infoCallApi} from '$lib/store/common/function';
     
 
 	import { afterUpdate, onMount } from 'svelte';
-  import Loading from '$lib/components/modal/Loading.svelte';
+
   
     // import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
-   
+
 	import moment from 'moment';
+	import Loading from '$lib/components/modal/restric_material_country/Loading.svelte';
             
   
     export let data;
@@ -50,8 +50,9 @@
 
 
     onMount(()=>{
-        
-        makeCustomTable(table_list_state,"item",tableComponent,"select");
+        console.log('시점');
+       
+        makeCustomTable(table_list_state,"restric_material_country",tableComponent,"select");
 
     });
 
@@ -60,9 +61,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/item'){
+        }else if($url_state['path'] === '/info/restric_material_country'){
          
-            makeCustomTable(table_list_state,"item",tableComponent,"select");
+          makeCustomTable(table_list_state,"restric_material_country",tableComponent,"select");
         }
       
     })
@@ -94,65 +95,64 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='기준정보 관리' subtitle='품목관리'/>
+              <Title title='거래처 관리' subtitle='매입처 관리'/>
             </div>
 
-           
-
+          
             
             <div class="row-span-15 col-span-12 "> 
                 <Tabs  style="pill" defaultClass=" mt-5 overflow-auto  flex rounded-lg divide-x divide-gray-200 shadow dark:divide-gray-700" >
                     <TabItem  open >
                    
 
-                      <span slot="title">품목 관리</span>
+                      <span slot="title">사용제한 배합금지국가 관리</span>
 
                 
-                      <SearchBar title="item"/>
+                      <SearchBar title="restric_material_country"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {itemModalOpen('','add')}}>
-                          <Icon.FloppyDiskSolid class='mr-2' size="20" />
-                          추가
-                        </Button>
+                        
+                        {#if $load_state === false}
+                          <Button  on:click={() => {restrictUpdate()}}>
+                            <Icon.FloppyDiskSolid class='mr-2' size="20" />
+                            사용제한 배합금지국가 업데이트
+                          </Button>
 
+                       
+                        {:else if $load_state === true}
+                        <Button  on:click={() => {restrictUpdate()}}>
+                          <Icon.FloppyDiskSolid class='mr-2' size="20" />
+                          사용제한 배합금지국가 업데이트
+                        </Button>
+                        
+                          <Loading title={"사용제한 배합금지국가 업데이트"} content={"업데이트중..."}/>
+                          
+                        {/if}
 
                      
 
 
+                      
 
-                        <Button  color='red' on:click={() => itemModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => restricMaterialCountryModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('item',EXCEL_CONFIG['item'])}>
+                        <Button  color='green' on:click={() =>excelDownload('restric_material_country',EXCEL_CONFIG['restric_material_country'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
-                          엑셀다운
-                        </Button>
-
-                        <Button  color='green' on:click={(e)=> fileButtonClick('upload')}>
-                          <Icon.UploadSolid class='mr-2' size="20" />
-                            엑셀 업로드
-                          <input 
-                          hidden  
-                          id = 'upload' 
-                          type='file' 
-                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-                          on:change={(e)=> itemExcelUpload(e)}
-                    
-                          />
+                          엑셀 다운로드
                       </Button>
 
-                      
+                     
 
-                        {#if $item_modal_state['title'] === 'add'}
-                          <Util title="add" />
-                        {:else if $item_modal_state['title'] === 'update'}
+            
+                      
+                        {#if $restric_material_country_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $item_modal_state['title'] === 'check_delete'}
+                          {:else if $restric_material_country_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
                         {/if}
                         
@@ -160,7 +160,7 @@
                       </div>
 
                       <div id="example-table-theme" bind:this={tableComponent}></div>
-                    </TabItem>
+                    </TabItem> 
                    
                   
           

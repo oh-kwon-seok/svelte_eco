@@ -73,6 +73,8 @@
               <SidebarDropdownItem class={text_style} label="품목 관리" href='/info/item' active={activeUrl === '/info/item'} on:click={handleToggle('item')} />
               <SidebarDropdownItem class={text_style} label="거래처 관리" href='/info/company' active={activeUrl === '/info/company'} on:click={handleToggle('company')}/>
               <SidebarDropdownItem class={text_style} label="공장 관리" href='/info/factory' active={activeUrl === '/info/factory'} on:click={handleToggle('factory')}/>
+              <SidebarDropdownItem class={text_style} label="사용제한 원료정보 관리" href='/info/restric_material' active={activeUrl === '/info/restric_material'} on:click={handleToggle('restric_material')}/>
+              <SidebarDropdownItem class={text_style} label="사용제한 배합금지국가 관리" href='/info/restric_material_country' active={activeUrl === '/info/restric_material_country'} on:click={handleToggle('restric_material_country')}/>
             </SidebarDropdownWrapper>
  
           </SidebarGroup>
