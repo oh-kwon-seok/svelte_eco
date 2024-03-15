@@ -10,7 +10,7 @@
 
     import { InfoCircleSolid } from 'flowbite-svelte-icons';
  
-    import {restric_material_modal_state, restric_material_form_state,restric_material_status_state} from '$lib/store/restric_material/state';
+    import {cosmetic_material_modal_state, cosmetic_material_form_state,cosmetic_material_status_state} from '$lib/store/cosmetic_material/state';
     export let title; 
 
 
@@ -32,18 +32,19 @@
             <InfoCircleSolid class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" />
             <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                 
-                {#if $restric_material_status_state['total_count'] > 0}
-                    <span>{$restric_material_status_state['title']}</span>
+                {#if $cosmetic_material_status_state['total_count'] > 0}
+                    <span>{$cosmetic_material_status_state['title']}</span>
                     <br/>
                     
 
-                    {#if $restric_material_status_state['final_total_count'] > 0}
-                    <span>데이터 수량 : {commaNumber($restric_material_status_state['final_total_count'])}</span>
+                    {#if $cosmetic_material_status_state['final_total_count'] > 0}
+                    <span>데이터 수량 : {commaNumber($cosmetic_material_status_state['final_total_count'])}</span>
                     <br/>
-                    <span>예상대기시간 : {Math.round($restric_material_status_state['final_total_count'] / 1980 * 100) / 100}분</span>
+                    <span>예상대기시간 : {Math.round($cosmetic_material_status_state['final_total_count'] / 1980 * 100) / 100}분</span>
+                   
                     
                     {:else}
-                    <span>{Math.round($restric_material_status_state['ing_count'] / $restric_material_status_state['total_count'] * 1000) / 10}{"%"}</span>
+                    <span>{Math.round($cosmetic_material_status_state['ing_count'] / $cosmetic_material_status_state['total_count'] * 1000) / 10}{"%"}</span>
                     <br/>
                    
                     {/if}

@@ -14,15 +14,15 @@
     import { Tabs, TabItem,  Button} from 'flowbite-svelte';
   
 
-    import Util from '$lib/components/modal/restric_material/Util.svelte';
+    import Util from '$lib/components/modal/cosmetic_material/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {restricMaterialModalOpen,restrictUpdate} from '$lib/store/restric_material/function';
+    import {cosmeticMaterialModalOpen,cosmeticUpdate} from '$lib/store/cosmetic_material/function';
     import {excelDownload} from '$lib/store/common/function';
     
-    import {restric_material_modal_state} from '$lib/store/restric_material/state';
+    import {cosmetic_material_modal_state} from '$lib/store/cosmetic_material/state';
 
     import {url_state,table_list_state,common_toast_state, load_state} from '$lib/store/common/state';
     import {EXCEL_CONFIG} from '$lib/module/common/constants';
@@ -40,7 +40,7 @@
 
 
 	import moment from 'moment';
-	import Loading from '$lib/components/modal/restric_material/Loading.svelte';
+	import Loading from '$lib/components/modal/cosmetic_material/Loading.svelte';
             
   
     export let data;
@@ -52,7 +52,7 @@
     onMount(()=>{
         console.log('시점');
        
-        makeCustomTable(table_list_state,"restric_material",tableComponent,"select");
+        makeCustomTable(table_list_state,"cosmetic_material",tableComponent,"select");
 
     });
 
@@ -61,9 +61,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/info/restric_material'){
+        }else if($url_state['path'] === '/info/cosmetic_material'){
          
-          makeCustomTable(table_list_state,"restric_material",tableComponent,"select");
+          makeCustomTable(table_list_state,"cosmetic_material",tableComponent,"select");
         }
       
     })
@@ -105,29 +105,29 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">사용제한 원료 관리</span>
+                      <span slot="title">화장품 원료성분정보 관리</span>
 
                 
-                      <SearchBar title="restric_material"/>
+                      <SearchBar title="cosmetic_material"/>
 
 
                       <div class='m-5'>
 
                         
                         {#if $load_state === false}
-                          <Button  on:click={() => {restrictUpdate()}}>
+                          <Button  on:click={() => {cosmeticUpdate()}}>
                             <Icon.FloppyDiskSolid class='mr-2' size="20" />
-                            사용제한 원료 업데이트
+                            원료성분정보 업데이트
                           </Button>
 
                        
                         {:else if $load_state === true}
-                        <Button  on:click={() => {restrictUpdate()}}>
+                        <Button  on:click={() => {cosmeticUpdate()}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
-                          사용제한 원료 업데이트
+                          원료성분정보 업데이트
                         </Button>
                         
-                          <Loading title={"사용제한 원료 업데이트"} content={"업데이트중..."}/>
+                          <Loading title={"원료성분정보 업데이트"} content={"업데이트중..."}/>
                           
                         {/if}
 
@@ -136,12 +136,12 @@
 
                       
 
-                        <Button  color='red' on:click={() => restricMaterialModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => cosmeticMaterialModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('restric_material',EXCEL_CONFIG['restric_material'])}>
+                        <Button  color='green' on:click={() =>excelDownload('cosmetic_material',EXCEL_CONFIG['cosmetic_material'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀 다운로드
                       </Button>
@@ -150,9 +150,9 @@
 
             
                       
-                        {#if $restric_material_modal_state['title'] === 'update'}
+                        {#if $cosmetic_material_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $restric_material_modal_state['title'] === 'check_delete'}
+                          {:else if $cosmetic_material_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
                         {/if}
                         

@@ -8,10 +8,10 @@
     
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
-    import {restric_material_modal_state, restric_material_form_state} from '$lib/store/restric_material/state';
-    import {common_alert_state, common_toast_state, common_restric_material_state} from '$lib/store/common/state';
+    import {cosmetic_material_modal_state, cosmetic_material_form_state} from '$lib/store/cosmetic_material/state';
+    import {common_alert_state, common_toast_state, common_cosmetic_material_state} from '$lib/store/common/state';
     
-    import {save,modalClose} from '$lib/store/restric_material/function';
+    import {save,modalClose} from '$lib/store/cosmetic_material/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     import {businessNumber,phoneNumber,validEmail} from '$lib/module/common/function';
     
@@ -39,7 +39,7 @@
 
  
 
-    <Modal title={`사용제한 원료정보 ${label_title}`} permanent={true} color={color} bind:open={$restric_material_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
+    <Modal title={`화장품 원료성분정보 ${label_title}`} permanent={true} color={color} bind:open={$cosmetic_material_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
         <form action="#">
@@ -47,48 +47,31 @@
    
         <div class="grid grid-cols-2 gap-4">
           
-        
-
       
           <Label class="space-y-2">
-            <span>구분</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['regulate_type']}/>       
-          </Label>
-
-          <Label class="space-y-2">
             <span>표준명</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['ingr_std_name']}/>       
+            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$cosmetic_material_form_state['ingr_kor_name']}/>       
           </Label>
 
           <Label class="space-y-2">
             <span>영문명</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['ingr_eng_name']}/>       
+            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$cosmetic_material_form_state['ingr_eng_name']}/>       
           </Label>
           <Label class="space-y-2">
             <span>CasNO</span>
-            <Textarea  id="last_name" rows="4"  readOnly placeholder="" required bind:value={$restric_material_form_state['cas_no']}/>       
+            <Textarea  id="last_name" rows="4"  readOnly placeholder="" required bind:value={$cosmetic_material_form_state['cas_no']}/>       
+          </Label>
+          <Label class="space-y-2">
+            <span>기원 및 정의</span>
+            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$cosmetic_material_form_state['origin_major_kor_name']}/>       
           </Label>
           <Label class="space-y-2">
             <span>이명</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['ingr_synonym']}/>       
+            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$cosmetic_material_form_state['ingr_synonym']}/>       
           </Label>
-          <Label class="space-y-2">
-            <span>배합제한국가</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['country_name']}/>       
-          </Label>
-          <Label class="space-y-2">
-            <span>고시원료명</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['notice_ingr_name']}/>       
-          </Label>
-          <Label class="space-y-2">
-            <span>단서조항</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['provis_atrcl']}/>       
-          </Label>
-          <Label class="space-y-2">
-            <span>제한사항</span>
-            <Textarea  id="last_name" rows="4" readOnly placeholder="" required bind:value={$restric_material_form_state['limit_cond']}/>
-
-          </Label>
+          
+        
+        
 
 
         
@@ -97,7 +80,7 @@
         
             <Label class="space-y-2">
               <span>사용유무</span>
-              <Select id="countries"  disabled class="mt-2" bind:value={$restric_material_form_state['used']} placeholder="">
+              <Select id="countries"  disabled class="mt-2" bind:value={$cosmetic_material_form_state['used']} placeholder="">
                     <option value={0}>{"사용안함"}</option>
                     <option value={1}>{"사용"}</option>
 
@@ -148,7 +131,7 @@
 
         {#if title !== 'update' && title !== 'add'}
 
-          <Button  class="w-1/2"  color={'red'}    on:click={save($restric_material_form_state,title)}>{label_title}</Button>
+          <Button  class="w-1/2"  color={'red'}    on:click={save($cosmetic_material_form_state,title)}>{label_title}</Button>
         
         {/if}
 

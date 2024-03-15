@@ -19,6 +19,7 @@ import { factoryModalOpen} from '$lib/store/factory/function';
 import { employmentModalOpen} from '$lib/store/employment/function';
 
 import { departmentModalOpen} from '$lib/store/department/function';
+import { cosmeticMaterialModalOpen } from '$lib/store/cosmetic_material/function';
 import { restricMaterialModalOpen } from '$lib/store/restric_material/function';
 import { restricMaterialCountryModalOpen } from '$lib/store/restric_material_country/function';
 import moment from 'moment';
@@ -157,7 +158,16 @@ const TABLE_FILTER : any = {
         {value : "name", name : "이름"},
         {value : "email", name : "이메일"},
         {value : "phone", name : "연락처"},
-    ],
+    ], 
+    cosmetic_material : [
+        {value : "all",name : "전체"},
+        {value : "ingr_kor_name", name : "표준명"},
+        {value : "ingr_eng_name", name : "영문명"},
+        {value : "cas_no", name : "CasNO"},
+        {value : "ingr_synonym", name : "이명"},
+        {value : "origin_major_kor_name", name : "기원 및 정의"},
+
+    ], 
     restric_material : [
         {value : "all",name : "전체"},
         {value : "regulate_type", name : "구분"},
@@ -236,6 +246,19 @@ const EXCEL_CONFIG : any = {
         {header: '개수', key: 'qty', width: 30},
 
         {header: '등록일', key: 'created', width: 30},
+        ],
+
+        cosmetic_material : [
+        
+        
+            {key : "ingr_kor_name", header : "표준명", width: 30},
+            {key : "ingr_eng_name", header : "영문명", width: 30},
+            {key : "cas_no", header : "CasNO", width: 30},
+            {key : "ingr_synonym", header : "이명", width: 30},
+           
+            {key : "origin_major_kor_name", header : "기원및정의", width: 30},
+         
+            
         ],
 
         restric_material : [
@@ -509,6 +532,41 @@ const TABLE_HEADER_CONFIG : any = {
     {title:"수량", field:"qty", width:150, editor : "input"},
 
    ],
+   cosmetic_material : [
+    {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+    cellClick:function(e : any, cell:any){
+        cell.getRow().toggleSelect()
+    }},
+    {title:"ID",  formatter: "rownum", width:150, headerFilter:"input"},
+    
+    {title:"표준명", field:"ingr_kor_name", width:500, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+    },
+
+    cellClick:function(e : any, cell:any){
+        let row = cell.getRow();
+    if(row){
+        cosmeticMaterialModalOpen(row.getData(),"update");
+    }else{
+    
+    }
+    }
+},
+{title:"영문명", field:"ingr_eng_name", width:150, headerFilter:"input"},
+
+{title:"CasNO", field:"cas_no", width:150, headerFilter:"input"},
+
+{title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+formatter: function(cell : any, formatterParams: any, onRendered: any) {
+    // Luxon을 사용하여 datetime 값을 date로 변환
+    const datetimeValue = cell.getValue();
+    const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+    return date;
+}},   
+
+],
 
    restric_material : [
         {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 

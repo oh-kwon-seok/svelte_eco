@@ -64,6 +64,7 @@ const url_state : any = writable({ path : '', query : ''});
     employment : "",
     factory : "",
     factory_sub : "",
+    cosmetic_material : "",
     restric_material : "",
     restric_material_country_state : "",
     
@@ -86,6 +87,10 @@ const url_state : any = writable({ path : '', query : ''});
   const common_employment_state : any = writable([]);
   const common_factory_state : any = writable([]);
   const common_factory_sub_state : any = writable([]);
+
+  
+  const common_cosmetic_material_state : any = writable([]);
+  
   const common_restric_material_state : any = writable([]);
   
   const common_restric_material_country_state : any = writable([]);
@@ -114,6 +119,7 @@ const url_state : any = writable({ path : '', query : ''});
     common_factory_sub_state,
     common_selected_state,
     common_company_filter_state,
+    common_cosmetic_material_state,
     common_restric_material_state,
     common_restric_material_country_state,
     
