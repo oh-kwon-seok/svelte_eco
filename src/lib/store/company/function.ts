@@ -236,7 +236,7 @@ const save = (param,title) => {
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
           company_modal_state.update(() => update_modal);
-          company_form_state.update(()=> init_form_data);
+          company_form_state.update(()=>update_form);
           select_query('company');
           return common_toast_state.update(() => toast);
 
@@ -288,7 +288,7 @@ const save = (param,title) => {
               update_modal['title'] = title;
               update_modal[title]['use'] = false;
               company_modal_state.update(() => update_modal);
-              company_form_state.update(()=> init_form_data);
+              company_form_state.update(()=>update_form);
 
               select_query('company');
     

@@ -96,7 +96,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='영업 관리' subtitle='주문 관리'/>
+              <Title title='기준정보 관리' subtitle='공장 관리'/>
             </div>
 
           

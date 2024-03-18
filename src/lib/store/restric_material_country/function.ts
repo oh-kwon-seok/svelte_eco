@@ -184,7 +184,7 @@ const save = (param,title) => {
               update_modal['title'] = title;
               update_modal[title]['use'] = false;
               restric_material_country_modal_state.update(() => update_modal);
-              restric_material_country_form_state.update(()=> init_form_data);
+              restric_material_country_form_state.update(()=>update_form);
 
               select_query('restric_material_country');
     

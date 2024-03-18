@@ -3,11 +3,11 @@
 //@ts-nocheck
 
 import { writable } from 'svelte/store';
-import {user_modal_state,user_form_state} from './state';
+import {equipment_modal_state,equipment_form_state} from './state';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
-import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,common_selected_state,common_user_state} from '$lib/store/common/state';
+import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,common_selected_state,common_equipment_state} from '$lib/store/common/state';
 import moment from 'moment';
 
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
@@ -27,34 +27,28 @@ let toast : any;
 let search_state : any;
 let login_data : any;
 let table_list_data : any;
-let user_data : any;
-let user_upload_data : any;
+let equipment_data : any;
+let equipment_upload_data : any;
 let selected_data : any;
 
 
 const init_form_data:any = {
   uid : 0,
-  id : '',
   company : '', // 사업장
-  employment : '',
-  department : '',
-
-  name : '', // 사용자이름
-  email : '', // 이메일
-  phone : '', // 연락처
-  password : '1111',
-  auth:'',
+  name : '',
+  purpose : '',
+  description : '', // 사용자이름 
   used : 1,
 
 
 }
 
 
-user_modal_state.subscribe((data) => {
+equipment_modal_state.subscribe((data) => {
     update_modal = data;
 })
 
-user_form_state.subscribe((data) => {
+equipment_form_state.subscribe((data) => {
     update_form = data;
 })
 
@@ -76,8 +70,8 @@ login_state.subscribe((data) => {
 table_list_state.subscribe((data) => {
   table_list_data = data;
 })
-common_user_state.subscribe((data) => {
-  user_data = data;
+common_equipment_state.subscribe((data) => {
+  equipment_data = data;
 })
 
 common_selected_state.subscribe((data) => {
@@ -88,7 +82,7 @@ common_selected_state.subscribe((data) => {
 
 
 
-const userModalOpen = (data : any, title : any) => {
+const equipmentModalOpen = (data : any, title : any) => {
  console.log('data : ', data);
 
   console.log('title : ', title);
@@ -99,12 +93,12 @@ const userModalOpen = (data : any, title : any) => {
     common_alert_state.update(() => alert);
     update_modal['title'] = title;
     update_modal[title]['use'] = true;
-    user_modal_state.update(() => update_modal);
+    equipment_modal_state.update(() => update_modal);
 
-    console.log('update_modal : ', update_modal);
-
+   
     if(title === 'add'){
-      user_form_state.update(() =>update_form);
+      update_form = init_form_data;
+      equipment_form_state.update(() => update_form);
      
     }
     if(title === 'update' ){
@@ -112,25 +106,21 @@ const userModalOpen = (data : any, title : any) => {
 
 
         Object.keys(update_form).map((item)=> {    
-            if(item === 'company' || item === 'employment' || item === 'department'){
+            if(item === 'company' ){
               update_form[item] = data[item]['uid'];
-            }else if(item === 'auth'){
-              update_form[item] = data[item][0];
-            
-            
             }else{
               update_form[item] = data[item];
             }
            
         }); 
 
-            user_form_state.update(() => update_form);
-            user_modal_state.update(() => update_modal);
-            console.log('update_form : ', update_form);
+            equipment_form_state.update(() => update_form);
+            equipment_modal_state.update(() => update_modal);
+           
 
     }
     if(title === 'check_delete'){
-      let data =  table_list_data['user'].getSelectedData();
+      let data =  table_list_data['equipment'].getSelectedData();
 
       common_selected_state.update(() => data);
     
@@ -167,7 +157,7 @@ const select_query = (type) => {
     }
   }
     axios.get(url,config).then(res=>{
-      console.log('table_list_state : ', table_list_state['user']);
+      console.log('table_list_state : ', table_list_state['equipment']);
       table_list_data[type].setData(res.data);
       table_list_state.update(() => table_list_data);
       console.log('table_list_data : ', table_list_data);
@@ -183,8 +173,11 @@ const modalClose = (title) => {
 
   alert['type'] = 'save';
   alert['value'] = false;
+  update_form = init_form_data;
   common_alert_state.update(() => alert);
-  user_modal_state.update(() => update_modal);
+  equipment_modal_state.update(() => update_modal);
+  equipment_form_state.update(() => update_form);
+  
 
 
 }
@@ -200,31 +193,27 @@ const save = (param,title) => {
     if(title === 'add'){
   
     
-      if( param['id'] === '' || param['password'] === '' || param['company'] === '' || param['employment'] === '' || param['department'] === ''){
+      if(  param['company'] === '' || param['name'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
-        user_modal_state.update(() => update_modal);
+        equipment_modal_state.update(() => update_modal);
  
         return common_alert_state.update(() => alert);
   
       }else {
       
-        const url = `${api}/user/save`
+        const url = `${api}/equipment/save`
         try {
   
           
           let params = {
-            id : param.id,
+          
             company_uid : param.company,
-            employment_uid : param.employment,
-            department_uid : param.department,
             name : param.name,
-            email : param.email,
-            phone : param.phone,
-            password : param.password,
+            purpose : param.purpose,
+            description : param.description,
             used : param.used,
-            auth : 'user',
             token : login_data['token'],
           };
         axios.post(url,
@@ -239,7 +228,7 @@ const save = (param,title) => {
             toast['value'] = true;
             update_modal['title'] = '';
             update_modal['add']['use'] = !update_modal['add']['use'];
-            user_modal_state.update(() => update_modal);
+            equipment_modal_state.update(() => update_modal);
 
             
 
@@ -260,39 +249,23 @@ const save = (param,title) => {
     }
     
     if(title === 'update'){
-      const url = `${api}/user/update`
+      const url = `${api}/equipment/update`
       
-      let auth ;
-
-      if(param.auth === 'ROLE_ADMIN'){
-        auth= 'admin';
-
-      }else{
-        auth = 'user';
-      }
+     
       
     
-     
-     
       try {
 
       
         let params = {
-          id : param.id,
+          uid : param.uid,
           company_uid : param.company,
-          employment_uid : param.employment,
-          department_uid : param.department,
           name : param.name,
-          password : param.password,
-          email : param.email,
-          phone : param.phone,
-          
-         
+          purpose : param.purpose,
+          description : param.description,
           used : param.used,
-          auth : auth,
           token : login_data['token'],
           
-
         };
       axios.post(url,
         params,
@@ -306,9 +279,10 @@ const save = (param,title) => {
           toast['value'] = true;
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
-          user_modal_state.update(() => update_modal);
-          user_form_state.update(()=>update_form);
-          select_query('user');
+          equipment_modal_state.update(() => update_modal);
+          update_form = init_form_data;
+          equipment_form_state.update(()=> update_form);
+          select_query('equipment');
           return common_toast_state.update(() => toast);
 
         }else{
@@ -340,7 +314,7 @@ const save = (param,title) => {
 
         if(uid_array.length > 0){
 
-          const url = `${api}/user/delete`
+          const url = `${api}/equipment/delete`
           try {
     
             let params = {
@@ -358,10 +332,11 @@ const save = (param,title) => {
               toast['value'] = true;
               update_modal['title'] = 'check_delete';
               update_modal[title]['use'] = false;
-              user_modal_state.update(() => update_modal);
-              user_form_state.update(()=>update_form);
+              equipment_modal_state.update(() => update_modal);
+              update_form = init_form_data;
+              equipment_form_state.update(()=> update_form);
 
-              select_query('user');
+              select_query('equipment');
     
               return common_toast_state.update(() => toast);
     
@@ -384,18 +359,15 @@ const save = (param,title) => {
   }
 
 
-  const userExcelUpload = (e) => {
+  const equipmentExcelUpload = (e) => {
   
     const config : any = [
       {header: '사업장', key: 'company_code', width: 30},
-      {header: '부서', key: 'department_name', width: 30},
-      {header: '직급', key: 'employment_name', width: 30},
-      {header: '아이디', key: 'id', width: 30},
-      {header: '비밀번호', key: 'password', width: 30},
-      {header: '이름', key: 'name', width: 30},
-      {header: '연락처', key: 'phone', width: 30},
-      {header: '이메일', key: 'email', width: 30},
-  
+      {header: '설비명', key: 'name', width: 30},
+      {header: '용도', key: 'purpose', width: 30},
+      {header: '비고', key: 'description', width: 30},
+      
+
 
     ]; 
 
@@ -425,7 +397,7 @@ const save = (param,title) => {
             }
             change_data.push(obj);
             
-            user_upload_data = change_data;
+            equipment_upload_data = change_data;
 
           
           }else {
@@ -433,18 +405,18 @@ const save = (param,title) => {
           }
           });
 
-          return console.log('user_upload_data',user_upload_data);
+          return console.log('equipment_upload_data',equipment_upload_data);
 
           
   
 
         })
 
-        const url = `${api}/user/excel_upload`
+        const url = `${api}/equipment/excel_upload`
         try {
   
           let params = {
-            data :  user_upload_data,
+            data :  equipment_upload_data,
             
           };
         axios.post(url,
@@ -459,7 +431,7 @@ const save = (param,title) => {
             toast['value'] = true;
             update_modal['title'] = '';
             update_modal['update']['use'] = false;
-            select_query('user');
+            select_query('equipment');
             return common_toast_state.update(() => toast);
   
           }else{
@@ -479,27 +451,19 @@ const save = (param,title) => {
   }
 
 
-  const userExcelFormDownload = () => {
+  const equipmentExcelFormDownload = () => {
 
     const data = [{
 
       company_code : "1112223345",
-      department_name : "생산팀",
-      employment_name : "차장",
-      id : "ohjin333",
-      password : "1111",
-      name : "김나영",
-      phone : "01022221111",
-      email  : "sale@wonpl.co.kr",
+      name : "스킨류 제조가마",
+      purpose : "액류 제조",
+      description  : "",
     },{
       company_code : "2225553345",
-      department_name : "영업팀",
-      employment_name : "과장",
-      id : "psforyou",
-      password : "1111",
-      name : "류인국",
-      phone : "01055552222",
-      email  : "nglee@gmail.co.kr",
+      name : "정제수(증류수)제조장치",
+      purpose : "증류수 제조",
+      description  : "화장품 시설기준",
     },
     
   ]; 
@@ -508,13 +472,9 @@ const save = (param,title) => {
   
     const config : any = [
       {header: '사업장', key: 'company_code', width: 30},
-      {header: '부서', key: 'department_name', width: 30},
-      {header: '직급', key: 'employment_name', width: 30},
-      {header: '아이디', key: 'id', width: 30},
-      {header: '비밀번호', key: 'password', width: 30},
-      {header: '이름', key: 'name', width: 30},
-      {header: '연락처', key: 'phone', width: 30},
-      {header: '이메일', key: 'email', width: 30},
+      {header: '설비명', key: 'name', width: 30},
+      {header: '용도', key: 'purpose', width: 30},
+      {header: '비고', key: 'description', width: 30},
     
     
     ]; 
@@ -522,7 +482,7 @@ const save = (param,title) => {
 
       try {
 
-        let text_title : any= '회원 업로드 형식';
+        let text_title : any= '설비 업로드 형식';
        
 
       const workbook = new Excel.Workbook();
@@ -571,7 +531,7 @@ const save = (param,title) => {
        
           // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
           
-          for(let loop = 1; loop <= 8; loop++) {
+          for(let loop = 1; loop <= 4; loop++) {
             const col = sheetOne.getRow(index + 2).getCell(loop);
             col.border = borderStyle;
             col.font = {name: 'Arial Black', size: 10};
@@ -608,4 +568,4 @@ const save = (param,title) => {
 
 
 
-export {userModalOpen,save,modalClose,userExcelFormDownload,userExcelUpload}
+export {equipmentModalOpen,save,modalClose,equipmentExcelFormDownload,equipmentExcelUpload}

@@ -16,12 +16,24 @@ import {v4 as uuid} from 'uuid';
    });
 
   const item_form_state : any = writable({
-    uid : 0,
-    
-    name : '',
-    type : '기타',
-    company : '',
-    used : 1,
+        uid : 0,
+        code :  "",
+        simple_code :  "",
+        ingr_kor_name :  "",
+        ingr_eng_name :  "",
+        inout_unit :  "",
+        inout_type :  "",
+        currency_unit :   "",
+        buy_type :  "",
+        type_code :  "",
+        classify_code :  "",
+        component_code :  "",
+        hs_code : "",
+        nts_code : "",
+        description : "",
+        company : "",
+        type : "",
+        used : 1,
 
   })
   

@@ -36,11 +36,24 @@ let selected_data : any;
 
 
 const init_form_data:any = {
-  uid : 0,
-  name : '',
-  type : '기타',
-  company : '',
-  used : 1,
+        uid : 0,
+        code :  "",
+        simple_code :  "",
+        ingr_kor_name :  "",
+        ingr_eng_name :  "",
+        inout_unit :  "",
+        inout_type :  "",
+        currency_unit :   "",
+        buy_type :  "",
+        type_code :  "",
+        classify_code :  "",
+        component_code :  "",
+        hs_code : "",
+        nts_code : "",
+        description : "",
+        company : "",
+        type : "",
+        used : 1,
 
 }
 
@@ -81,9 +94,7 @@ common_selected_state.subscribe((data) => {
 
 
 const itemModalOpen = (data : any, title : any) => {
-  console.log('data : ', data);
-
-  console.log('title : ', title);
+ 
   
     alert['type'] = 'save';
     alert['value'] = false;
@@ -96,14 +107,15 @@ const itemModalOpen = (data : any, title : any) => {
     console.log('update_modal : ', update_modal);
 
     if(title === 'add'){
-      item_form_state.update(() => init_form_data);
+      update_form = init_form_data;
+      item_form_state.update(() =>update_form);
      
     }
     if(title === 'update' ){
        
    
         Object.keys(update_form).map((item)=> {    
-            if(item === 'company' ){
+            if(item === 'company' ||  item === 'type'){
               update_form[item] = data[item]['uid'];
             }else{
               update_form[item] = data[item];
@@ -113,7 +125,7 @@ const itemModalOpen = (data : any, title : any) => {
 
             item_form_state.update(() => update_form);
             item_modal_state.update(() => update_modal);
-            console.log('update_modal : ', update_modal);
+        
 
     }
     if(title === 'check_delete'){
@@ -183,7 +195,7 @@ const save = (param,title) => {
  
     if(title === 'add'){
     
-      if(param['name'] === '' || param['type'] === '' || param['company'] === ''){
+      if(param['code'] === '' || param['type'] === '' || param['company'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
@@ -198,11 +210,26 @@ const save = (param,title) => {
   
           
           let params = {
-            name : param.name,
-            type : param.type,
-            company_uid : param.company,
-            used : param.used,
+
             
+            code: param.code,
+            simple_code: param.simple_code,
+            ingr_kor_name: param.ingr_kor_name,
+            ingr_eng_name: param.ingr_eng_name,
+            inout_unit: param.inout_unit,
+            inout_type: param.inout_type,
+            currency_unit: param.currency_unit,
+            buy_type: param.buy_type,
+            type_code: param.type_code,
+            classify_code: param.classify_code,
+            component_code: param.component_code,
+            hs_code:param.hs_code,
+            nts_code:param.nts_code,
+            description:param.description,
+            company_uid:param.company,
+            type_uid:param.type,
+            
+            used : param.used,
             token : login_data['token'],
           };
         axios.post(url,
@@ -243,9 +270,22 @@ const save = (param,title) => {
 
         let params = {
           uid : param.uid,
-          name : param.name,
-          type : param.type,  
-          company_uid : param.company,
+          code: param.code,
+          simple_code: param.simple_code,
+          ingr_kor_name: param.ingr_kor_name,
+          ingr_eng_name: param.ingr_eng_name,
+          inout_unit: param.inout_unit,
+          inout_type: param.inout_type,
+          currency_unit: param.currency_unit,
+          buy_type: param.buy_type,
+          type_code: param.type_code,
+          classify_code: param.classify_code,
+          component_code: param.component_code,
+          hs_code:param.hs_code,
+          nts_code:param.nts_code,
+          description:param.description,
+          company_uid:param.company,
+          type_uid:param.type,
           used : param.used,
           token : login_data['token'],
         };
@@ -262,7 +302,7 @@ const save = (param,title) => {
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
           item_modal_state.update(() => update_modal);
-          item_form_state.update(()=> init_form_data);
+          item_form_state.update(()=>update_form);
           select_query('item');
           return common_toast_state.update(() => toast);
 
@@ -314,7 +354,7 @@ const save = (param,title) => {
               update_modal['title'] = 'check_delete';
               update_modal[title]['use'] = false;
               item_modal_state.update(() => update_modal);
-              item_form_state.update(()=> init_form_data);
+              item_form_state.update(()=>update_form);
 
             
               select_query('item');
@@ -421,8 +461,23 @@ const save = (param,title) => {
   const itemExcelUpload = (e) => {
   
     const item_config : any = [
-      {header: '제품명', key: 'name', width: 30},
-      {header: '품목분류', key: 'type', width: 30},
+       {header: '품목코드', key: 'code', width: 30},
+      {header: '약호', key: 'simple_code', width: 30},
+      {header: '품목 한글명', key: 'ingr_kor_name', width: 30},
+      {header: '품목 영문명', key: 'ingr_eng_name', width: 30},
+      {header: '수불단위', key: 'inout_unit', width: 30},
+      {header: '수불구분', key: 'inout_type', width: 30},
+      {header: '화폐단위', key: 'currency_unit', width: 30},
+      {header: '구매구분', key: 'buy_type', width: 30},
+      {header: '품목분류', key: 'type_code', width: 30},
+      {header: '유형코드', key: 'classify_code', width: 30},
+      {header: '성분코드', key: 'component_code', width: 30},
+      {header: 'HS코드', key: 'hs_code', width: 30},
+      {header: '국세청코드', key: 'nts_code', width: 30},
+      {header: '취급사 사업자번호', key: 'company_code', width: 30},
+      {header: '품목구분', key: 'type_name', width: 30},
+      {header: '비고', key: 'description', width: 30},
+
   
     ]; 
 
@@ -509,6 +564,136 @@ const save = (param,title) => {
 
   }
 
+  const itemExcelFormDownload = () => {
+
+    const data = [{
+
+      code :  "J10002",
+      simple_code :  "1,3-BG",
+      ingr_kor_name :  "1,3-부틸렌 글리콘",
+      ingr_eng_name :  "1,3-Butylene Glycol",
+      inout_unit :  "Kg",
+      inout_type :  "1",
+      currency_unit :   "￥",
+      buy_type :  "2",
+      type_code :  "원자재",
+      classify_code :  "110",
+      component_code :  "H11",
+      hs_code : "2905390000",
+      nts_code : "nts-001",
+      description : "Titanium Dioxide/Aluminium Oxide/Cobalt Aluminium Oxide Coated Mica",
+      company_code : "900-00-00000",
+      type_name : "샴푸",
+
+    }
+    
+  ]; 
+    const config : any = [
+      {header: '품목코드', key: 'code', width: 30},
+      {header: '약호', key: 'simple_code', width: 30},
+      {header: '품목 한글명', key: 'ingr_kor_name', width: 30},
+      {header: '품목 영문명', key: 'ingr_eng_name', width: 30},
+      {header: '수불단위', key: 'inout_unit', width: 30},
+      {header: '수불구분', key: 'inout_type', width: 30},
+      {header: '화폐단위', key: 'currency_unit', width: 30},
+      {header: '구매구분', key: 'buy_type', width: 30},
+      {header: '품목분류', key: 'type_code', width: 30},
+      {header: '유형코드', key: 'classify_code', width: 30},
+      {header: '성분코드', key: 'component_code', width: 30},
+      {header: 'HS코드', key: 'hs_code', width: 30},
+      {header: '국세청코드', key: 'nts_code', width: 30},
+      {header: '취급사 사업자번호', key: 'company_code', width: 30},
+      {header: '품목구분', key: 'type_name', width: 30},
+      {header: '비고', key: 'description', width: 30},
+      
+      
+      
+      
+  
+    
+    
+    ]; 
+
+
+      try {
+
+        let text_title : any= '품목 업로드 형식';
+       
+
+      const workbook = new Excel.Workbook();
+        // 엑셀 생성
+  
+        // 생성자
+        workbook.creator = '작성자';
+       
+        // 최종 수정자
+        workbook.lastModifiedBy = '최종 수정자';
+       
+        // 생성일(현재 일자로 처리)
+        workbook.created = new Date();
+       
+        // 수정일(현재 일자로 처리)
+        workbook.modified = new Date();
+
+        let file_name = text_title + moment().format('YYYY-MM-DD HH:mm:ss') + '.xlsx';
+        let sheet_name = moment().format('YYYYMMDDHH:mm:ss');
+     
+      
+        workbook.addWorksheet(text_title);
+           
+
+        const sheetOne = workbook.getWorksheet(text_title);
+             
+             
+              
+        // 컬럼 설정
+        // header: 엑셀에 표기되는 이름
+        // key: 컬럼을 접근하기 위한 key
+        // hidden: 숨김 여부
+        // width: 컬럼 넓이
+        sheetOne.columns = config;
+     
+        const sampleData = data;
+        const borderStyle = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+       
+        sampleData.map((item, index) => {
+          sheetOne.addRow(item);
+       
+          // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
+          
+          for(let loop = 1; loop <= config.length; loop++) {
+            const col = sheetOne.getRow(index + 2).getCell(loop);
+            col.border = borderStyle;
+            col.font = {name: 'Arial Black', size: 10};
+          }
+        
+      });
+  
+  
+          
+     
+        workbook.xlsx.writeBuffer().then((data) => {
+          const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          const url = window.URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = file_name;
+          anchor.click();
+          window.URL.revokeObjectURL(url);
+        })
+      } catch(error) {
+        console.error(error);
+      }
+
+   
+}
+
+
   
 
 
@@ -517,4 +702,4 @@ const save = (param,title) => {
 
 
 
-export {itemModalOpen,save,itemExcelUpload,modalClose}
+export {itemModalOpen,save,itemExcelUpload,itemExcelFormDownload,modalClose}

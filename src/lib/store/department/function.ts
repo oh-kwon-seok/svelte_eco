@@ -174,7 +174,7 @@ const save = (param,title) => {
             update_modal['add']['use'] = !update_modal['add']['use'];
         
             department_modal_state.update(() => update_modal);
-            department_form_state.update(()=> init_form_data);
+            department_form_state.update(()=>update_form);
             select_query('department');
             return common_toast_state.update(() => toast);
 
@@ -270,7 +270,7 @@ const save = (param,title) => {
               update_modal['title'] = title;
               update_modal[title]['use'] = false;
               department_modal_state.update(() => update_modal);
-              department_form_state.update(()=> init_form_data);
+              department_form_state.update(()=>update_form);
 
               select_query('department');
     

@@ -69,10 +69,17 @@
                 <SidebarDropdownItem class={text_style} label="부서  관리" href='/info/department' active={activeUrl === '/info/department'} on:click={handleToggle('department')}/>
              
                 <SidebarDropdownItem class={text_style} label="회원 관리" href='/info/user' active={activeUrl === '/info/user'} on:click={handleToggle('user')}/>
-
+                <SidebarDropdownItem class={text_style} label="품목 구분 관리" href='/info/type' active={activeUrl === '/info/type'} on:click={handleToggle('type')} />
+             
               <SidebarDropdownItem class={text_style} label="품목 관리" href='/info/item' active={activeUrl === '/info/item'} on:click={handleToggle('item')} />
+               
+              
               <SidebarDropdownItem class={text_style} label="거래처 관리" href='/info/company' active={activeUrl === '/info/company'} on:click={handleToggle('company')}/>
               <SidebarDropdownItem class={text_style} label="공장 관리" href='/info/factory' active={activeUrl === '/info/factory'} on:click={handleToggle('factory')}/>
+                
+              <SidebarDropdownItem class={text_style} label="설비 관리" href='/info/equipment' active={activeUrl === '/info/equipment'} on:click={handleToggle('equipment')}/>
+              
+
               <SidebarDropdownItem class={text_style} label="화장품 원료성분정보 관리" href='/info/cosmetic_material' active={activeUrl === '/info/cosmetic_material'} on:click={handleToggle('cosmetic_material')}/>
               <SidebarDropdownItem class={text_style} label="사용제한 원료정보 관리" href='/info/restric_material' active={activeUrl === '/info/restric_material'} on:click={handleToggle('restric_material')}/>
               <SidebarDropdownItem class={text_style} label="사용제한 배합금지국가 관리" href='/info/restric_material_country' active={activeUrl === '/info/restric_material_country'} on:click={handleToggle('restric_material_country')}/>

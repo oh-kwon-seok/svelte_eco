@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state } from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state } from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -45,6 +45,7 @@ let company_data : any;
 let company_filter_data : any;
 
 let user_data : any;
+let type_data : any;
 
 const workbook = new Excel.Workbook();
 
@@ -69,7 +70,9 @@ menu_state.subscribe((data : any) => {
 url_state.subscribe((data : any) => {
   url_data = data;
 })
-
+common_type_state.subscribe((data : any) => {
+  type_data = data;
+})
 
 common_search_state.subscribe((data : any) => {
     search_data = data;
@@ -168,7 +171,11 @@ const infoCallApi = (title) => {
           department_data = res.data;
           console.log('depart : ', res.data);
           common_department_state.update(()=> department_data);
-      }
+      }else if(title === 'type'){
+        type_data = res.data;
+        console.log('depart : ', res.data);
+        common_type_state.update(()=> type_data);
+    }
       }else {
       
       }

@@ -3,7 +3,7 @@
 //@ts-nocheck
 
 import { writable } from 'svelte/store';
-import {employment_modal_state,employment_form_state} from './state';
+import {type_modal_state,type_form_state} from './state';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
@@ -32,7 +32,6 @@ let selected_data : any;
 const init_form_data:any = {
   uid : 0,
   name : '',
-  name2 : '',
   company : '',
   used : 1,
  
@@ -40,11 +39,11 @@ const init_form_data:any = {
 }
 
 
-employment_modal_state.subscribe((data) => {
+type_modal_state.subscribe((data) => {
     update_modal = data;
 })
 
-employment_form_state.subscribe((data) => {
+type_form_state.subscribe((data) => {
     update_form = data;
 })
 
@@ -75,7 +74,7 @@ common_selected_state.subscribe((data) => {
 
 
 
-const employmentModalOpen = (data : any, title : any) => {
+const typeModalOpen = (data : any, title : any) => {
   console.log('data : ', data);
 
   console.log('title : ', title);
@@ -86,12 +85,13 @@ const employmentModalOpen = (data : any, title : any) => {
     common_alert_state.update(() => alert);
     update_modal['title'] = title;
     update_modal[title]['use'] = true;
-    employment_modal_state.update(() => update_modal);
+    type_modal_state.update(() => update_modal);
 
-    console.log('update_modal : ', update_modal);
+    
 
     if(title === 'add'){
-      employment_form_state.update(() =>update_form);
+      update_form = init_form_data;  
+      type_form_state.update(() =>update_form);
      
     }
     if(title === 'update' ){
@@ -103,12 +103,12 @@ const employmentModalOpen = (data : any, title : any) => {
           }
         
       }); 
-            employment_form_state.update(() => update_form);
-            employment_modal_state.update(() => update_modal);
+            type_form_state.update(() => update_form);
+            type_modal_state.update(() => update_modal);
            
     }
     if(title === 'check_delete'){
-      let data =  table_list_data['employment'].getSelectedData();
+      let data =  table_list_data['type'].getSelectedData();
 
       common_selected_state.update(() => data);
    
@@ -121,13 +121,13 @@ const employmentModalOpen = (data : any, title : any) => {
 const modalClose = (title) => {
   update_modal['title'] = '';
   update_modal[title]['use'] = !update_modal[title]['use'];
-
+  update_form = init_form_data;
   alert['type'] = 'save';
   alert['value'] = false;
   common_alert_state.update(() => alert);
-  employment_modal_state.update(() => update_modal);
-
-
+  type_modal_state.update(() => update_modal);
+  type_form_state.update(() => update_form);
+  
 }
 
 
@@ -144,19 +144,19 @@ const save = (param,title) => {
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
-        employment_modal_state.update(() => update_modal);
+        type_modal_state.update(() => update_modal);
  
         return common_alert_state.update(() => alert);
   
       }else {
       
-        const url = `${api}/employment/save`
+        const url = `${api}/type/save`
         try {
   
           let params = {
             company_uid : param.company,
             name : param.name,
-            name2 : param.name2,
+           
             used : param.used,
             token : login_data['token'],
           };
@@ -173,10 +173,10 @@ const save = (param,title) => {
             update_modal['title'] = '';
             update_modal['add']['use'] = !update_modal['add']['use'];
         
-            employment_modal_state.update(() => update_modal);
+            type_modal_state.update(() => update_modal);
             update_form = init_form_data;
-            employment_form_state.update(()=> update_form);
-            select_query('employment');
+            type_form_state.update(()=> update_form);
+            select_query('type');
             return common_toast_state.update(() => toast);
 
           }else{
@@ -194,14 +194,14 @@ const save = (param,title) => {
     }
     
     if(title === 'update'){
-      const url = `${api}/employment/update`
+      const url = `${api}/type/update`
       try {
 
         let params = {
           uid : param.uid,
           company_uid : param.company,
           name : param.name,
-          name2 : param.name2,
+         
           used : param.used,
           token : login_data['token'],
         };
@@ -217,10 +217,10 @@ const save = (param,title) => {
           toast['value'] = true;
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
-          employment_modal_state.update(() => update_modal);
+          type_modal_state.update(() => update_modal);
           update_form = init_form_data;
-          employment_form_state.update(()=> update_form);
-          select_query('employment');
+          type_form_state.update(()=> update_form);
+          select_query('type');
           return common_toast_state.update(() => toast);
 
         }else{
@@ -252,7 +252,7 @@ const save = (param,title) => {
 
         if(uid_array.length > 0){
 
-          const url = `${api}/employment/delete`
+          const url = `${api}/type/delete`
           try {
     
             let params = {
@@ -270,10 +270,10 @@ const save = (param,title) => {
               toast['value'] = true;
               update_modal['title'] = title;
               update_modal[title]['use'] = false;
-              employment_modal_state.update(() => update_modal);
-              employment_form_state.update(()=>update_form);
+              type_modal_state.update(() => update_modal);
+              type_form_state.update(()=>update_form);
 
-              select_query('employment');
+              select_query('type');
     
               return common_toast_state.update(() => toast);
     
@@ -311,7 +311,7 @@ const save = (param,title) => {
   //       maker : update_form['maker'],
   //       code : '',
   //       name : '',
-  //       employment : 'BOX',
+  //       type : 'BOX',
   //       type : '완제품',
   //       check : false,
   //       use_qty : 0,
@@ -346,7 +346,7 @@ const save = (param,title) => {
   //     update_form['child'].pop();
   //   }
   
-  //   employment_form_state.update(() => update_form);
+  //   type_form_state.update(() => update_form);
     
   // }
 
@@ -363,7 +363,7 @@ const save = (param,title) => {
   
   //   }
     
-  //   employment_form_state.update(() => update_form);
+  //   type_form_state.update(() => update_form);
     
 
 
@@ -374,4 +374,4 @@ const save = (param,title) => {
 
 
 
-export {employmentModalOpen,save,modalClose}
+export {typeModalOpen,save,modalClose}

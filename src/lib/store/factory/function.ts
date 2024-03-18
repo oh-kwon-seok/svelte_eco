@@ -97,7 +97,7 @@ const factoryModalOpen = (data : any, title : any) => {
     
     if(title === 'add'){
       update_form = init_form_data;
-      factory_form_state.update(() => init_form_data);
+      factory_form_state.update(() =>update_form);
      
     }
     if(title === 'update' ){
@@ -298,7 +298,7 @@ const save = (param,title) => {
           update_modal['title'] = '';
           update_modal['update']['use'] = false;
           factory_modal_state.update(() => update_modal);
-          factory_form_state.update(()=> init_form_data);
+          factory_form_state.update(()=>update_form);
           select_query('factory');
           return common_toast_state.update(() => toast);
 
@@ -348,7 +348,7 @@ const save = (param,title) => {
               update_modal['title'] = 'check_delete';
               update_modal[title]['use'] = false;
               factory_modal_state.update(() => update_modal);
-              factory_form_state.update(()=> init_form_data);
+              factory_form_state.update(()=>update_form);
 
               select_query('factory');
     

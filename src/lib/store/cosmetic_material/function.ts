@@ -183,7 +183,7 @@ const save = (param,title) => {
               update_modal['title'] = title;
               update_modal[title]['use'] = false;
               cosmetic_material_modal_state.update(() => update_modal);
-              cosmetic_material_form_state.update(()=> init_form_data);
+              cosmetic_material_form_state.update(()=>update_form);
 
               select_query('cosmetic_material');
     

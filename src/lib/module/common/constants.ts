@@ -17,11 +17,15 @@ import { userModalOpen} from '$lib/store/user/function';
 
 import { factoryModalOpen} from '$lib/store/factory/function';
 import { employmentModalOpen} from '$lib/store/employment/function';
-
+import { typeModalOpen} from '$lib/store/type/function';
 import { departmentModalOpen} from '$lib/store/department/function';
+
 import { cosmeticMaterialModalOpen } from '$lib/store/cosmetic_material/function';
 import { restricMaterialModalOpen } from '$lib/store/restric_material/function';
 import { restricMaterialCountryModalOpen } from '$lib/store/restric_material_country/function';
+
+import { equipmentModalOpen} from '$lib/store/equipment/function';
+
 import moment from 'moment';
 
 import axios from 'axios'
@@ -41,13 +45,13 @@ const LOGIN_ALERT = {
 
 const CLIENT_INFO = {  // 업체정보
    
-    code  : "314-13-24575",
-    company_name : "장안유통(대청254번)",
-    name : "김옥병",
-    address : "대전시 대덕구 오정동 705 대청254번",
-    type : "도,소매",
-    type2 : "음식재료",
-    fax : "042-369-6892",
+    code  : " 314-86-46990",
+    company_name : "주식회사 에코바이오의학연구소",
+    name : "구태규",
+    address : "대전 유성구 전민동 461-6 한남대학교 대덕밸리캠퍼스 이노비즈파크 308호",
+    type : "화장품 판매업",
+    type2 : "",
+    fax : "042-825-8818",
 
 }
 
@@ -111,11 +115,17 @@ const TOAST_SAMPLE = {
 
 
 const TABLE_FILTER : any = {
+    type : [
+        {value : "all",name : "전체"},
+        {value : "name", name : "품목구분"},
+        {value : "company", name : "사업장"},
+    ],
+
     item : [
     {value : "all",name : "전체"},
-    {value : "name", name : "상품명"},
+    {value : "code", name : "코드"},
     {value : "type", name : "분류"},
-    {value : "company", name : "매입처"},
+    {value : "company", name : "취급사"},
   
     ],
     company : [
@@ -191,6 +201,15 @@ const TABLE_FILTER : any = {
         {value : "provis_atrcl", name : "단서조항"},
         {value : "limit_cond", name : "제한사항"},
         
+    ],   
+    equipment : [
+        {value : "all",name : "전체"},
+        {value : "name", name : "설비명"},
+        {value : "purpose", name : "용도"},
+        {value : "description", name : "규격"},
+        {value : "company", name : "사업장"},
+        
+
     ],
 }
 
@@ -204,10 +223,10 @@ const TABLE_HEADER_LIST_FILTER : any = {
 
 
 const EXCEL_CONFIG : any = {
+   
     item : [
-    {header: '번호코드', key: 'uid', width: 30},
-    {header: '분류', key: "type", width: 30},
-    {header: '상품명', key: 'name', width: 30},
+ 
+    {header: '코드', key: 'code', width: 30},
    
    
     {header: '등록일', key: 'created', width: 30},
@@ -215,7 +234,7 @@ const EXCEL_CONFIG : any = {
   
 
     company : [
-        {header: '번호코드', key: 'uid', width: 30},
+     
         {header: '사업자등록번호', key: 'code', width: 30},
         {header: '회사명', key: 'name', width: 30},
         {header: '대표자', key: 'owner_name', width: 30},
@@ -240,7 +259,7 @@ const EXCEL_CONFIG : any = {
         {header: '등록일', key: 'created', width: 30},
     ],
     user_item : [
-        {header: '번호코드', key: 'uid', width: 30},
+     
         {header: '분류', key: "type", width: 30},
         {header: '상품명', key: 'name', width: 150},
         {header: '개수', key: 'qty', width: 30},
@@ -285,20 +304,63 @@ const EXCEL_CONFIG : any = {
             {key : "limit_cond", header : "제한사항", width: 30},
             
         ],
+        equipment : [
+        
+            {header: '사업장', key: 'company', width: 30},
+            {header: '설비명', key: 'name', width: 30},
+            {header: '용도', key: 'purpose', width: 30},
+            {header: '비고', key: 'description', width: 30},
+      
+        ],
     
 }; 
 
 
 const TABLE_HEADER_CONFIG : any = {
+    type : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        { title: "ID", formatter: "rownum", align: "center", width: 70,}, 
+        {title:"품목구분", field:"name", width:150, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+              
+                typeModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+        
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+
     item : [
         {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
         cellClick:function(e : any, cell:any){
             cell.getRow().toggleSelect()
         }},
-        {title:"ID", field:"uid", width:150, headerFilter:"input"},
-        {title:"분류", field:"type", width:150, headerFilter:"list",headerFilterParams:{values:TABLE_HEADER_LIST_FILTER['type']}, clearable:true},
-      
-        {title:"상품명", field:"name", width:500, headerFilter:"input", 
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"품목구분", field:"type.name", width:150, headerFilter:"input"},
+
+        {title:"코드", field:"code", width:500, headerFilter:"input", 
         formatter:function(cell : any){
             var value = cell.getValue();
         return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
@@ -313,8 +375,7 @@ const TABLE_HEADER_CONFIG : any = {
             }
             }
         },
-        
-        {title:"매입처", field:"company.name", width:150, headerFilter:"input"},
+        {title:"취급사", field:"company.name", width:150, headerFilter:"input"},
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
         formatter: function(cell : any, formatterParams: any, onRendered: any) {
             // Luxon을 사용하여 datetime 값을 date로 변환
@@ -636,6 +697,39 @@ formatter: function(cell : any, formatterParams: any, onRendered: any) {
 }},   
 
 ],
+equipment : [
+    {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+    cellClick:function(e : any, cell:any){
+        cell.getRow().toggleSelect()
+    }},
+    { title: "ID", formatter: "rownum", align: "center", width: 70,}, 
+    {title:"설비명", field:"name", width:150, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+     },
+
+    cellClick:function(e : any, cell:any){
+        let row = cell.getRow();
+        if(row){
+            equipmentModalOpen(row.getData(),"update");
+        }else{
+            
+        }
+        }
+    },
+    {title:"용도", field:"purpose", width:150, headerFilter:"input"},
+    {title:"비고", field:"description", width:150, headerFilter:"input"},
+
+    {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+    {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+    formatter: function(cell : any, formatterParams: any, onRendered: any) {
+        // Luxon을 사용하여 datetime 값을 date로 변환
+        const datetimeValue = cell.getValue();
+        const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+        return date;
+    },
+}],
 }
 
 

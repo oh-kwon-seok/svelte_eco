@@ -15,31 +15,31 @@
     import { ChevronDownSolid, SearchOutline } from 'flowbite-svelte-icons';
 
 
-    import Util from '$lib/components/modal/item/Util.svelte';
+    import Util from '$lib/components/modal/equipment/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {itemModalOpen,itemExcelUpload, itemExcelFormDownload} from '$lib/store/item/function';
+    import {equipmentModalOpen,equipmentExcelFormDownload, equipmentExcelUpload} from '$lib/store/equipment/function';
     import {excelDownload, excelUpload, fileButtonClick} from '$lib/store/common/function';
     
-    import {item_form_state,item_modal_state} from '$lib/store/item/state';
+    import {equipment_form_state,equipment_modal_state} from '$lib/store/equipment/state';
 
-    import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state,load_state} from '$lib/store/common/state';
+    import {url_state,cookie_state,common_equipment_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
     import {TABLE_COMPONENT,EXCEL_CONFIG} from '$lib/module/common/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
     
-    import {makeCustomTable,infoCallApi,loadChange} from '$lib/store/common/function';
+    import {makeCustomTable,infoCallApi} from '$lib/store/common/function';
     
 
 	import { afterUpdate, onMount } from 'svelte';
-  import Loading from '$lib/components/modal/Loading.svelte';
+
   
     // import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
-   
+  
 	import moment from 'moment';
             
   
@@ -50,8 +50,9 @@
 
 
     onMount(()=>{
-        
-        makeCustomTable(table_list_state,"item",tableComponent,"select");
+        console.log('시점');
+       
+        makeCustomTable(table_list_state,"equipment",tableComponent,"select");
 
     });
 
@@ -60,9 +61,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/item'){
+        }else if($url_state['path'] === '/info/equipment'){
          
-            makeCustomTable(table_list_state,"item",tableComponent,"select");
+            makeCustomTable(table_list_state,"equipment",tableComponent,"select");
         }
       
     })
@@ -72,12 +73,11 @@
  
 
     </script>
-
-<style>
-  @import 'tabulator-tables/dist/css/tabulator_modern.min.css';
-
-  /* 나머지 스타일 정의 */
-</style>
+        <style>
+          @import 'tabulator-tables/dist/css/tabulator_modern.min.css';
+       
+          /* 나머지 스타일 정의 */
+        </style>
 
 
         
@@ -94,70 +94,63 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='기준정보 관리' subtitle='품목관리'/>
+              <Title title='기준정보 관리' subtitle='설비 관리'/>
             </div>
 
-           
-
+          
             
             <div class="row-span-15 col-span-12 "> 
                 <Tabs  style="pill" defaultClass=" mt-5 overflow-auto  flex rounded-lg divide-x divide-gray-200 shadow dark:divide-gray-700" >
                     <TabItem  open >
                    
 
-                      <span slot="title">품목 관리</span>
+                      <span slot="title">설비 관리</span>
 
                 
-                      <SearchBar title="item"/>
+                      <SearchBar title="equipment"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {itemModalOpen('','add')}}>
+                        <Button  on:click={() => {equipmentModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-
-                     
-
-
-
-                        <Button  color='red' on:click={() => itemModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => equipmentModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('item',EXCEL_CONFIG['item'])}>
+                        <Button  color='green' on:click={() =>excelDownload('equipment',EXCEL_CONFIG['equipment'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀다운
-                        </Button>
-
-                        <Button  color='green' on:click={(e)=> fileButtonClick('upload')}>
-                          <Icon.UploadSolid class='mr-2' size="20" />
-                            엑셀 업로드
-                          <input 
-                          hidden  
-                          id = 'upload' 
-                          type='file' 
-                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-                          on:change={(e)=> itemExcelUpload(e)}
-                    
-                          />
                       </Button>
-                      <Button  color="light" on:click={() => itemExcelFormDownload()}>
-                        <Icon.FileExportSolid class='mr-2' size="20" />
-                        업로드 양식 다운
-                      </Button>
-  
+                      
+                      <Button  color='green' on:click={(e)=> fileButtonClick('upload')}>
+                        <Icon.UploadSolid class='mr-2' size="20" />
+                          엑셀 업로드
+                        <input 
+                        hidden  
+                        id = 'upload' 
+                        type='file' 
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+                        on:change={(e)=> equipmentExcelUpload(e)}
+                  
+                        />
+                    </Button>
+                    <Button  color="light" on:click={() => equipmentExcelFormDownload()}>
+                      <Icon.FileExportSolid class='mr-2' size="20" />
+                      업로드 양식 다운
+                    </Button>
 
                       
 
-                        {#if $item_modal_state['title'] === 'add'}
+                        {#if $equipment_modal_state['title'] === 'add'}
                           <Util title="add" />
-                        {:else if $item_modal_state['title'] === 'update'}
+                        {:else if $equipment_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $item_modal_state['title'] === 'check_delete'}
+                          {:else if $equipment_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
                         {/if}
                         

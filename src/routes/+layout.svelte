@@ -28,6 +28,7 @@
 		infoCallApi('company');
 		infoCallApi('department');
 		infoCallApi('employment');
+		infoCallApi('type');
 		// infoCallApi('factory');
 		// infoCallApi('factory_sub');
 		
