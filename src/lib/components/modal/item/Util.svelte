@@ -2,7 +2,7 @@
 <script>
 
     // @ts-nocheck
-    import { Hr, Button ,Modal, Label, Select, Input, Helper, Textarea} from 'flowbite-svelte'
+    import { Hr, Button ,Modal, Label, Select, Input, Helper, Textarea,Fileupload,Img} from 'flowbite-svelte'
     
     import * as Icon from 'svelte-awesome-icons';
     
@@ -10,8 +10,8 @@
     import Alert from '$lib/components/alert/Alert.svelte';
     import {item_modal_state, item_form_state} from '$lib/store/item/state';
     import {common_alert_state, common_toast_state,common_company_state,common_type_state} from '$lib/store/common/state';
-    
-    import {save,modalClose} from '$lib/store/item/function';
+    import {fileButtonClick} from '$lib/store/common/function';
+    import {save,modalClose,itemImageDownload,itemFileUpload,itemImageDelete } from '$lib/store/item/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT,TABLE_HEADER_LIST_FILTER} from '$lib/module/common/constants';
     
     export let title;
@@ -36,10 +36,35 @@
 
     let color = title === 'add' || title === 'update' ? 'blue' : 'red'; 
 
+    let showModal = false;
+
+
+    function closeModal() {
+        showModal = false;
+    }
 
   
 
     </script>
+        <style>
+          .modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+    
+          .modal img {
+            max-width: 80%;
+            max-height: 80%;
+          }
+    
+        </style>
 
  
 
@@ -155,6 +180,56 @@
             <Textarea type="text" id="last_name" rows="4" required bind:value={$item_form_state['description']}/>
            
           </Label>
+
+          {#if $item_form_state['type_code'] === "완제품"}   
+          <Label class="space-y-2" for="small_size">
+            <span>완제품 이미지 등록</span>
+            <Fileupload id="small_size" size="xl" accept="image/*" on:change={(e)=> itemFileUpload(e)}/>
+          </Label>
+          
+        {/if}
+
+  
+
+          {#if $item_form_state['image_url'] && $item_form_state['type_code'] === "완제품"}   
+            <Button id="download" class="mt-5"  color='blue' on:click={()=> itemImageDownload()}>
+             이미지 다운로드
+          </Button>
+          {/if}
+
+      
+
+
+          <div class="mt-5">
+           
+            {#if $item_form_state['image_url'] !== "null" &&  $item_form_state['image_url'] !== "" &&  $item_form_state['type_code'] === "완제품" }
+          
+                
+
+
+            <Img style="max-width: 100%; height : 40vh;" src={$item_form_state['image_url']} alt="sample 1" caption="품목이미지" on:click={()=>console.log('누름 :::')}/>
+              <Button id="download" class="mt-5 w-full"  color='blue' on:click={()=> showModal = true}>
+                상세보기
+             </Button>
+             <Button id="download" class="mt-5 w-full"  color='blue' on:click={()=> itemImageDelete()}>
+                이미지 삭제
+            </Button>
+
+            {#if showModal}
+            
+            
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <div class="modal" on:clicfk={closeModal}>
+               
+                <Img  src={$item_form_state['image_url']} alt="Zoomed Image" />
+              </div>
+            {/if}
+
+
+            {/if}
+            </div>
+
+          
     
     
 

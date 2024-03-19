@@ -31,6 +31,7 @@ import {v4 as uuid} from 'uuid';
         hs_code : "",
         nts_code : "",
         description : "",
+        image_url:'',
         company : "",
         type : "",
         used : 1,

@@ -51,6 +51,7 @@ const init_form_data:any = {
         hs_code : "",
         nts_code : "",
         description : "",
+        image_url:'',
         company : "",
         type : "",
         used : 1,
@@ -195,7 +196,7 @@ const save = (param,title) => {
  
     if(title === 'add'){
     
-      if(param['code'] === '' || param['type'] === '' || param['company'] === ''){
+      if(param['code'] === '' ||  param['type_code'] === '' || param['type'] === '' || param['company'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
@@ -228,7 +229,7 @@ const save = (param,title) => {
             description:param.description,
             company_uid:param.company,
             type_uid:param.type,
-            
+            image_url : param.type_code === '완제품' ? param['image_url'] : "",  
             used : param.used,
             token : login_data['token'],
           };
@@ -286,6 +287,7 @@ const save = (param,title) => {
           description:param.description,
           company_uid:param.company,
           type_uid:param.type,
+          image_url : param.type_code === '완제품' ? param['image_url'] : "",  
           used : param.used,
           token : login_data['token'],
         };
@@ -694,6 +696,54 @@ const save = (param,title) => {
 }
 
 
+const itemImageDownload = () => {
+
+  if (update_form['image_url']) {
+    const link = document.createElement("a");
+    link.href = update_form['image_url'];
+    link.download = update_form['code'] +"_사진.jpg";
+    link.click();
+  }
+}
+
+const itemFileUpload = (e) => {
+  console.log('e.target.files[0]; : ', e.target.files[0]);
+  const file = e.target.files[0];
+    if (file) {
+      // 이미지 파일이 선택된 경우 처리
+      const reader = new FileReader();
+
+      
+
+      reader.onload = (e) => {
+        update_form['image_url'] = e.target.result;
+       
+
+        item_form_state.update(()=> update_form);
+      };
+      
+      
+      
+      reader.readAsDataURL(file);
+    }
+}
+
+const itemImageDelete = (e) => {
+
+
+      
+
+    
+        update_form['image_url'] = "";
+       
+
+        item_form_state.update(()=> update_form);
+  
+      
+    
+}
+
+
   
 
 
@@ -702,4 +752,4 @@ const save = (param,title) => {
 
 
 
-export {itemModalOpen,save,itemExcelUpload,itemExcelFormDownload,modalClose}
+export {itemModalOpen,save,itemExcelUpload,itemExcelFormDownload,modalClose,itemImageDownload,itemFileUpload,itemImageDelete}
