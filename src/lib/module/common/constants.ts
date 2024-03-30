@@ -211,14 +211,17 @@ const TABLE_FILTER : any = {
         
 
     ],
+    bom : [
+        {value : "all",name : "전체"},
+        {value : "code", name : "코드"},
+        {value : "ingr_kor_name", name : "한글명"},
+        {value : "ingr_eng_name", name : "영문명"},
+            
+
+    ],
 }
 
 
-const TABLE_HEADER_LIST_FILTER : any = {
-    type : {"채소류" : "채소류","김치":"김치","수산물":"수산물","육류":"육류","젓갈":"젓갈","건어물":"건어물","냉동":"냉동","일회용품":"일회용품","공산품":"공산품","기타":"기타"}
-    
-   
-}
 
 
 
@@ -311,6 +314,13 @@ const EXCEL_CONFIG : any = {
             {header: '용도', key: 'purpose', width: 30},
             {header: '비고', key: 'description', width: 30},
       
+        ],
+        bom : [
+        
+            {header: '품목코드', key: 'code', width: 30},
+            {header: '한글명', key: 'ingr_kor_name', width: 30},
+            {header: '영문명', key: 'ingr_eng_name', width: 30},
+              
         ],
     
 }; 
@@ -730,6 +740,39 @@ equipment : [
         return date;
     },
 }],
+    bom : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+
+        {title:"BOM코드", field:"code", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                bomModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
 }
 
 
@@ -815,7 +858,7 @@ export {
     TABLE_COMPONENT,
     TABLE_FILTER,
     EXCEL_CONFIG,
-    TABLE_HEADER_LIST_FILTER,
+    
     CLIENT_INFO
 }
 

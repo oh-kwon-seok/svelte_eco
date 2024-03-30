@@ -12,7 +12,7 @@
     import {common_alert_state, common_toast_state,common_company_state,common_type_state} from '$lib/store/common/state';
     import {fileButtonClick} from '$lib/store/common/function';
     import {save,modalClose,itemImageDownload,itemFileUpload,itemImageDelete } from '$lib/store/item/function';
-    import {DATA_FAIL_ALERT,DATA_SELECT_ALERT,TABLE_HEADER_LIST_FILTER} from '$lib/module/common/constants';
+    import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     
     export let title;
 

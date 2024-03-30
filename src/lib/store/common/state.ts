@@ -59,14 +59,16 @@ const url_state : any = writable({ path : '', query : ''});
     item : "",
     company : "",
     user : "",
-  
+    bom : "",
     department : "",
     employment : "",
+    equipment : "",
     factory : "",
     factory_sub : "",
     cosmetic_material : "",
     restric_material : "",
     restric_material_country_state : "",
+
     
   });
 
@@ -97,11 +99,10 @@ const url_state : any = writable({ path : '', query : ''});
   const common_restric_material_country_state : any = writable([]);
 
   const common_equipment_state : any = writable([]);
+
+  const common_bom_state : any =  writable([]);
   
-
   const common_company_filter_state : any = writable([]); // 매입매출이 아닌 사업장 데이터임
-
-
 
   const common_selected_state : any = writable([]); // 삭제용 데이터
 
@@ -129,6 +130,6 @@ const url_state : any = writable({ path : '', query : ''});
     common_restric_material_state,
     common_restric_material_country_state,
     common_equipment_state,
-
+    common_bom_state,
     
   };

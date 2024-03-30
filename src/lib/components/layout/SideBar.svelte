@@ -83,6 +83,11 @@
               <SidebarDropdownItem class={text_style} label="화장품 원료성분정보 관리" href='/info/cosmetic_material' active={activeUrl === '/info/cosmetic_material'} on:click={handleToggle('cosmetic_material')}/>
               <SidebarDropdownItem class={text_style} label="사용제한 원료정보 관리" href='/info/restric_material' active={activeUrl === '/info/restric_material'} on:click={handleToggle('restric_material')}/>
               <SidebarDropdownItem class={text_style} label="사용제한 배합금지국가 관리" href='/info/restric_material_country' active={activeUrl === '/info/restric_material_country'} on:click={handleToggle('restric_material_country')}/>
+            
+                
+              <SidebarDropdownItem class={text_style} label="생산레시피 관리" href='/info/bom' active={activeUrl === '/info/bom'} on:click={handleToggle('bom')}/>
+        
+            
             </SidebarDropdownWrapper>
  
           </SidebarGroup>

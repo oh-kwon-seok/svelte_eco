@@ -30,9 +30,11 @@ import {v4 as uuid} from 'uuid';
   
   })
   const restric_material_status_state : any  = writable({
-   
-    total_count : 0,
+    title : '',
     ing_count : 0,
+    total_count : 0,
+  
+    final_total_count : 0,
     
   })
   
