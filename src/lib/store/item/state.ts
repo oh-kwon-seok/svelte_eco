@@ -11,6 +11,7 @@ import {v4 as uuid} from 'uuid';
     update : { use : false, title: ''},
     delete : { use : false, title: ''},
     check_delete : { use : false, title: ''},
+    search : { use : false, title: ''},
     
      
    });

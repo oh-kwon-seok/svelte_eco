@@ -76,8 +76,8 @@
 
     </script>
         <style>
-          @import 'tabulator-tables/dist/css/tabulator_midnight.min.css';
-          #example-table-theme{
+          @import 'tabulator-tables/dist/css/tabulator_modern.min.css';
+          /* #example-table-theme{
     background-color:#ccc;
     border: 1px solid #333;
     border-radius: 10px;
@@ -104,7 +104,7 @@
 
     #example-table-theme .tabulator-tableholder .tabulator-table .tabulator-row:nth-child(even) {
     background-color: #444;
-}
+} */
 
 
      

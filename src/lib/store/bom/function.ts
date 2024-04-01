@@ -4,15 +4,16 @@
 
 import { writable } from 'svelte/store';
 import {bom_modal_state,bom_form_state} from './state';
+import {item_modal_state} from '$lib/store/item/state';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
-import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,common_selected_state,common_bom_state} from '$lib/store/common/state';
+import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,table_modal_state,common_selected_state,common_bom_state} from '$lib/store/common/state';
 import moment from 'moment';
 
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
-import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER} from '$lib/module/common/constants';
+import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER, MODAL_TABLE_HEADER_CONFIG} from '$lib/module/common/constants';
 import Excel from 'exceljs';
 const api = import.meta.env.VITE_API_BASE_URL;
 
@@ -20,6 +21,7 @@ const api = import.meta.env.VITE_API_BASE_URL;
 
 
 let update_modal : any;
+
 let update_form : any;
 let list_data : any;
 let alert : any;
@@ -27,10 +29,13 @@ let toast : any;
 
 let login_data : any;
 let table_list_data : any;
+let table_modal_data : any;
 let bom_data : any;
 let bom_upload_data : any;
 let selected_data : any;
 let search_data : any;
+let item_modal : any;
+
 
 const init_form_data:any = {
   uid : 0,
@@ -71,12 +76,19 @@ login_state.subscribe((data) => {
 table_list_state.subscribe((data) => {
   table_list_data = data;
 })
+table_modal_state.subscribe((data) => {
+  table_modal_data = data;
+})
 common_bom_state.subscribe((data) => {
   bom_data = data;
 })
 
 common_selected_state.subscribe((data) => {
   selected_data = data;
+})
+
+item_modal_state.subscribe((data) => {
+  item_modal = data;
 })
 
 
@@ -96,14 +108,22 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
  
  var tableDataNested = [
-    {code:"Oli Bob",  _children:[
-      {code:"Mary May"},
-      {code:"Christine Lobowski"},
-      {code:"Brendon Philips", _children:[
-          {code:"Margret Marmajuke", },
-          {code:"Frank Harbours",},
+    {code:"인디안밥",  _children:[
+      {code:"인디안밥"},
+      {code:"인디안밥"},
+      {code:"양념", _children:[
+          {code:"시즈닝", },
+          {code:"소금",},
       ]},
   ]},
+  {code:"인디안밥",_children:[
+    {code:"밥"},
+    {code:"밥1"},
+    {code:"양념", _children:[
+        {code:"시즈닝", },
+        {code:"소금",},
+    ]},
+]},
 
 ];
  
@@ -119,7 +139,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
     filter_title : filter_title,   
   };
 
- 
+  
   const config = {
     params : params,
     headers:{
@@ -130,8 +150,43 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
     axios.get(url,config).then(res=>{
       
       console.log('res : ', res.data);
+      console.log('params : ',params);
+      
      
       if(res.data.length > 0){
+        let data = res.data;
+              let map = {};
+              data.forEach(item => {
+                map[item.uid] = item;
+              });
+
+              console.log('map : ', map);
+
+      // _children 속성을 추가할 요소들을 담을 배열 초기화
+      let result = [];
+
+      // 주어진 배열을 순회하면서 _children 속성을 추가할 요소들을 처리
+      data.forEach(item => {
+        if (item.parent_uid !== 0) {
+          // parent_uid가 0이 아닌 경우
+          let parent = map[item.parent_uid];
+          if (parent) {
+            // 부모 요소를 찾은 경우
+            if (!parent._children) {
+              // _children 속성이 없는 경우 초기화
+              parent._children = [];
+            }
+            // 현재 요소를 부모 요소의 _children 속성에 추가
+            parent._children.push(item);
+          }
+        } else {
+          // parent_uid가 0인 경우
+          result.push(item);
+        }
+      });
+
+      
+
        
         if(table_list_state[type]){
           table_list_state[type].destory();
@@ -139,8 +194,18 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
         
         table_list_data[type] =   new Tabulator(tableComponent, {
-        dataTree : true,
-        dataTreeStartExpanded:false,
+          dataTree : true,
+          dataTreeStartExpanded:false,
+          movableRows:true,
+    
+          dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
+          dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
+          dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
+         
+         
+      
+          dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
+    
      
         height:TABLE_TOTAL_CONFIG['height'],
         layout:TABLE_TOTAL_CONFIG['layout'],
@@ -168,7 +233,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
         },
      
 
-        data : tableDataNested,
+        data : result,
       
         columns: TABLE_HEADER_CONFIG[type],
         
@@ -190,11 +255,15 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
     table_list_data[type] =   new Tabulator(tableComponent, {
       dataTree : true,
       dataTreeStartExpanded:false,
+      movableRows:true,
+
       dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
       dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
       dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
-
-      dataTreeBranchElement:"<i class='fa-light fa-l'></i>", //show image for branch element
+     
+     
+  
+      dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
 
       height:TABLE_TOTAL_CONFIG['height'],
       layout:TABLE_TOTAL_CONFIG['layout'],
@@ -225,7 +294,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
           },
    
 
-      data : tableDataNested,
+      data : [],
     
       columns: TABLE_HEADER_CONFIG[type],
       
@@ -292,6 +361,93 @@ const bomModalOpen = (data : any, title : any) => {
 
 
 
+const itemSearchModalOpen = (title : any) => {
+
+   
+     alert['type'] = 'save';
+     alert['value'] = false;
+     console.log('titme : ', title);
+     common_alert_state.update(() => alert);
+     item_modal['title'] = title;
+     item_modal[title]['use'] = true;
+    console.log('item_modal',item_modal['search']);
+
+     item_modal_state.update(() => item_modal);
+ 
+ }
+ 
+
+
+
+const itemSearchTable = (table_state,type,tableComponent,select) => {
+
+
+  const url = `${api}/${type}/${select}`; 
+
+  const config = {
+  
+    headers:{
+      "Content-Type": "application/json",
+      
+    }
+  }
+    axios.get(url,config).then(res=>{
+      if(table_modal_state['item']){
+        table_modal_state['item'].destory();
+      }
+
+      if(res.data.length > 0){
+      let data = res.data;
+  
+
+            table_modal_data['item'] =   new Tabulator(tableComponent, {
+              height:TABLE_TOTAL_CONFIG['height'],
+              layout:TABLE_TOTAL_CONFIG['layout'],
+              pagination:TABLE_TOTAL_CONFIG['pagination'],
+              paginationSize:1000,
+              paginationSizeSelector:[10, 50, 100,1000,5000],
+              movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+              paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+              paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+              locale: TABLE_TOTAL_CONFIG['locale'],
+              langs: TABLE_TOTAL_CONFIG['langs'],
+              selectable: true,
+              rowClick:function(e, row){
+              
+                row.toggleSelect(); //toggle row selected state on row click,
+            },
+    
+              rowFormatter:function(row){
+                    row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+                    let selected = row.getData().selected;
+
+                    if(selected){
+                      console.log('selected : ', selected);
+                      row.getElement().classList.add("tabulator-selected");
+                      row.toggleSelect();
+                      console.log('selected : ', row.getData());
+                    }
+              },
+           
+           
+    
+              data :  data,
+  
+              columns: MODAL_TABLE_HEADER_CONFIG[type],
+              
+         
+             
+              });
+              table_modal_state.update(()=> table_modal_data);
+           
+    }
+  })
+        
+}
+
+
+
+
 
 
 
@@ -342,6 +498,33 @@ const modalClose = (title) => {
   bom_form_state.update(() => update_form);
   
 
+
+}
+
+const itemSearchmodalClose = (title) => {
+  item_modal['title'] = '';
+  item_modal[title]['use'] = !item_modal[title]['use'];
+
+  alert['type'] = 'save';
+  alert['value'] = false;
+
+  common_alert_state.update(() => alert);
+  item_modal_state.update(() => item_modal);
+ 
+
+}
+const itemSelect = (row) => {
+  
+
+  update_form['item'] = row.uid;
+  update_form['code'] = row.code;
+  
+  item_modal['search']['use'] = !item_modal['search']['use'];
+
+  item_modal_state.update(() => item_modal);
+  bom_form_state.update(()=> update_form);
+  
+ 
 
 }
 
@@ -733,4 +916,4 @@ const save = (param,title) => {
 
 
 
-export {bomModalOpen,save,modalClose,bomExcelFormDownload,bomExcelUpload,makeCustomTable}
+export {bomModalOpen,save,modalClose,bomExcelFormDownload,bomExcelUpload,makeCustomTable,itemSearchTable,itemSearchModalOpen,itemSearchmodalClose,itemSelect}

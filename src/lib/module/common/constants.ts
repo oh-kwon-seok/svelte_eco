@@ -25,7 +25,7 @@ import { restricMaterialModalOpen } from '$lib/store/restric_material/function';
 import { restricMaterialCountryModalOpen } from '$lib/store/restric_material_country/function';
 
 import { equipmentModalOpen} from '$lib/store/equipment/function';
-
+import { bomModalOpen,itemSelect} from '$lib/store/bom/function';
 import moment from 'moment';
 
 import axios from 'axios'
@@ -326,6 +326,47 @@ const EXCEL_CONFIG : any = {
 }; 
 
 
+
+const MODAL_TABLE_HEADER_CONFIG : any = {
+    item : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"품목구분", field:"type.name", width:150, headerFilter:"input"},
+
+        {title:"코드", field:"code", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                itemSelect(row.getData());
+            }else{
+                
+            }
+            }
+        },
+        {title:"취급사", field:"company.name", width:150, headerFilter:"input"},
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+
+
+
+
+}
 const TABLE_HEADER_CONFIG : any = {
     type : [
         {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
@@ -855,6 +896,10 @@ export {
     TOAST_SAMPLE,
     TABLE_TOTAL_CONFIG,
     TABLE_HEADER_CONFIG,
+
+    MODAL_TABLE_HEADER_CONFIG,
+
+
     TABLE_COMPONENT,
     TABLE_FILTER,
     EXCEL_CONFIG,

@@ -8,10 +8,13 @@
     
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
+    import ItemSearch from '$lib/components/modal/bom/Item.svelte';
     import {bom_modal_state, bom_form_state} from '$lib/store/bom/state';
+    import {item_modal_state} from '$lib/store/item/state';
+    
     import {common_alert_state, common_toast_state,common_company_state,common_type_state} from '$lib/store/common/state';
     import {fileButtonClick} from '$lib/store/common/function';
-    import {save,modalClose } from '$lib/store/bom/function';
+    import {save,modalClose,itemSearchModalOpen } from '$lib/store/bom/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     
     export let title;
@@ -69,7 +72,7 @@
 
  
 
-    <Modal title={`품목 ${label_title}`} permanent={true} color={color} bind:open={$bom_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
+    <Modal title={`생산레시피 ${label_title}`} permanent={true} color={color} bind:open={$bom_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
         <form action="#">
@@ -79,13 +82,17 @@
     
           <Label class="space-y-2">
             <span>품목코드</span>
-            <Input type="text" id="last_name" placeholder="품목코드를 입력하세요" required bind:value={$bom_form_state['code']}/>
+            <Input type="text" id="last_name" placeholder="품목코드를 입력하세요" required bind:value={$bom_form_state['code']} on:click={() => {itemSearchModalOpen('search')}}/>
             
             {#if $bom_form_state['code'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
             {/if}
           </Label>
-    
+
+          {#if $item_modal_state['title'] === 'search'}
+          <ItemSearch title="search" />
+          {/if}
+          
           <Label class="space-y-2">
             <span>비고</span>
             <Textarea type="text" id="last_name" rows="4" required bind:value={$bom_form_state['description']}/>
