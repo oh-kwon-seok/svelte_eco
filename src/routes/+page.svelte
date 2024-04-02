@@ -22,6 +22,16 @@
 	const api = import.meta.env.VITE_API_BASE_URL;
 	
 	
+	let login_data:any ;
+
+
+	login_state.subscribe((data:any) => {
+		login_data = data;
+
+		})
+
+
+
 	let autoSave : any = false; // 자동저장유무
 
 	let test_style= `background-image: url('${bg_url}');`
@@ -32,6 +42,7 @@
 		const storedUsername = getCookie('my-cookie');
 		const storedPassword = getCookie('password');
 		const storedAutoSave = getCookie('autoSave');
+
 		
 	
 		if(storedUsername){
@@ -77,10 +88,12 @@
 		
 			if(res.data['success'] === true){
 
-				console.log('res : data', res);
-					// 	// 쿠키 설정
-
+				console.log('res.data.company_uid : ', res.data.company_uid);
+				
+			
 				setCookie('my-cookie', $login_state['id'], { expires: 3600 });
+				setCookie('company_uid', res.data.company_uid, { expires: 3600 });
+				
 				if(autoSave === true){
 					setCookie('my-cookie', $login_state['id'], { expires: 21 * 24 * 60 * 60  });
 					setCookie('password', $login_state['password'], { expires: 21 * 24 * 60 * 60  });

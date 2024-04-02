@@ -10,7 +10,7 @@ import {v4 as uuid} from 'uuid';
 import axios from 'axios'
 import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,table_modal_state,common_selected_state,common_bom_state} from '$lib/store/common/state';
 import moment from 'moment';
-
+import { setCookie, getCookie, removeCookie } from '$lib/cookies';
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER, MODAL_TABLE_HEADER_CONFIG} from '$lib/module/common/constants';
@@ -48,6 +48,9 @@ const init_form_data:any = {
 
 
 }
+
+let init_bom_uid :any ;
+let selected_bom_sub_data :any ;
 
 
 bom_modal_state.subscribe((data) => {
@@ -310,6 +313,273 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
   
 }
+
+
+const bomModalTable = (table_modal_state,type,tableComponent,select,title) => {
+
+  
+  
+  if(title === 'add'){
+    
+          if(table_modal_state[type]){
+            table_modal_state[type].destory();
+          }
+  
+          table_modal_data[type] =   new Tabulator(tableComponent, {
+            dataTree : true,
+            dataTreeStartExpanded:true,
+            movableRows:true,
+            dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
+            dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
+            dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
+            dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
+            height:TABLE_TOTAL_CONFIG['height'],
+            layout:TABLE_TOTAL_CONFIG['layout'],
+            pagination:TABLE_TOTAL_CONFIG['pagination'],
+            paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+            paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+            movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+            paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+            paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+            locale: TABLE_TOTAL_CONFIG['locale'],
+            langs: TABLE_TOTAL_CONFIG['langs'],
+            // selectable: true,
+          rowClick:function(e, row){
+            //e - the click event object
+            //row - row component
+  
+         
+            row.toggleSelect(); //toggle row selected state on row click
+        },
+  
+          rowFormatter:function(row){
+                row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+          },
+       
+  
+          data : [],
+          placeholder:"데이터 없음",
+          columns: MODAL_TABLE_HEADER_CONFIG[type],
+          
+          });
+          table_modal_state.update(()=> table_modal_data);
+  
+      
+        
+          
+    }else if(title === 'update'){
+    const url = `${api}/${type}/${select}`; 
+  
+    const config = {
+      headers:{
+        "Content-Type": "application/json",
+        
+      }
+    }
+      axios.get(url,config).then(res=>{
+        
+        console.log('res : ', res.data);
+        if(res.data.length > 0){
+          let data = res.data;
+                let map = {};
+                data.forEach(item => {
+                  map[item.uid] = item;
+                });
+  
+                console.log('map : ', map);
+  
+        // _children 속성을 추가할 요소들을 담을 배열 초기화
+        let result = [];
+  
+        // 주어진 배열을 순회하면서 _children 속성을 추가할 요소들을 처리
+        data.forEach(item => {
+          if (item.parent_uid !== 0) {
+            // parent_uid가 0이 아닌 경우
+            let parent = map[item.parent_uid];
+            if (parent) {
+              // 부모 요소를 찾은 경우
+              if (!parent._children) {
+                // _children 속성이 없는 경우 초기화
+                parent._children = [];
+              }
+              // 현재 요소를 부모 요소의 _children 속성에 추가
+              parent._children.push(item);
+            }
+          } else {
+            // parent_uid가 0인 경우
+            result.push(item);
+          }
+        });
+  
+        
+  
+         
+          if(table_modal_state[type]){
+            table_modal_state[type].destory();
+          }
+  
+          
+          table_modal_data[type] =   new Tabulator(tableComponent, {
+            dataTree : true,
+            dataTreeStartExpanded:false,
+            movableRows:true,
+            dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
+            dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
+            dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
+            dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
+            height:TABLE_TOTAL_CONFIG['height'],
+            layout:TABLE_TOTAL_CONFIG['layout'],
+            pagination:TABLE_TOTAL_CONFIG['pagination'],
+            paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+            paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+            movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+            paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+            paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+            locale: TABLE_TOTAL_CONFIG['locale'],
+            langs: TABLE_TOTAL_CONFIG['langs'],
+            selectable: true,
+          rowClick:function(e, row){
+            //e - the click event object
+            //row - row component
+  
+         
+            row.toggleSelect(); //toggle row selected state on row click
+        },
+  
+          rowFormatter:function(row){
+                row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+          },
+       
+  
+          data : result,
+        
+          columns: MODAL_TABLE_HEADER_CONFIG[type],
+          
+          });
+          table_modal_state.update(()=> table_modal_data);
+  
+      
+        
+          
+    }else{
+      
+      if(table_modal_state[type]){
+        table_modal_state[type].destory();
+      }
+  
+      table_modal_data[type] =   new Tabulator(tableComponent, {
+        dataTree : true,
+        dataTreeStartExpanded:false,
+        movableRows:true,
+  
+        dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
+        dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
+        dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
+       
+       
+    
+        dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
+  
+        height:TABLE_TOTAL_CONFIG['height'],
+        layout:TABLE_TOTAL_CONFIG['layout'],
+        pagination:TABLE_TOTAL_CONFIG['pagination'],
+        paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+        paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+        movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+        paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+        paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+        locale: TABLE_TOTAL_CONFIG['locale'],
+        langs: TABLE_TOTAL_CONFIG['langs'],
+        selectable: true,
+        placeholder:"데이터 없음",
+        rowClick:function(e, row){
+          //e - the click event object
+          //row - row component
+       
+          row.toggleSelect(); //toggle row selected state on row click
+      },
+  
+        rowFormatter:function(row){
+              //row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+
+            },
+     
+  
+        data : [],
+      
+        columns: MODAL_TABLE_HEADER_CONFIG[type],
+        
+  
+        });
+        
+        table_modal_state.update(()=> table_modal_data);
+    }
+     })
+
+  }
+
+
+  
+}
+
+
+
+const bomAddRow = () => {
+
+
+ 
+
+
+  let company_uid = getCookie('company_uid');
+
+
+  
+  let data = table_modal_data['bom'].getData();
+
+  console.log('data : ', data);
+  let new_obj = {
+    title : 'main',
+
+    uid : parseInt(data.length) + 1, 
+    parent_uid : update_form['item'],
+    company_uid : company_uid,
+    item_uid : 0,
+    code : '',
+    qty : 1,
+    rate : 1,
+    used : 1,
+  }
+  
+  data.push(new_obj);
+
+  table_modal_data['bom'].setData(data);
+
+
+  table_modal_state.update(()=> table_modal_data);
+}
+
+
+
+
+const bomDeleteRow = () => {
+  // console.log('눌림');
+  let data = table_modal_data['bom'].getData();
+  
+  data.pop();
+  table_modal_data['bom'].setData(data);
+  table_modal_state.update(()=> table_modal_data);
+
+}
+const bomAllDeleteRow = () => {
+ 
+
+  table_modal_data['bom'].setData([]);
+
+  table_modal_state.update(()=> table_modal_data);
+
+}
+
+
  
 
 
@@ -370,16 +640,38 @@ const itemSearchModalOpen = (title : any) => {
      common_alert_state.update(() => alert);
      item_modal['title'] = title;
      item_modal[title]['use'] = true;
-    console.log('item_modal',item_modal['search']);
+     item_modal[title]['title'] = title;
 
+     
+   
      item_modal_state.update(() => item_modal);
  
  }
+
+ const bomSearchModalOpen = (title : any, data:any) => {
+
+  console.log('data : ', data);
+  init_bom_uid = data.getData();
+   
+
+  alert['type'] = 'save';
+  alert['value'] = false;
+  console.log('titme : ', title);
+  common_alert_state.update(() => alert);
+  item_modal['title'] = title;
+  item_modal[title]['use'] = true;
+  item_modal[title]['title'] = title;
+
+  
+
+  item_modal_state.update(() => item_modal);
+
+}
  
 
 
 
-const itemSearchTable = (table_state,type,tableComponent,select) => {
+const itemSearchTable = (table_state,type,tableComponent,select,title) => {
 
 
   const url = `${api}/${type}/${select}`; 
@@ -433,7 +725,7 @@ const itemSearchTable = (table_state,type,tableComponent,select) => {
     
               data :  data,
   
-              columns: MODAL_TABLE_HEADER_CONFIG[type],
+              columns: title === 'search' ? MODAL_TABLE_HEADER_CONFIG[type] : MODAL_TABLE_HEADER_CONFIG['bom_search'],
               
          
              
@@ -444,6 +736,56 @@ const itemSearchTable = (table_state,type,tableComponent,select) => {
   })
         
 }
+
+
+
+const bomSubAddRow = (row,cell:any) => {
+
+
+  let company_uid = getCookie('company_uid');
+
+  let new_obj;
+
+  if(row.item_uid === 0){
+    window.alert('품목을 선택해주십시오.');
+  
+  }else{
+    if (!row._children) {
+      // _children 속성이 없으면 빈배열 할당
+      row._children = [];    
+    } else {
+      // 있으면 아무것도 안함
+   
+    }
+      new_obj = {
+        uid : parseInt(row._children.length) + 1, 
+        title : 'sub',
+        company_uid : company_uid,
+        item_uid : 0,
+        code : '',
+        qty : 1,
+        rate : 1,
+        used : 1,
+      }
+
+      // 새로운 {}를 _children 배열에 추가
+      row._children.push(new_obj);
+      selected_bom_sub_data = row;
+
+      cell.getRow().update(row);
+
+      let final_data = table_modal_data['bom'].getData();
+
+      table_modal_data['bom'].setData(final_data)
+      table_modal_state.update(()=> table_modal_data);
+
+  }
+ 
+
+  }
+
+  
+
 
 
 
@@ -524,9 +866,81 @@ const itemSelect = (row) => {
   item_modal_state.update(() => item_modal);
   bom_form_state.update(()=> update_form);
   
+}
+
+const bomSelect = (row) => {
+   
+  
+
+  let new_data = row.getData();
+  
+  console.log('bomSelect  :',init_bom_uid);
+  
+  let checkData ; 
+
+  if(init_bom_uid.title === 'main'){
+    checkData = table_modal_data['bom'].getData().find(item => item['item_uid'] === new_data['uid']);
+
+  }else{
+    console.log('bomSelect  :',selected_bom_sub_data);
+    checkData = selected_bom_sub_data['_children'].find(item => item['item_uid'] === new_data['uid']);
+  }
+ 
+  
+  if(checkData){
+    return window.alert('BOM 목록에 존재하는 품목입니다.');
+    
+
+  }else{
+   
+
+    init_bom_uid.item_uid = new_data.uid;
+    init_bom_uid.name = new_data.code;
+    init_bom_uid.code = new_data.code;
+    
+    
+
+    row.getRow().update(init_bom_uid);
+
+    let final_data = table_modal_data['bom'].getData();
+
+    table_modal_data['bom'].setData(final_data)
+
+    table_modal_state.update(()=> table_modal_data);
+
+    item_modal['bom_search']['use'] = !item_modal['bom_search']['use'];
+    item_modal_state.update(() => item_modal);
+  
+  }
+}
+
+
+const bomSelectDelete = (row) => {
+   // 보완해야함
+  let deleteCheck = confirm("정말로 삭제하시겠습니까?");
+
+  if(deleteCheck){
+    let new_data = row.getData();
+  
+
+
+    let filterd_data = table_modal_data['bom'].getData().filter((item) => {
+      return item.uid !== new_data.uid;
+    })
+  
+     table_modal_data['bom'].setData(filterd_data);
+  
+  
+      table_modal_state.update(()=> table_modal_data);
+
+  }else{
+
+  }
+
  
 
-}
+  }
+
 
 
 
@@ -916,4 +1330,4 @@ const save = (param,title) => {
 
 
 
-export {bomModalOpen,save,modalClose,bomExcelFormDownload,bomExcelUpload,makeCustomTable,itemSearchTable,itemSearchModalOpen,itemSearchmodalClose,itemSelect}
+export {bomModalOpen,save,modalClose,bomExcelFormDownload,bomExcelUpload,makeCustomTable,itemSearchTable,itemSearchModalOpen,itemSearchmodalClose,itemSelect,bomModalTable,bomAddRow,bomSelect,bomSearchModalOpen,bomDeleteRow,bomAllDeleteRow,bomSelectDelete,bomSubAddRow}

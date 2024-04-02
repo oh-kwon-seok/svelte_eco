@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state } from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state,common_bom_state } from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -36,6 +36,7 @@ let table_data : any;
 let table_list_data : any;
 
 let item_data : any;
+let bom_data : any;
 
 let employment_data : any;
 let department_data : any;
@@ -100,6 +101,10 @@ common_employment_state.subscribe((data) => {
   employment_data = data;
 
 })
+common_bom_state.subscribe((data) => {
+  bom_data = data;
+
+})
 
 
 
@@ -132,7 +137,10 @@ const init_login_data : any = {
 };
 
 
-
+const handleSubmit = (e) => {
+  e.preventDefault(); // 폼의 기본 동작 방지
+  // 폼 제출에 대한 추가 로직을 이곳에 추가할 수 있습니다.
+}
 
 
 const infoCallApi = (title) => {
@@ -747,7 +755,7 @@ const excelDownload = (type,config) => {
          
              
               });
-             
+              
               table_list_state.update(()=> table_list_data);
 
           
@@ -875,5 +883,6 @@ export {handleToggle,
   tokenChange,
   select_query,
   selectCustomQuery,
-  logout
+  logout,
+  handleSubmit
 }

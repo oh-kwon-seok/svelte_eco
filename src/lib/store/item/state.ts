@@ -11,9 +11,9 @@ import {v4 as uuid} from 'uuid';
     update : { use : false, title: ''},
     delete : { use : false, title: ''},
     check_delete : { use : false, title: ''},
-    search : { use : false, title: ''},
-    
-     
+    search : { use : false, title: ''}, // 팝업 불러오기
+    bom_search : {use : false, title: ''} // bom에서 불러오는 item_search
+
    });
 
   const item_form_state : any = writable({

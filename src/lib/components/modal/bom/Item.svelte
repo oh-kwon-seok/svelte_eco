@@ -37,18 +37,18 @@
 
 
       onMount(()=>{
-        itemSearchTable(table_modal_state,"item",tableComponent,"info_select");
+        itemSearchTable(table_modal_state,"item",tableComponent,"info_select",title);
       });
 
       afterUpdate(()=> {
-        itemSearchTable(table_modal_state,"item",tableComponent,"info_select");
+        itemSearchTable(table_modal_state,"item",tableComponent,"info_select",title);
       })
 
     </script>
 
  
 
-    <Modal title={`품목 선택`}  permanent={true} color={color} bind:open={$item_modal_state['search']['use']} size="xl" placement={ 'center'}   class="w-full">
+    <Modal title={`품목 선택`}  permanent={true} color={color} bind:open={$item_modal_state[title]['use']} size="xl" placement={ 'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
         <form action="#">

@@ -12,11 +12,11 @@
     import {bom_modal_state, bom_form_state} from '$lib/store/bom/state';
     import {item_modal_state} from '$lib/store/item/state';
     
-    import {common_alert_state, common_toast_state,common_company_state,common_type_state} from '$lib/store/common/state';
-    import {fileButtonClick} from '$lib/store/common/function';
-    import {save,modalClose,itemSearchModalOpen } from '$lib/store/bom/function';
+    import {common_alert_state, common_toast_state,common_company_state,common_type_state, table_modal_state} from '$lib/store/common/state';
+    import {fileButtonClick,handleSubmit} from '$lib/store/common/function';
+    import {save,modalClose,itemSearchModalOpen,bomModalTable,bomAddRow, bomDeleteRow, bomAllDeleteRow } from '$lib/store/bom/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
-    
+    import {onMount,afterUpdate } from 'svelte';
     export let title;
 
 
@@ -42,11 +42,64 @@
     let showModal = false;
 
 
-    function closeModal() {
-        showModal = false;
-    }
 
-  
+    let tableComponent = "example-table-theme";
+
+    onMount(()=>{
+      console.log('마운트 ? ');
+        if(table_modal_state['bom']){
+
+        }else{
+          if(title === 'add'){
+            if($bom_form_state['code'] !== ""){
+              // 여기에 테이블 그려야됌
+            bomModalTable(table_modal_state,"bom",tableComponent,"info_select","add");
+            
+          
+          }
+
+          }else if(title === 'update'){
+            // 수정일때, 이따 작업
+            //bomTable(table_modal_state,"item",tableComponent,"info_select");
+          }
+         
+        }
+       
+
+      });
+
+      afterUpdate(()=> {
+      
+        if(table_modal_state['bom']){
+         
+          }else{
+            if(title === 'add'){
+            
+                if($bom_form_state['code'] !== ""){
+                 
+                  if($table_modal_state['bom']){
+
+                  }else{
+                    bomModalTable(table_modal_state,"bom",tableComponent,"info_select","add");
+                  }
+                
+                
+              
+                }
+
+              
+                
+
+            }else if(title === 'update'){
+              // 수정일때, 이따 작업
+              //bomTable(table_modal_state,"item",tableComponent,"info_select");
+            }
+          
+          }
+      })
+
+
+    
 
     </script>
         <style>
@@ -75,7 +128,7 @@
     <Modal title={`생산레시피 ${label_title}`} permanent={true} color={color} bind:open={$bom_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#">
+        <form action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
         <div class="grid grid-cols-2 gap-4">
@@ -89,19 +142,21 @@
             {/if}
           </Label>
 
-          {#if $item_modal_state['title'] === 'search'}
+          {#if $item_modal_state['title'] === 'search' }
           <ItemSearch title="search" />
+          {/if}
+
+          {#if $item_modal_state['title'] === 'bom_search'}
+          <ItemSearch title="bom_search" />
           {/if}
           
           <Label class="space-y-2">
             <span>비고</span>
-            <Textarea type="text" id="last_name" rows="4" required bind:value={$bom_form_state['description']}/>
+            <Textarea type="text" id="last_name" rows="4"  bind:value={$bom_form_state['description']}/>
            
           </Label>
 
-     
-
-        
+         
           {#if $bom_modal_state['title'] === 'update'}
             <Label class="space-y-2">
               <span>사용유무</span>
@@ -115,10 +170,34 @@
           </div>
       
 
+          
+          
           <div class="grid grid-cols-1 gap-4">
                 <Hr class="my-8 bg-slate-300 "  height="h-1"></Hr>
          
           </div>
+
+            {#if $bom_form_state['code'] !== ""}
+              <div class="grid grid-cols-1 gap-4">
+                <p class="mb-4 font-semibold text-xl dark:text-white">BOM 리스트</p>
+              
+              </div>
+              <button  on:click={bomAddRow}>행 추가</button>
+              <button  on:click={bomDeleteRow}>행 삭제</button>
+
+              <button  on:click={bomAllDeleteRow}>전체 삭제</button> 
+              
+
+              <div class="flex flex-row">
+                <div  class="w-full" id="example-table-theme" bind:this={tableComponent}></div>
+              </div>
+              {:else}
+                <div class="grid grid-cols-1 gap-4">
+                  <p class="mb-4 font-semibold text-xl dark:text-white">품목코드를 선택해주십시오.</p>
+                
+                </div>
+          {/if}
+
 
           {#if $common_alert_state['type'] === 'select' && $common_alert_state['value'] === true}
             

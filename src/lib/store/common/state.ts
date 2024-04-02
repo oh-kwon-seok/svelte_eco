@@ -49,7 +49,7 @@ const url_state : any = writable({ path : '', query : ''});
     name : "",
     password : "",
     token :"",
-
+    company_uid : 0,
     status : false,
     
   });
@@ -74,8 +74,8 @@ const url_state : any = writable({ path : '', query : ''});
 
   const table_modal_state : any = writable({  // 모달에서 쓰는 리스트
     item : "",
+    bom : "",
    
-    
   });
 
   // common 은 창고나 공장 등 정보를 select하기위해서 필요한 기능임 infoCallAPI 용

@@ -25,7 +25,7 @@ import { restricMaterialModalOpen } from '$lib/store/restric_material/function';
 import { restricMaterialCountryModalOpen } from '$lib/store/restric_material_country/function';
 
 import { equipmentModalOpen} from '$lib/store/equipment/function';
-import { bomModalOpen,itemSelect} from '$lib/store/bom/function';
+import { bomModalOpen,itemSelect,bomSelect,bomSearchModalOpen,bomSelectDelete,bomSubAddRow} from '$lib/store/bom/function';
 import moment from 'moment';
 
 import axios from 'axios'
@@ -361,9 +361,132 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
             return date;
         },
     }],
+    bom_search : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"품목구분", field:"type.name", width:150, headerFilter:"input"},
+
+        {title:"코드", field:"code", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(cell){
+                bomSelect(cell);
+            }else{
+                
+            }
+            }
+        },
+        {title:"취급사", field:"company.name", width:150, headerFilter:"input"},
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+    bom : [
+        // {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        // cellClick:function(e : any, cell:any){
+        //     cell.getRow().toggleSelect()
+        // }},
+        // {title:"ID", field: "uid", width:100, headerFilter:"input"},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+
+        {title:"BOM코드", field:"code", width:150, headerFilter:"input", 
+        
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+        cellClick:function(e : any, cell:any){
+                let row = cell.getRow();
+                if(row){
+                  
+                    bomSearchModalOpen('bom_search',row);
+                }else{
+                    
+                }
+        }
+        },
+        {title:"품목명", field:"name", width:150, headerFilter:"input",
+    
+       
+
+        },
+       
+
+        {title:"수량", field:"qty", width:150, headerFilter:"input",editor:"input",},
+        {title:"비율", field:"rate", width:150, headerFilter:"input",editor:"input",},
+        {
+            title: "추가",
+            width:100,
+            headerSort: false,
+            formatter: function (cell:any, formatterParams:any, onRendered:any) {
+                var row = cell.getRow();
+                // "+" 아이콘 버튼
+                var deleteButton = document.createElement("button");
+                deleteButton.innerHTML = "<i class='fas fa-plus'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+                deleteButton.addEventListener("click", function () {
+                    // let add_qty = parseInt(rowData.qty) + 1;
+                    // row.update({qty : add_qty});
+                    bomSubAddRow(row.getData(),cell);
+                });
+            
+                var container = document.createElement("div");
+                container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+                container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+                container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+                container.appendChild(deleteButton);
+            
+             
+                return container;
+            }
+
+        }, 
+      
+
+        {
+            title: "삭제",
+            headerSort: false,
+            formatter: function (cell:any, formatterParams:any, onRendered:any) {
+             
+                // "+" 아이콘 버튼
+                var deleteButton = document.createElement("button");
+                deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+                deleteButton.addEventListener("click", function () {
+                    // let add_qty = parseInt(rowData.qty) + 1;
+                    // row.update({qty : add_qty});
+                    bomSelectDelete(cell);
+                });
+            
+                var container = document.createElement("div");
+                container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+                container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+                container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+                container.appendChild(deleteButton);
+            
+             
+                return container;
+            }
+
+        },
+        
 
 
-
+    ],
 
 
 }
