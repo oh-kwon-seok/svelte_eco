@@ -22,6 +22,9 @@ import {v4 as uuid} from 'uuid';
     item : '', // 제품 OR 자재
     code : '', 
     name : '',
+    qty : 1,
+    rate : 1,
+
     
     description : '', // 사용자이름
     used : 1,

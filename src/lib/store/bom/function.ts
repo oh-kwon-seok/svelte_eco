@@ -43,6 +43,8 @@ const init_form_data:any = {
     item : '', // 제품 OR 자재
     code : '', 
     name : '',
+    qty : 1,
+    rate : 1,
     description : '', // 사용자이름
     used : 1,
 
@@ -608,7 +610,7 @@ const bomModalOpen = (data : any, title : any) => {
 
 
         Object.keys(update_form).map((item)=> {    
-            if(item === 'company' ){
+            if(item === 'company' || item === 'item'){
               update_form[item] = data[item]['uid'];
             }else{
               update_form[item] = data[item];
@@ -741,7 +743,7 @@ const itemSearchTable = (table_state,type,tableComponent,select,title) => {
 
 const bomSubAddRow = (row,cell:any) => {
 
-
+  console.log('row  :', row);
   let company_uid = getCookie('company_uid');
 
   let new_obj;
@@ -758,10 +760,11 @@ const bomSubAddRow = (row,cell:any) => {
    
     }
       new_obj = {
-        uid : parseInt(row._children.length) + 1, 
+        uid : row.item_uid + "-" + parseInt(row._children.length) + 1, 
         title : 'sub',
         company_uid : company_uid,
         item_uid : 0,
+        parent_uid : row.item_uid,
         code : '',
         qty : 1,
         rate : 1,
@@ -876,13 +879,15 @@ const bomSelect = (row) => {
   
   console.log('bomSelect  :',init_bom_uid);
   
+  
+  
   let checkData ; 
 
   if(init_bom_uid.title === 'main'){
     checkData = table_modal_data['bom'].getData().find(item => item['item_uid'] === new_data['uid']);
 
   }else{
-    console.log('bomSelect  :',selected_bom_sub_data);
+  
     checkData = selected_bom_sub_data['_children'].find(item => item['item_uid'] === new_data['uid']);
   }
  
@@ -919,18 +924,110 @@ const bomSelectDelete = (row) => {
    // 보완해야함
   let deleteCheck = confirm("정말로 삭제하시겠습니까?");
 
+  
   if(deleteCheck){
+
+ 
     let new_data = row.getData();
-  
+    let filterd_data;
+    
+   
+
+    if(new_data.title === 'main'){
+       filterd_data = table_modal_data['bom'].getData().filter((item) => {
+        return item.uid !== new_data.uid;
+      })
+      table_modal_data['bom'].setData(filterd_data);
+
+    }else{
+      
+      let data = table_modal_data['bom'].getData();
+      let checkData = data.find(item => item['item_uid'] === new_data['parent_uid']);
+      let filterd_data;
+      let final_data;
+      if(checkData){
+        //filterd_data = table_modal_data['bom'].getData().find(item => item['item_uid'] === new_data['parent_uid']);
+        if(final_data && Object.keys(final_data).length === 0 && final_data.constructor === Object){
+        }else{
+          final_data = checkData['_children'].find(item => item['uid'] === new_data['uid']);
+
+          if (final_data && Object.keys(final_data).length === 0 && final_data.constructor === Object) {
+            // final_data가 비어 있는 객체인 경우
+            console.log('final_data는 비어 있는 객체입니다.');
+          } else {
+            filterd_data = checkData['_children'].filter((item) => {
+              return item.uid !== new_data['uid'];
+            })
+          
+            for(let i =0 ; i< data.length; i++){
+              if(data[i]['item_uid'] === checkData['parent_uid']){
+                data[i]['_children'] =  filterd_data;
+              }
+            }
+
+            table_modal_data['bom'].setData(data);
 
 
-    let filterd_data = table_modal_data['bom'].getData().filter((item) => {
-      return item.uid !== new_data.uid;
-    })
+
   
-     table_modal_data['bom'].setData(filterd_data);
-  
-  
+          }
+         
+        }
+      }else{
+
+        // 첫번째 하위품목에서 bom을 못찾았을 떄 아래로 계속진행
+        for(let i =0 ; i< data.length; i++){
+
+
+          if (data[i]['_children']) { // 자식속성이 있는 경우
+            
+            let checkData = data[i]['_children'].find(item => item['item_uid'] === new_data['parent_uid']);
+            console.log('리얼체크데이터 : ', checkData);
+            if(checkData){ // 찾았으면
+              final_data = checkData['_children'].find(item => item['uid'] === new_data['uid']);
+
+
+              if (final_data && Object.keys(final_data).length === 0 && final_data.constructor === Object) {
+                // final_data가 비어 있는 객체인 경우
+                console.log('final_data는 비어 있는 객체입니다.');
+              } else {
+                filterd_data = checkData['_children'].filter((item) => {
+                  return item.uid !== new_data['uid'];
+                })
+
+           
+
+             
+                   for(let j =0 ; j< data[i]['_children'].length; j++){
+                
+                    for(let z=0; z<data[i]['_children'][j]['_children'].length; z++){
+
+                      console.log(data[i]['_children'][j]['_children'][z]['item_uid']);
+                      // console.log(checkData['_children']['parent_uid']);
+                          if(data[i]['_children'][j]['_children'][z]['item_uid'] === checkData['_children'][j]['item_uid']){
+                          data[i]['_children'][j]['_children'] =  filterd_data;
+                        }
+                      }
+                  }
+                table_modal_data['bom'].setData(data);
+              }
+            }
+
+          
+          }else{
+            window.alert('bom은 4단계까지만 지원됩니다.');
+
+          }
+
+          // if(data[i]['item_uid'] === checkData['parent_uid']){
+          //   data[i]['_children'] =  filterd_data;
+          // }
+        }
+      }
+    }
+
+
+
       table_modal_state.update(()=> table_modal_data);
 
   }else{
@@ -947,6 +1044,8 @@ const bomSelectDelete = (row) => {
 const save = (param,title) => {
 
   console.log('param : ', param);
+  param['company'] = getCookie('company_uid')
+
   update_modal['title'] = 'add';
   update_modal['add']['use'] = true;
  
@@ -962,17 +1061,61 @@ const save = (param,title) => {
         return common_alert_state.update(() => alert);
   
       }else {
+        let data = table_modal_data['bom'].getData();
+        let sub_data = [];
+        for(let i =0 ; i< data.length; i++){
+          
+          if (data[i]['_children']) { // 자식속성이 있는 경우
+            for(let j=0; j<data[i]['_children'].length; j++){ 
+              console.log('uid : ', data[i]['_children'][j]['item_uid'])
+              if(data[i]['_children'][j]['item_uid'] !== 0){
+                sub_data.push(data[i]['_children'][j]);
+              }
+
+              if(data[i]['_children'][j]['_children']){
+
+                for(let z=0; z<data[i]['_children'][j]['_children'].length; z++){
+
+                  if(data[i]['_children'][j]['_children'][z]['item_uid'] !== 0){
+                    sub_data.push(data[i]['_children'][j]['_children'][z]);
+                  }
+                }
+
+              }
+
+              
+           
+
+
+            }
+
+          }
+        }
+        let final_data = data.concat(sub_data).filter(item => {
+            parseFloat(item['qty']); 
+            parseFloat(item['rate']); 
+            
+        
+          return item['qty'] > 0 && item['qty'] !== undefined && item['rate'] > 0 && item['rate'] !== undefined
+        });
+
       
+
+        console.log('final_data : ', final_data);
+       
         const url = `${api}/bom/save`
         try {
   
           
           let params = {
           
-            company_uid : param.company,
-            item : param.item,
+            company_uid : param['company'],
+            item_uid : param.item,
             code  : param.code,
-            
+            qty : parseFloat(param.qty),
+            rate : parseFloat(param.rate),
+            bom_data : final_data,
+            description : param.description,
             used : param.used,
             token : login_data['token'],
           };

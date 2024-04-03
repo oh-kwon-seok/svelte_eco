@@ -149,6 +149,23 @@
           {#if $item_modal_state['title'] === 'bom_search'}
           <ItemSearch title="bom_search" />
           {/if}
+
+          <Label class="space-y-2">
+            <span>수량</span>
+            <Input type="text" id="last_name" placeholder="수량을 입력하세요" required bind:value={$bom_form_state['qty']} />
+            
+            {#if (parseFloat($bom_form_state['qty']) === 0 || parseFloat($bom_form_state['qty']) < 0)   && $common_alert_state['value'] === true}
+            <Helper class="mt-2" color="red"><span class="font-medium">수량을 0이상 입력해주세요</span></Helper>
+            {/if}
+          </Label>
+          <Label class="space-y-2">
+            <span>비율</span>
+            <Input type="text" id="last_name" placeholder="비율을 입력하세요(1KG 기준일 경우, 1로 입력하면 됩니다.)" required bind:value={$bom_form_state['rate']} />
+            
+            {#if (parseFloat($bom_form_state['rate']) === 0 || parseFloat($bom_form_state['rate']) < 0)   && $common_alert_state['value'] === true}
+            <Helper class="mt-2" color="red"><span class="font-medium">비율을 0이상 입력해주세요</span></Helper>
+            {/if}
+          </Label>
           
           <Label class="space-y-2">
             <span>비고</span>
