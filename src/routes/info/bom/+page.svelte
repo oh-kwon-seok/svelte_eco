@@ -76,7 +76,7 @@
 
     </script>
         <style>
-          @import 'tabulator-tables/dist/css/tabulator_modern.min.css';
+          @import 'tabulator-tables/dist/css/tabulator_midnight.min.css';
           /* #example-table-theme{
     background-color:#ccc;
     border: 1px solid #333;

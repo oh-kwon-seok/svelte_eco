@@ -922,7 +922,13 @@ equipment : [
         cellClick:function(e : any, cell:any){
             let row = cell.getRow();
             if(row){
-                bomModalOpen(row.getData(),"update");
+                let data = row.getData();
+                if(data['parent_uid'] === 0){
+                    bomModalOpen(row.getData(),"update");
+                }else{
+                    window.alert('읽기 또는 수정은 최상위 BOM에서만 가능합니다.');
+                }
+              
             }else{
                 
             }

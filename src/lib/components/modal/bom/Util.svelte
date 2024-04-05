@@ -46,7 +46,7 @@
     let tableComponent = "example-table-theme";
 
     onMount(()=>{
-      console.log('마운트 ? ');
+     
         if(table_modal_state['bom']){
 
         }else{
@@ -60,7 +60,15 @@
 
           }else if(title === 'update'){
             // 수정일때, 이따 작업
-            //bomTable(table_modal_state,"item",tableComponent,"info_select");
+            if($bom_form_state['code'] !== ""){
+                 
+                 if($table_modal_state['bom']){
+                  console.log('마운트 ? : ', $table_modal_state['bom']);
+                 }else{
+                  console.log('마운트 ?333 ');
+                   bomModalTable(table_modal_state,"bom",tableComponent,"info_select","update");
+                 }
+               }
           }
          
         }
@@ -92,7 +100,17 @@
 
             }else if(title === 'update'){
               // 수정일때, 이따 작업
-              //bomTable(table_modal_state,"item",tableComponent,"info_select");
+              if($bom_form_state['code'] !== ""){
+                 
+                 if($table_modal_state['bom']){
+
+                 }else{
+                   bomModalTable(table_modal_state,"bom",tableComponent,"info_select","update");
+                 }
+               
+               
+             
+               }
             }
           
           }
@@ -120,7 +138,12 @@
             max-width: 80%;
             max-height: 80%;
           }
-    
+          .tabulator .tabulator-tree .tabulator-data-tree .tabulator-data-tree-branch i {
+              margin-left: 5px; /* 오른쪽으로 이동할 거리를 조정하세요 */
+              margin-right: 0; /* 기존의 오른쪽 여백을 없앱니다 */
+          }
+
+              
         </style>
 
  
@@ -199,10 +222,20 @@
                 <p class="mb-4 font-semibold text-xl dark:text-white">BOM 리스트</p>
               
               </div>
-              <button  on:click={bomAddRow}>행 추가</button>
-              <button  on:click={bomDeleteRow}>행 삭제</button>
+              
+          
 
-              <button  on:click={bomAllDeleteRow}>전체 삭제</button> 
+              <div class="flex justify-start">
+                <Button class="m-2 " outline color="blue" on:click={bomAddRow}>행 추가</Button>
+                <Button class="m-2" outline color="red" on:click={bomDeleteRow}>행 삭제</Button>
+                <Button class="m-2" outline color="purple" on:click={bomAllDeleteRow}>전체 삭제</Button>
+              
+              </div>
+              
+         
+            
+             
+            
               
 
               <div class="flex flex-row">
