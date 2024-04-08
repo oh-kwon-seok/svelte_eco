@@ -61,13 +61,8 @@
           }else if(title === 'update'){
             // 수정일때, 이따 작업
             if($bom_form_state['code'] !== ""){
-                 
-                 if($table_modal_state['bom']){
-                  console.log('마운트 ? : ', $table_modal_state['bom']);
-                 }else{
-                  console.log('마운트 ?333 ');
                    bomModalTable(table_modal_state,"bom",tableComponent,"info_select","update");
-                 }
+                
                }
           }
          
@@ -86,32 +81,33 @@
                 if($bom_form_state['code'] !== ""){
                  
                   if($table_modal_state['bom']){
-
+                    
                   }else{
                     bomModalTable(table_modal_state,"bom",tableComponent,"info_select","add");
                   }
                 
                 
-              
                 }
 
               
                 
 
             }else if(title === 'update'){
-              // 수정일때, 이따 작업
-              if($bom_form_state['code'] !== ""){
-                 
-                 if($table_modal_state['bom']){
+            // 수정일때, 이따 작업
+            if($bom_form_state['code'] !== ""){
 
-                 }else{
+
+              if($table_modal_state['bom']){
+
+              }else{
+                console.log('동작하나? ');
                    bomModalTable(table_modal_state,"bom",tableComponent,"info_select","update");
-                 }
-               
-               
-             
+
+              }
+                
+                  
                }
-            }
+          }
           
           }
       })

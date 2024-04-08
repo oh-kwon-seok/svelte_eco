@@ -24,7 +24,7 @@ import {v4 as uuid} from 'uuid';
     name : '',
     qty : 1,
     rate : 1,
-    _children : '', // 서브데이터
+    _children : [], // 서브데이터
     description : '', // 사용자이름
     used : 1,
     

@@ -744,7 +744,7 @@ const excelDownload = (type,config) => {
             },
 
               rowFormatter:function(row){
-                    row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+                    //row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
               },
            
 

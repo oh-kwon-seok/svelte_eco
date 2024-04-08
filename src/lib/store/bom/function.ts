@@ -47,7 +47,7 @@ const init_form_data:any = {
     name : '',
     qty : 1,
     rate : 1,
-    _children : '', // 서브데이터
+    _children : [], // 서브데이터
     description : '', // 사용자이름
     used : 1,
 
@@ -208,11 +208,15 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
     
           // dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
           // dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
+
+          dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
+          dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
+
           dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
          
          
       
-          //dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
+          dataTreeBranchElement:"<i style='font-size:0.7em; margin-left : 5px; padding-right:2px;' class='fas fa-l'></i>", //show image for branch element
     
      
         height:TABLE_TOTAL_CONFIG['height'],
@@ -237,7 +241,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
       },
 
         rowFormatter:function(row){
-              row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+              //row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
         },
      
 
@@ -337,8 +341,9 @@ const bomModalTable = (table_modal_state,type,tableComponent,select,title) => {
             dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
             dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
             dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
-            //dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
-            
+          
+             dataTreeBranchElement:"<i style='font-size:0.7em; margin-left : 5px; padding-right:2px;' class='fas fa-l'></i>", //show image for branch element
+    
             height:TABLE_TOTAL_CONFIG['height'],
             layout:TABLE_TOTAL_CONFIG['layout'],
             pagination:TABLE_TOTAL_CONFIG['pagination'],
@@ -374,6 +379,8 @@ const bomModalTable = (table_modal_state,type,tableComponent,select,title) => {
         
           
     }else if(title === 'update'){
+
+     
       if(table_modal_state[type]){
         table_modal_state[type].destory();
       }
@@ -385,8 +392,9 @@ const bomModalTable = (table_modal_state,type,tableComponent,select,title) => {
         dataTreeCollapseElement:"<i class='fas fa-minus-square'></i>", //fontawesome toggle icon
         dataTreeExpandElement:"<i class='fas fa-plus-square'></i>", //fontawesome toggle icon
         dataTreeElementColumn:"code", //insert the collapse/expand toggle element 
-        //dataTreeBranchElement:"<i style='font-size:0.7em; vertical-align : top; margin-right : 5px;' class='fas fa-l'></i>", //show image for branch element
         
+        dataTreeBranchElement:"<i style='font-size:0.7em; margin-left : 5px; padding-right:2px;' class='fas fa-l'></i>", //show image for branch element
+    
         height:TABLE_TOTAL_CONFIG['height'],
         layout:TABLE_TOTAL_CONFIG['layout'],
         pagination:TABLE_TOTAL_CONFIG['pagination'],
@@ -411,11 +419,13 @@ const bomModalTable = (table_modal_state,type,tableComponent,select,title) => {
       },
    
 
-      data : [],
+      data : update_form['_children'].length > 0 ? update_form['_children'] : [],
       placeholder:"데이터 없음",
       columns: MODAL_TABLE_HEADER_CONFIG[type],
       
       });
+
+    
       table_modal_state.update(()=> table_modal_data);
 
    
@@ -518,8 +528,64 @@ const bomModalOpen = (data : any, title : any) => {
         Object.keys(update_form).map((item)=> {    
             if(item === 'company' || item === 'item'){
               update_form[item] = data[item]['uid'];
-            }if(item === '_children'){
+             
+              console.log('item : ',  update_form[item]);
+              console.log('data.item : ', data[item]);
+              
+            }else if(item === '_children'){
               if(data._children){
+
+                for(let i =0; i<data._children.length; i++){
+                  data._children[i]['company_uid'] = data._children[i]['company']['uid'];
+                  data._children[i]['parent_uid'] = data['item']['uid'];
+                  data._children[i]['item_uid'] = data._children[i]['item']['uid'];
+                  data._children[i]['title'] = 'main';
+
+                  if(data._children[i]['_children']){
+                    for(let j=0; j<data._children[i]['_children'].length; j++){
+                      data._children[i]['_children'][j]['company_uid'] = data._children[i]['_children'][j]['company']['uid'];
+                      data._children[i]['_children'][j]['parent_uid'] = data._children[i]['item']['uid'];
+                      data._children[i]['_children'][j]['item_uid'] = data._children[i]['_children'][j]['item']['uid'];
+                      
+                      data._children[i]['_children'][j]['title'] = 'sub';
+
+
+                      if(data._children[i]['_children'][j]['_children']){
+                        for(let z=0; z<data._children[i]['_children'][j]['_children'].length; z++){
+                          data._children[i]['_children'][j]['_children'][z]['company_uid'] = data._children[i]['_children'][j]['_children'][z]['company']['uid'];
+                          data._children[i]['_children'][j]['_children'][z]['parent_uid'] = data._children[i]['_children'][j]['item']['uid'];
+                          data._children[i]['_children'][j]['_children'][z]['item_uid'] = data._children[i]['_children'][j]['_children'][z]['item']['uid'];
+                          
+                          
+                          data._children[i]['_children'][j]['title'] = 'sub';
+                          
+                          if(data._children[i]['_children'][j]['_children'][z]['_children']){
+                            for(let x=0; x<data._children[i]['_children'][j]['_children'][z]['_children'].length; x++){
+                              
+                              
+                              data._children[i]['_children'][j]['_children'][z]['_children'][x]['company_uid'] = data._children[i]['_children'][j]['_children'][z]['_children'][x]['company']['uid'];
+                              data._children[i]['_children'][j]['_children'][z]['_children'][x]['parent_uid'] = data._children[i]['_children'][j]['_children'][z]['item']['uid'];
+                              data._children[i]['_children'][j]['_children'][z]['_children'][x]['item_uid'] = data._children[i]['_children'][j]['_children'][z]['_children'][x]['item']['uid'];
+                              
+                              
+                              data._children[i]['_children'][j]['title'] = 'sub';
+                              
+                            
+                            
+                            }
+                          }
+                        
+                        
+                        }
+                      }
+
+                    }
+
+                  }
+
+
+                }
+
                 update_form[item] = data._children;
               }else {
                 update_form[item] = [];
@@ -527,12 +593,15 @@ const bomModalOpen = (data : any, title : any) => {
             }
             else{
               update_form[item] = data[item];
+              console.log('update_form', update_form[item]);
+              console.log('data[item0]', data[item]);
             }
            
         }); 
 
-    
-        console.log('update_form : ', update_form);
+        
+          console.log('update_form : ', update_form);
+      
             bom_form_state.update(() => update_form);
             bom_modal_state.update(() => update_modal);
            
@@ -754,6 +823,12 @@ const modalClose = (title) => {
   alert['value'] = false;
   update_form = init_form_data;
   common_alert_state.update(() => alert);
+
+  if(table_modal_data['bom']){
+    table_modal_data['bom'].destroy();
+    table_modal_state.update(()=> table_modal_data)
+
+  }
   bom_modal_state.update(() => update_modal);
   bom_form_state.update(() => update_form);
   
@@ -872,12 +947,13 @@ const bomSelectDelete = (row) => {
     let new_data = row.getData();
     let filterd_data;
     
-   
+    console.log('filterd_data : ', new_data);
 
     if(new_data.title === 'main'){
        filterd_data = table_modal_data['bom'].getData().filter((item) => {
         return item.uid !== new_data.uid;
       })
+      console.log('filterd_data : ', filterd_data);
       table_modal_data['bom'].setData(filterd_data);
 
     }else{
@@ -886,11 +962,13 @@ const bomSelectDelete = (row) => {
       let checkData = data.find(item => item['item_uid'] === new_data['parent_uid']);
       let filterd_data;
       let final_data;
+
+      console.log('checkData : ', checkData);
       if(checkData){
-        //filterd_data = table_modal_data['bom'].getData().find(item => item['item_uid'] === new_data['parent_uid']);
-        if(final_data && Object.keys(final_data).length === 0 && final_data.constructor === Object){
-        }else{
+       
           final_data = checkData['_children'].find(item => item['uid'] === new_data['uid']);
+
+         
 
           if (final_data && Object.keys(final_data).length === 0 && final_data.constructor === Object) {
             // final_data가 비어 있는 객체인 경우
@@ -899,9 +977,10 @@ const bomSelectDelete = (row) => {
             filterd_data = checkData['_children'].filter((item) => {
               return item.uid !== new_data['uid'];
             })
-          
+
+           
             for(let i =0 ; i< data.length; i++){
-              if(data[i]['item_uid'] === checkData['parent_uid']){
+              if(data[i]['item_uid'] === final_data['parent_uid']){
                 data[i]['_children'] =  filterd_data;
               }
             }
@@ -913,17 +992,19 @@ const bomSelectDelete = (row) => {
   
           }
          
-        }
+        
       }else{
 
         // 첫번째 하위품목에서 bom을 못찾았을 떄 아래로 계속진행
         for(let i =0 ; i< data.length; i++){
 
-
+          console.log('data : ', data[i]);
           if (data[i]['_children']) { // 자식속성이 있는 경우
-            
             let checkData = data[i]['_children'].find(item => item['item_uid'] === new_data['parent_uid']);
-            console.log('리얼체크데이터 : ', checkData);
+           
+            console.log('checkData : ', checkData);
+         
+            
             if(checkData){ // 찾았으면
               final_data = checkData['_children'].find(item => item['uid'] === new_data['uid']);
 
@@ -952,6 +1033,58 @@ const bomSelectDelete = (row) => {
                   }
                 table_modal_data['bom'].setData(data);
               }
+            }else{
+
+              for(let j=0; j< data[i]['_children'].length; j++){
+                
+                if(data[i]['_children'][j]['_children']){
+                  
+                  let checkData = data[i]['_children'][j]['_children'].find(item => item['item_uid'] === new_data['parent_uid']);
+
+                  console.log('checkData : ', checkData);
+                  console.log('newData : ', new_data);
+
+                  if(checkData){ // 찾았으면
+                    
+                    final_data = checkData['_children'].find(item => item['uid'] === new_data['uid']);
+                    if (final_data && Object.keys(final_data).length === 0 && final_data.constructor === Object) {
+                      // final_data가 비어 있는 객체인 경우
+                      console.log('final_data는 비어 있는 객체입니다.');
+                    } else {
+                      filterd_data = checkData['_children'].filter((item) => {
+                        return item.uid !== new_data['uid'];
+                      })
+                      console.log('filterd_data : ', filterd_data);
+                      for(let z =0 ; z< data[i]['_children'][j]['_children'].length; z++){
+                        console.log('data : ', new_data);
+                        console.log('data : ', checkData['_children'][z]['item_uid']);
+                        console.log('hihi : ', data[i]['_children'][j]['_children'][z]['item_uid']);
+                        
+                        if(data[i]['_children'][j]['_children'][z]['item_uid'] === checkData['_children'][z]['parent_uid']){
+                          data[i]['_children'][j]['_children'][z]['_children'] =  filterd_data;
+                        }
+                      }
+
+                      
+                      console.log('data',data);
+                    table_modal_data['bom'].setData(data);
+
+
+
+
+                  }
+
+
+                }
+             
+              
+                
+              
+              }
+
+              
+            }
+
             }
 
           
@@ -1097,8 +1230,62 @@ const save = (param,title) => {
     }
     
     if(title === 'update'){
+      
+      let data = table_modal_data['bom'].getData();
+      
+      let sub_data = [];
+      for(let i =0 ; i< data.length; i++){
+          
+        if (data[i]['_children']) { // 자식속성이 있는 경우
+          for(let j=0; j<data[i]['_children'].length; j++){ 
+            console.log('uid : ', data[i]['_children'][j]['item_uid'])
+            if(data[i]['_children'][j]['item_uid'] !== 0){
+              sub_data.push(data[i]['_children'][j]);
+            }
+
+            if(data[i]['_children'][j]['_children']){
+
+              for(let z=0; z<data[i]['_children'][j]['_children'].length; z++){
+
+                if(data[i]['_children'][j]['_children'][z]['item_uid'] !== 0){
+                  sub_data.push(data[i]['_children'][j]['_children'][z]);
+                }
+
+                if(data[i]['_children'][j]['_children'][z]['_children']){
+                  for(let x=0; x<data[i]['_children'][j]['_children'][z]['_children'].length; x++){
+  
+                    if(data[i]['_children'][j]['_children'][z]['_children'][x]['item_uid'] !== 0){
+                      sub_data.push(data[i]['_children'][j]['_children'][z]['_children'][x]);
+                    }
+  
+  
+                  }
+  
+  
+                }
+
+
+              }
+
+           
+
+            }
+          }
+
+        }
+      }
+      let final_data = data.concat(sub_data).filter(item => {
+        parseFloat(item['qty']); 
+        parseFloat(item['rate']); 
+        
+    
+      return item['qty'] > 0 && item['qty'] !== undefined && item['rate'] > 0 && item['rate'] !== undefined
+    });
+
+
       const url = `${api}/bom/update`
       
+
      
       
     
@@ -1107,14 +1294,21 @@ const save = (param,title) => {
       
         let params = {
           uid : param.uid,
-          company_uid : param.company,
-          name : param.name,
-          purpose : param.purpose,
+          company_uid : parseFloat(param['company']),
+          item_uid : param.item,
+          code  : param.code,
+          qty : parseFloat(param.qty),
+          rate : parseFloat(param.rate),
+          bom_data : final_data,
           description : param.description,
           used : param.used,
           token : login_data['token'],
           
         };
+
+        console.log('params : ', params);
+
+       
       axios.post(url,
         params,
       ).then(res => {
