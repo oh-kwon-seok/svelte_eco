@@ -41,8 +41,7 @@
 
    
 	import moment from 'moment';
-            
-  
+
     export let data;
 
  

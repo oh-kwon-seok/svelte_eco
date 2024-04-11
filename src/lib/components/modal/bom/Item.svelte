@@ -15,7 +15,7 @@
 
     
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
-    import {} from '$lib/module/common/function';
+    import {handleSubmit} from '$lib/store/common/function';
     
 
 
@@ -51,7 +51,7 @@
     <Modal title={`품목 선택`}  permanent={true} color={color} bind:open={$item_modal_state[title]['use']} size="xl" placement={ 'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#">
+         <form action="#" on:submit={handleSubmit} >
          
     
         

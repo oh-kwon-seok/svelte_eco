@@ -14,7 +14,7 @@
     import {save,modalClose} from '$lib/store/employment/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     import {businessNumber,phoneNumber,validEmail} from '$lib/module/common/function';
-    
+    import {handleSubmit} from '$lib/store/common/function';
     export let title;
     
     let label_title = '';
@@ -42,7 +42,7 @@
     <Modal title={`직급 ${label_title}`} permanent={true} color={color} bind:open={$employment_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#">
+         <form action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
         <div class="grid grid-cols-2 gap-4">

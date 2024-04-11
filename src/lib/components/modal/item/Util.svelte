@@ -13,7 +13,7 @@
     import {fileButtonClick} from '$lib/store/common/function';
     import {save,modalClose,itemImageDownload,itemFileUpload,itemImageDelete } from '$lib/store/item/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
-    
+    import {handleSubmit} from '$lib/store/common/function';
     export let title;
 
 
@@ -71,7 +71,7 @@
     <Modal title={`품목 ${label_title}`} permanent={true} color={color} bind:open={$item_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#">
+         <form action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
         <div class="grid grid-cols-2 gap-4">

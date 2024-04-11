@@ -685,8 +685,8 @@ const excelDownload = (type,config) => {
         search_data['filter'] = TABLE_FILTER[type];
         
         common_search_state.update(() => search_data);
-       let start_date= moment(search_data['start_date']).format('YYYY-MM-DDTHH:mm:ss');
-       let end_date= moment(search_data['end_date']).format('YYYY-MM-DDTHH:mm:ss');;
+      //  let start_date= moment(search_data['start_date']).format('YYYY-MM-DDTHH:mm:ss');
+      //  let end_date= moment(search_data['end_date']).format('YYYY-MM-DDTHH:mm:ss');;
        
       
        
@@ -697,8 +697,7 @@ const excelDownload = (type,config) => {
 
         let params = 
         {
-          start_date : start_date,
-          end_date  : end_date,
+     
           search_text : search_text,
           filter_title : filter_title,   
         };

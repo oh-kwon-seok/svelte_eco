@@ -277,6 +277,11 @@
     <Alert  state={'add'} color={DATA_FAIL_ALERT.color} title={DATA_FAIL_ALERT['add'].title} content={DATA_FAIL_ALERT['add'].content} />
 
     {/if}
+    {#if $common_alert_state['type'] === 'code' && $common_alert_state['value'] === true}
+        
+    <Alert  state={'code'} color={DATA_FAIL_ALERT.color} title={DATA_FAIL_ALERT['code'].title} content={DATA_FAIL_ALERT['code'].content} />
+
+    {/if}
     {#if $common_alert_state['type'] === 'check_delete' && $common_alert_state['value'] === true}
           
     <Alert  state={'check_delete'} color={DATA_FAIL_ALERT.color} title={DATA_FAIL_ALERT['check_delete'].title} content={DATA_FAIL_ALERT['check_delete'].content} />

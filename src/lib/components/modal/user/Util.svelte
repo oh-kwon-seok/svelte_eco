@@ -12,7 +12,7 @@
     import {common_alert_state, common_company_filter_state,common_department_state,common_employment_state} from '$lib/store/common/state';
     
     import {save,modalClose} from '$lib/store/user/function';
-
+    import {handleSubmit} from '$lib/store/common/function';
     
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     import {businessNumber,phoneNumber,validEmail} from '$lib/module/common/function';
@@ -89,7 +89,7 @@
     <Modal title={`회원 ${label_title}`}  permanent={true} color={color} bind:open={$user_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#">
+         <form action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
         <div class="grid grid-cols-2 gap-4">

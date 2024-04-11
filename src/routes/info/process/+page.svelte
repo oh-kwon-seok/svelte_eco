@@ -15,25 +15,24 @@
     import { ChevronDownSolid, SearchOutline } from 'flowbite-svelte-icons';
 
 
-    import Util from '$lib/components/modal/bom/Util.svelte';
+    import Util from '$lib/components/modal/process/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {bomModalOpen,bomExcelFormDownload,bomExcelUpload} from '$lib/store/bom/function';
-    import {excelDownload, excelUpload, fileButtonClick} from '$lib/store/common/function';
+    import {processModalOpen,processExcelFormDownload,processExcelUpload} from '$lib/store/process/function';
+    import {excelDownload, excelUpload, fileButtonClick,makeCustomTable} from '$lib/store/common/function';
     
-    import {bom_form_state,bom_modal_state} from '$lib/store/bom/state';
+    import {process_form_state,process_modal_state} from '$lib/store/process/state';
 
-    import {url_state,cookie_state,common_bom_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
+    import {url_state,cookie_state,common_process_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
     import {TABLE_COMPONENT,EXCEL_CONFIG} from '$lib/module/common/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
     
     //import {makeCustomTable,infoCallApi} from '$lib/store/common/function';
-    import {makeCustomTable} from '$lib/store/bom/function';
-    
+
     
 
 	import { afterUpdate, onMount } from 'svelte';
@@ -54,7 +53,7 @@
     onMount(()=>{
         console.log('시점');
        
-        makeCustomTable(table_list_state,"bom",tableComponent,"select");
+        makeCustomTable(table_list_state,"process",tableComponent,"select");
 
     });
 
@@ -63,9 +62,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/info/bom'){
+        }else if($url_state['path'] === '/info/process'){
          
-            makeCustomTable(table_list_state,"bom",tableComponent,"select");
+            makeCustomTable(table_list_state,"process",tableComponent,"select");
         }
       
     })
@@ -126,7 +125,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='기준정보 관리' subtitle='생산레시피 관리'/>
+              <Title title='기준정보 관리' subtitle='공정 관리'/>
             </div>
 
           
@@ -136,25 +135,25 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">생산레시피 관리</span>
+                      <span slot="title">공정 관리</span>
 
                 
-                      <SearchBar title="bom"/>
+                      <SearchBar title="process"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {bomModalOpen('','add')}}>
+                        <Button  on:click={() => {processModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-                        <Button  color='red' on:click={() => bomModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => processModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('bom',EXCEL_CONFIG['bom'])}>
+                        <Button  color='green' on:click={() =>excelDownload('process',EXCEL_CONFIG['process'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀다운
                       </Button>
@@ -167,22 +166,22 @@
                         id = 'upload' 
                         type='file' 
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-                        on:change={(e)=> bomExcelUpload(e)}
+                        on:change={(e)=> processExcelUpload(e)}
                   
                         />
                     </Button>
-                    <Button  color="light" on:click={() => bomExcelFormDownload()}>
+                    <Button  color="light" on:click={() => processExcelFormDownload()}>
                       <Icon.FileExportSolid class='mr-2' size="20" />
                       업로드 양식 다운
                     </Button>
 
                       
 
-                        {#if $bom_modal_state['title'] === 'add'}
+                        {#if $process_modal_state['title'] === 'add'}
                           <Util title="add" />
-                        {:else if $bom_modal_state['title'] === 'update'}
+                        {:else if $process_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $bom_modal_state['title'] === 'check_delete'}
+                          {:else if $process_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
                         {/if}
                         

@@ -1183,7 +1183,7 @@ const save = (param,title) => {
           
           let params = {
           
-            company_uid : param['company'],
+            company_uid : parseInt(param['company']),
             item_uid : param.item,
             code  : param.code,
             qty : parseFloat(param.qty),
@@ -1193,6 +1193,8 @@ const save = (param,title) => {
             used : param.used,
             token : login_data['token'],
           };
+
+          console.log('params',params);
         axios.post(url,
           params,
         ).then(res => {
@@ -1212,11 +1214,18 @@ const save = (param,title) => {
             return common_toast_state.update(() => toast);
 
           }else{
+            alert['value'] = true;
+            if(res.data.msg === 'code'){
+              alert['type'] = 'code';
+            }else if(res.data.msg === 'error'){
+              alert['type'] = 'error';
+           
+            }else{
+              alert['type'] = 'save';
+            }
           
                
-            alert['type'] = 'save';
-            alert['value'] = true;
-            
+      
             return common_alert_state.update(() => alert);
           }
         })
@@ -1294,7 +1303,7 @@ const save = (param,title) => {
       
         let params = {
           uid : param.uid,
-          company_uid : parseFloat(param['company']),
+          company_uid : parseInt(param['company']),
           item_uid : param.item,
           code  : param.code,
           qty : parseFloat(param.qty),
@@ -1342,25 +1351,30 @@ const save = (param,title) => {
       let data =  selected_data;
       let uid_array = [];
 
-      console.log('deleted_data : ', data);
+
+      console.log('data : ', data);
+    
       if(data.length === 0){
         alert['type'] = 'check_delete';
         alert['value'] = true;
         return common_alert_state.update(() => alert);
 
       }else{
-        for(let i=0; i<data.length; i++){
-          uid_array.push(data[i]['id']);
-        }
+        // for(let i=0; i<data.length; i++){
+          
+          
+        //   uid_array.push(data[i]['id']);
+        // }
       }
 
-        if(uid_array.length > 0){
+        if(data.length > 0){
 
           const url = `${api}/bom/delete`
           try {
     
             let params = {
-              id : uid_array,
+  
+              data : data,
             };
           axios.post(url,
             params,
@@ -1403,12 +1417,15 @@ const save = (param,title) => {
 
   const bomExcelUpload = (e) => {
   
+    let company_uid = getCookie('company_uid');
     const config : any = [
-      {header: '사업장', key: 'company_code', width: 30},
-      {header: '품목코드', key: 'item_code', width: 30},
+      {header: 'BOM(품목)코드', key: 'item_code', width: 30},
+      {header: '메인코드', key: 'main_code', width: 30},
       {header: '부모코드', key: 'parent_code', width: 30},
       {header: '필요수량', key: 'qty', width: 30},
       {header: '비율', key: 'rate', width: 30},
+    
+    
     ]; 
 
 
@@ -1445,17 +1462,24 @@ const save = (param,title) => {
           }
           });
 
-          return console.log('bom_upload_data',bom_upload_data);
-
+        
           
   
 
         })
-
+     
+          
+        console.log('bom_upload_data',bom_upload_data);
+        for(let i= 0; i<bom_upload_data.length; i++){
+          bom_upload_data[i]['company'] = company_uid;
+          
+        }
+        
         const url = `${api}/bom/excel_upload`
         try {
   
           let params = {
+          
             data :  bom_upload_data,
             
           };
@@ -1471,7 +1495,7 @@ const save = (param,title) => {
             toast['value'] = true;
             update_modal['title'] = '';
             update_modal['update']['use'] = false;
-            select_query('bom');
+            //select_query('bom');
             return common_toast_state.update(() => toast);
   
           }else{
@@ -1494,18 +1518,24 @@ const save = (param,title) => {
   const bomExcelFormDownload = () => {
 
     const data = [{
-
-      company_code : "1112223345",
-      item_code : "B100-111-222",
-      parent_uid : "A100-111-222",
-      qty : 333,
+      item_code : "A100-100-111",
+      main_code : "",
+      parent_code : "",
+      qty : 1,
       rate : 0.5,
      
     },{
-      company_code : "3451112644",
-      item_code : "B550-111-221",
-      parent_uid : "A300-112-122",
-      qty : 111,
+      item_code : "B100-100-111",
+      main_code : "A100-100-111",
+      parent_code : "A100-100-111",
+      qty : 0.33,
+      rate : 0.3,
+    },
+    {
+      item_code : "C100-100-111",
+      main_code : "A100-100-111",
+      parent_code : "B100-100-111",
+      qty : 11,
       rate : 0.3,
     },
     
@@ -1514,9 +1544,10 @@ const save = (param,title) => {
 
   
     const config : any = [
-      {header: '사업장', key: 'company_code', width: 30},
-      {header: '품목코드', key: 'item_code', width: 30},
+      {header: 'BOM(품목)코드', key: 'item_code', width: 30},
+      {header: '메인코드', key: 'main_code', width: 30},
       {header: '부모코드', key: 'parent_code', width: 30},
+      
       {header: '필요수량', key: 'qty', width: 30},
       {header: '비율', key: 'rate', width: 30},
     
@@ -1575,7 +1606,7 @@ const save = (param,title) => {
        
           // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
           
-          for(let loop = 1; loop <= 4; loop++) {
+          for(let loop = 1; loop <= config.length; loop++) {
             const col = sheetOne.getRow(index + 2).getCell(loop);
             col.border = borderStyle;
             col.font = {name: 'Arial Black', size: 10};

@@ -33,7 +33,7 @@
   // let text_style = 'font-heavy text-green-400 bg-green-100  hover:text-black '
   let text_style = 'font-heavy  hover:text-black '
 
-  console.log('mainPath',mainPath,activeUrl,$page.url);
+
 
 
 </script>
@@ -84,10 +84,13 @@
               <SidebarDropdownItem class={text_style} label="사용제한 원료정보 관리" href='/info/restric_material' active={activeUrl === '/info/restric_material'} on:click={handleToggle('restric_material')}/>
               <SidebarDropdownItem class={text_style} label="사용제한 배합금지국가 관리" href='/info/restric_material_country' active={activeUrl === '/info/restric_material_country'} on:click={handleToggle('restric_material_country')}/>
             
-                
+              
+              <SidebarDropdownItem class={text_style} label="공정 관리" href='/info/process' active={activeUrl === '/info/process'} on:click={handleToggle('process')}/>
+
               <SidebarDropdownItem class={text_style} label="생산레시피 관리" href='/info/bom' active={activeUrl === '/info/bom'} on:click={handleToggle('bom')}/>
         
-            
+             
+        
             </SidebarDropdownWrapper>
  
           </SidebarGroup>

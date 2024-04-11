@@ -16,7 +16,7 @@
     import {businessNumber,phoneNumber,validEmail} from '$lib/module/common/function';
     import { afterUpdate, onMount } from 'svelte';
     export let title;
-    
+    import {handleSubmit} from '$lib/store/common/function';
     let label_title = '';
     $: factorySubArray = $factory_form_state.factory_sub_array;
    
@@ -48,10 +48,10 @@
 
  
 
-    <Modal title={`공장 ${label_title}`} permanent={true} color={color} bind:open={$factory_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
+    <Modal title={`공장 ${label_title}`} size={"xl"} permanent={true} color={color} bind:open={$factory_modal_state[title]['use']}  placement={'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#">
+         <form action="#"  >
           {#if title === 'add' || title === 'update'}
    
         <div class="grid grid-cols-2 gap-4">
@@ -75,14 +75,25 @@
           
           <Label class="space-y-2">
             <span>용도</span>
-            <Input type="text" id="last_name" placeholder="용도를 입력하세요" required bind:value={$factory_form_state['status']}/>
+            <Input type="text" id="last_name" placeholder="용도를 입력하세요"  bind:value={$factory_form_state['status']}/>
           </Label>
 
           <Label class="space-y-2">
             <span>비고</span>
-            <Input type="textarea"   id="last_name" placeholder="비고를 적어주세요" required bind:value={$factory_form_state['description']}/>
+            <Input type="textarea"   id="last_name" placeholder="비고를 적어주세요"  bind:value={$factory_form_state['description']}/>
           </Label>
 
+          {#if $factory_modal_state['title'] === 'update'}
+          <Label class="space-y-2">
+            <span>사용유무</span>
+            <Select id="countries" class="mt-2" bind:value={$factory_form_state['used']} placeholder="">
+                  <option value={0}>{"사용안함"}</option>
+                  <option value={1}>{"사용"}</option>
+
+              </Select>
+          </Label>
+        {/if}
+      </div>
 
           <div class="grid grid-cols-1 gap-4">
             <Hr class="my-8 bg-slate-300 "  height="h-1"></Hr>
@@ -97,49 +108,43 @@
             <button on:click={factorySubDeleteRow}>창고 삭제</button>
             <button on:click={factorySubAllDeleteRow}>창고 삭제</button>
          
-            {#each factorySubArray as item,i} 
         
+            </div>
+
+            
+          <div class="grid grid-cols-4 gap-4">
+              {#each factorySubArray as item,i} 
+          
               <Label class="space-y-1">
                 <span>창고명</span>
-                <Input type="text"  id="last_name" placeholder="창고명을 입력하세요" required bind:value={item['name']}/>
+                <Input type="text"  id="last_name" placeholder="창고명을 입력하세요" bind:value={item['name']}/>
               
               
               </Label>
               <Label class="space-y-1">
                 <span>용도</span>
-                <Input type="text"  id="last_name" placeholder="용도를 입력하세요" required bind:value={item['status']}/>
+                <Input type="text"  id="last_name" placeholder="용도를 입력하세요"  bind:value={item['status']}/>
               </Label>    
               
               <Label class="space-y-1">
                 <span>비고</span>
-                <Input type="textarea"  id="last_name" placeholder="비고를 입력하세요" required bind:value={item['description']}/>
+                <Input type="textarea"  id="last_name" placeholder="비고를 입력하세요"  bind:value={item['description']}/>
               </Label>    
 
-             
+            
               <Label class="space-y-1">
                   <button on:click={()=> factorySubSelectDeleteRow(i)}>삭제</button>
               </Label>    
         
                 
             {/each}
+
             </div>
-        
-
-
          
         
     
-          {#if $factory_modal_state['title'] === 'update'}
-            <Label class="space-y-2">
-              <span>사용유무</span>
-              <Select id="countries" class="mt-2" bind:value={$factory_form_state['used']} placeholder="">
-                    <option value={0}>{"사용안함"}</option>
-                    <option value={1}>{"사용"}</option>
-
-                </Select>
-            </Label>
-          {/if}
-          </div>
+        
+        
          
 
           <div class="grid grid-cols-1 gap-4">
