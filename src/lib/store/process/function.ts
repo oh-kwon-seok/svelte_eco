@@ -34,6 +34,8 @@ let table_list_data : any;
 let table_modal_data : any;
 let process_data : any;
 let process_upload_data : any;
+let process_qc_upload_data : any;
+
 let selected_data : any;
 let search_data : any;
 let item_modal : any;
@@ -98,7 +100,7 @@ item_modal_state.subscribe((data) => {
 
 
  
-const processModalTable = (table_modal_state,type,tableComponent,select,title) => {
+const processModalTable = async(table_modal_state,type,tableComponent,select,title) => {
 
   
   
@@ -164,9 +166,46 @@ const processModalTable = (table_modal_state,type,tableComponent,select,title) =
 
         }
 
+      }else{
+
+        let url = `${api}/process_qc/info_select`;
+        let params = { process_uid : update_form.uid};
+        const config = {
+          params : params,
+          headers:{
+            "Content-Type": "application/json",
+            
+          }
+        }
+
+        await axios.get(url,config).then(res=>{
+            
+          let data =  res.data;
+          console.log('data : ', data);
+
+          if(data.length > 0){
+            for(let i=0; i<data.length; i++){
+              if(data[i]['type'] === 0){
+                data[i]['type'] = "합불";
+    
+              }else{
+                data[i]['type'] = "수치";
+              }
+    
+            }
+    
+          }
+
+          update_form['process_qc_array'] = data;
+          
+        });
+
+
+
+
       }
 
-
+      console.log('qc_array : ', update_form['process_qc_array']);
       table_modal_data[type] =   new Tabulator(tableComponent, {
       
         height:TABLE_TOTAL_CONFIG['height'],
@@ -575,48 +614,42 @@ const save = (param,title) => {
      
     }if(title === 'check_delete'){
       let data =  selected_data;
+
+
       let uid_array = [];
 
-
-      console.log('data : ', data);
-    
       if(data.length === 0){
         alert['type'] = 'check_delete';
         alert['value'] = true;
+        
         return common_alert_state.update(() => alert);
+   
 
       }else{
-        // for(let i=0; i<data.length; i++){
-          
-          
-        //   uid_array.push(data[i]['id']);
-        // }
+        for(let i=0; i<data.length; i++){
+          uid_array.push(data[i]['uid']);
+        }
       }
 
-        if(data.length > 0){
+        if(uid_array.length > 0){
 
           const url = `${api}/process/delete`
           try {
     
             let params = {
-  
-              data : data,
+              uid : uid_array,
             };
           axios.post(url,
             params,
           ).then(res => {
-            console.log('res',res);
             if(res.data !== undefined && res.data !== null && res.data !== '' ){
-              console.log('실행');
-              console.log('res:data', res.data);
               
               toast['type'] = 'success';
               toast['value'] = true;
               update_modal['title'] = 'check_delete';
               update_modal[title]['use'] = false;
               process_modal_state.update(() => update_modal);
-              update_form = init_form_data;
-              process_form_state.update(()=> update_form);
+              process_form_state.update(()=>update_form);
 
               select_query('process');
     
@@ -631,12 +664,14 @@ const save = (param,title) => {
             }
           })
           }catch (e:any){
-            return console.log('에러 : ',e);
+            
+            
+            alert['type'] = 'error';
+            alert['value'] = true;
+            return common_alert_state.update(() => alert);
           };
-    
         }
-
-      
+  
     }
   }
 
@@ -645,11 +680,10 @@ const save = (param,title) => {
   
     let company_uid = getCookie('company_uid');
     const config : any = [
-      {header: 'process(품목)코드', key: 'item_code', width: 30},
-      {header: '메인코드', key: 'main_code', width: 30},
-      {header: '부모코드', key: 'parent_code', width: 30},
-      {header: '필요수량', key: 'qty', width: 30},
-      {header: '비율', key: 'rate', width: 30},
+      {header: '공정명', key: 'name', width: 30},
+      {header: '용도', key: 'status', width: 30},
+      {header: '비고', key: 'description', width: 30},
+     
     
     
     ]; 
@@ -695,7 +729,7 @@ const save = (param,title) => {
         })
      
           
-        console.log('process_upload_data',process_upload_data);
+       
         for(let i= 0; i<process_upload_data.length; i++){
           process_upload_data[i]['company'] = company_uid;
           
@@ -741,28 +775,132 @@ const save = (param,title) => {
   }
 
 
+
+  const processQcExcelUpload = (e) => {
+  
+    let company_uid = getCookie('company_uid');
+    const config : any = [
+      {header: '공정명', key: 'process_name', width: 30},
+      {header: '검사명', key: 'name', width: 30},
+      {header: '검사유형', key: 'type', width: 30},
+      {header: '비고', key: 'description', width: 30},
+     
+    
+    
+    ]; 
+
+
+    const wb = new Excel.Workbook();
+    const reader = new FileReader()
+
+    let file = e.target.files[0];
+
+    reader.readAsArrayBuffer(file)
+    reader.onload = () => {
+     let change_data = [];
+     
+      const buffer = reader.result;
+      wb.xlsx.load(buffer).then(workbook => {
+        console.log(workbook, 'workbook instance')
+        workbook.eachSheet((sheet, id) => {
+          sheet.eachRow((row, rowIndex) => {
+          
+            if(rowIndex > 1){
+            let obj = {
+
+            };
+            for(let i=0; i<config.length; i++){
+              obj[config[i].key] = row.values[i+1] !== '' ?  row.values[i+1] : "";
+
+            }
+            change_data.push(obj);
+            
+            process_qc_upload_data = change_data;
+
+          
+          }else {
+
+          }
+          });
+
+        
+          
+  
+
+        })
+     
+          
+       
+        for(let i= 0; i<process_qc_upload_data.length; i++){
+          process_qc_upload_data[i]['company'] = company_uid;
+          if(process_qc_upload_data[i]['type'] === "합불"){
+            process_qc_upload_data[i]['type'] = 0;
+
+          }else if(process_qc_upload_data[i]['type'] === "수치"){
+            process_qc_upload_data[i]['type'] = 1;
+          }else{
+            process_qc_upload_data[i]['type'] = 0;
+          }
+          
+        }
+        
+        const url = `${api}/process_qc/excel_upload`
+        try {
+  
+          let params = {
+          
+            data :  process_qc_upload_data,
+            
+          };
+        axios.post(url,
+          params,
+        ).then(res => {
+          console.log('res',res);
+          if(res.data !== undefined && res.data !== null && res.data !== '' ){
+            console.log('실행');
+            console.log('res:data', res.data);
+            
+            toast['type'] = 'success';
+            toast['value'] = true;
+            update_modal['title'] = '';
+            update_modal['update']['use'] = false;
+            //select_query('process');
+            return common_toast_state.update(() => toast);
+  
+          }else{
+          
+            return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+          }
+        })
+        }catch (e:any){
+          return console.log('에러 : ',e);
+        };
+
+
+      })
+
+    }
+
+  }
+
+
   const processExcelFormDownload = () => {
 
     const data = [{
-      item_code : "A100-100-111",
-      main_code : "",
-      parent_code : "",
-      qty : 1,
-      rate : 0.5,
+      name : "계량1",
+      status : "계량용",
+      description : "특이사항 없음",
+     
      
     },{
-      item_code : "B100-100-111",
-      main_code : "A100-100-111",
-      parent_code : "A100-100-111",
-      qty : 0.33,
-      rate : 0.3,
+      name : "충진1",
+      status : "충진용",
+      description : "특이사항 없음",
     },
     {
-      item_code : "C100-100-111",
-      main_code : "A100-100-111",
-      parent_code : "B100-100-111",
-      qty : 11,
-      rate : 0.3,
+      name : "포장1",
+      status : "포장용",
+      description : "특이사항 없음",
     },
     
   ]; 
@@ -770,12 +908,11 @@ const save = (param,title) => {
 
   
     const config : any = [
-      {header: 'process(품목)코드', key: 'item_code', width: 30},
-      {header: '메인코드', key: 'main_code', width: 30},
-      {header: '부모코드', key: 'parent_code', width: 30},
+      {header: '공정명', key: 'process_name', width: 30},
+      {header: '검사명', key: 'name', width: 30},
+      {header: '용도', key: 'status', width: 30},
+      {header: '비고', key: 'description', width: 30},
       
-      {header: '필요수량', key: 'qty', width: 30},
-      {header: '비율', key: 'rate', width: 30},
     
     
     ]; 
@@ -783,7 +920,7 @@ const save = (param,title) => {
 
       try {
 
-        let text_title : any= '생산레시피 업로드 형식';
+        let text_title : any= '공정 업로드 형식';
        
 
       const workbook = new Excel.Workbook();
@@ -861,6 +998,124 @@ const save = (param,title) => {
 
 
 
+const processQcExcelFormDownload = () => {
+
+  const data = [{
+    process_name : "계량1",
+    name : "검사1",
+    type : "합불",
+     description : "비고"
+   
+   
+  },{
+    process_name : "충진1",
+    name : "검사1",
+    type : "합불",
+     description : "비고"
+  },
+  {
+    process_name : "포장1",
+    name : "검사1",
+    type : "수치",
+     description : "비고"
+  },
+  
+]; 
+
+
+
+  const config : any = [
+    {header: '공정명', key: 'process_name', width: 30},
+    {header: '검사명', key: 'name', width: 30},
+    {header: '검사유형', key: 'type', width: 30},
+    
+    {header: '비고', key: 'description', width: 30},
+  
+  
+  ]; 
+
+
+    try {
+
+      let text_title : any= '공정검사 업로드 형식';
+     
+
+    const workbook = new Excel.Workbook();
+      // 엑셀 생성
+
+      // 생성자
+      workbook.creator = '작성자';
+     
+      // 최종 수정자
+      workbook.lastModifiedBy = '최종 수정자';
+     
+      // 생성일(현재 일자로 처리)
+      workbook.created = new Date();
+     
+      // 수정일(현재 일자로 처리)
+      workbook.modified = new Date();
+
+      let file_name = text_title + moment().format('YYYY-MM-DD HH:mm:ss') + '.xlsx';
+      let sheet_name = moment().format('YYYYMMDDHH:mm:ss');
+   
+    
+      workbook.addWorksheet(text_title);
+         
+
+      const sheetOne = workbook.getWorksheet(text_title);
+           
+           
+            
+      // 컬럼 설정
+      // header: 엑셀에 표기되는 이름
+      // key: 컬럼을 접근하기 위한 key
+      // hidden: 숨김 여부
+      // width: 컬럼 넓이
+      sheetOne.columns = config;
+   
+      const sampleData = data;
+      const borderStyle = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+     
+      sampleData.map((item, index) => {
+        sheetOne.addRow(item);
+     
+        // 추가된 행의 컬럼 설정(헤더와 style이 다를 경우)
+        
+        for(let loop = 1; loop <= config.length; loop++) {
+          const col = sheetOne.getRow(index + 2).getCell(loop);
+          col.border = borderStyle;
+          col.font = {name: 'Arial Black', size: 10};
+        }
+      
+    });
+
+
+        
+   
+      workbook.xlsx.writeBuffer().then((data) => {
+        const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = file_name;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      })
+    } catch(error) {
+      console.error(error);
+    }
+
+ 
+}
+
+
+
+
 
 
   
@@ -869,4 +1124,4 @@ const save = (param,title) => {
 
 
 
-export {processModalOpen,save,modalClose,processExcelFormDownload,processExcelUpload,processModalTable,processAddRow,processDeleteRow,processAllDeleteRow,processQcSelectDelete}
+export {processModalOpen,save,modalClose,processExcelFormDownload,processQcExcelFormDownload,processExcelUpload,processQcExcelUpload,processModalTable,processAddRow,processDeleteRow,processAllDeleteRow,processQcSelectDelete}

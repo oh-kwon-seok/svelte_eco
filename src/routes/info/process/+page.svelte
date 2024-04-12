@@ -20,7 +20,7 @@
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {processModalOpen,processExcelFormDownload,processExcelUpload} from '$lib/store/process/function';
+    import {processModalOpen,processExcelFormDownload,processExcelUpload,processQcExcelUpload,processQcExcelFormDownload} from '$lib/store/process/function';
     import {excelDownload, excelUpload, fileButtonClick,makeCustomTable} from '$lib/store/common/function';
     
     import {process_form_state,process_modal_state} from '$lib/store/process/state';
@@ -160,7 +160,7 @@
                       
                       <Button  color='green' on:click={(e)=> fileButtonClick('upload')}>
                         <Icon.UploadSolid class='mr-2' size="20" />
-                          엑셀 업로드
+                          공정 업로드
                         <input 
                         hidden  
                         id = 'upload' 
@@ -170,10 +170,27 @@
                   
                         />
                     </Button>
+                    <Button  color='green' on:click={(e)=> fileButtonClick('upload1')}>
+                      <Icon.UploadSolid class='mr-2' size="20" />
+                        공정검사 업로드
+                      <input 
+                      hidden  
+                      id = 'upload1' 
+                      type='file' 
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+                      on:change={(e)=> processQcExcelUpload(e)}
+                
+                      />
+                  </Button>
                     <Button  color="light" on:click={() => processExcelFormDownload()}>
                       <Icon.FileExportSolid class='mr-2' size="20" />
-                      업로드 양식 다운
+                      공정 업로드 양식 다운
                     </Button>
+                    <Button  color="light" on:click={() => processQcExcelFormDownload()}>
+                      <Icon.FileExportSolid class='mr-2' size="20" />
+                      공정검사 업로드 양식 다운
+                    </Button>
+
 
                       
 
