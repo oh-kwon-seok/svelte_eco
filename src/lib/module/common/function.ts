@@ -62,7 +62,8 @@ function updateSupplyPrice(cell:any) {
 
     // "supply_price" 셀을 계산하여 업데이트
     var supplyPrice = qty * price;
-    cell.getRow().update({ supply_price: supplyPrice });
+    var vatPrice = supplyPrice * 0.1;
+    cell.getRow().update({ supply_price: supplyPrice, vat_price : vatPrice });
 }
 
 const commaNumber = (number:any) => {

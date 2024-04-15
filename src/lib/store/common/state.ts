@@ -106,7 +106,8 @@ const url_state : any = writable({ path : '', query : ''});
   const common_bom_state : any =  writable([]);
   const common_process_state : any =  writable([]);
   
-  
+  const common_bookmark_estimate_state : any =  writable([]);
+
   const common_company_filter_state : any = writable([]); // 매입매출이 아닌 사업장 데이터임
 
   const common_selected_state : any = writable([]); // 삭제용 데이터
@@ -137,4 +138,5 @@ const url_state : any = writable({ path : '', query : ''});
     common_equipment_state,
     common_bom_state,
     common_process_state,
+    common_bookmark_estimate_state
   };

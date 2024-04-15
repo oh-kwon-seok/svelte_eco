@@ -9,14 +9,16 @@
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
   
-    import {process_modal_state, process_form_state} from '$lib/store/process/state';
+    import {bookmark_estimate_modal_state, bookmark_estimate_form_state} from '$lib/store/bookmark_estimate/state';
 
-    
+    import ItemSearch from '$lib/components/modal/bookmark_estimate/Item.svelte';
     import {common_alert_state, common_toast_state,common_company_state,common_type_state, table_modal_state} from '$lib/store/common/state';
     import {fileButtonClick,handleSubmit} from '$lib/store/common/function';
-    import {save,modalClose,processModalTable,processAddRow, processDeleteRow, processAllDeleteRow } from '$lib/store/process/function';
+    import {save,modalClose,bookmarkEstimateModalTable,bookmarkEstimateAddRow, bookmarkEstimateDeleteRow, bookmarkEstimateAllDeleteRow,itemSearchModalClose } from '$lib/store/bookmark_estimate/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     import {onMount,afterUpdate } from 'svelte';
+    import {item_modal_state} from '$lib/store/item/state';
+
     export let title;
 
     import { setCookie, getCookie, removeCookie } from '$lib/cookies';
@@ -45,22 +47,22 @@
 
     onMount(()=>{
       
-      console.log('table_modal_state : ', table_modal_state['process_qc']);
-     if(table_modal_state['process_qc']){
+      console.log('table_modal_state : ', table_modal_state['bookmark_estimate_sub']);
+     if(table_modal_state['bookmark_estimate_sub']){
 
      }else{
        if(title === 'add'){
-         if($process_form_state['name'] !== ""){
+         if($bookmark_estimate_form_state['name'] !== ""){
            // 여기에 테이블 그려야됌
-         processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","add");
+         bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","add");
          
        
        }
 
        }else if(title === 'update'){
          // 수정일때, 이따 작업
-         if($process_form_state['name'] !== ""){
-                processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","update");
+         if($bookmark_estimate_form_state['name'] !== ""){
+                bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","update");
              
             }
        }
@@ -72,17 +74,17 @@
 
    afterUpdate(()=> {
       
-      if(table_modal_state['process_qc']){
+      if(table_modal_state['bookmark_estimate_sub']){
        
         }else{
           if(title === 'add'){
           
-              if($process_form_state['name'] !== ""){
+              if($bookmark_estimate_form_state['name'] !== ""){
                
-                if($table_modal_state['process_qc']){
+                if($table_modal_state['bookmark_estimate_sub']){
                   
                 }else{
-                  processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","add");
+                  bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","add");
                 }
               
               
@@ -93,14 +95,14 @@
 
           }else if(title === 'update'){
           // 수정일때, 이따 작업
-          if($process_form_state['name'] !== ""){
+          if($bookmark_estimate_form_state['name'] !== ""){
 
 
-            if($table_modal_state['process_qc']){
+            if($table_modal_state['bookmark_estimate_sub']){
 
             }else{
               console.log('동작하나? ');
-              processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","update");
+              bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","update");
             }
               
                 
@@ -114,22 +116,31 @@
 
     </script>
       
+    <style>
+    
+    /* .full-screen-modal {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100vw;
+    } */
+    </style>
 
  
-
-    <Modal title={`공정 ${label_title}`} permanent={true} color={color} bind:open={$process_modal_state[title]['use']} size="xl" placement={'center'}   class="w-full">
+      
+    <Modal  class="w-full" title={`자동견적 ${label_title}`} permanent={true} color={color}  bind:open={$bookmark_estimate_modal_state[title]['use']} size="xl"  placement={'center'}   >
        
           <!-- grid grid-cols-2 gap-4 -->
-        <form action="#" on:submit={handleSubmit} >
+        <form  action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 ">
     
           <Label class="space-y-2">
-            <span>공정명</span>
-            <Input type="text" id="last_name" placeholder="공정을 입력하세요" required bind:value={$process_form_state['name']} />
+            <span>견적명</span>
+            <Input type="text" id="last_name" placeholder="견적을 입력하세요" required bind:value={$bookmark_estimate_form_state['name']} />
             
-            {#if $process_form_state['name'] === '' && $common_alert_state['value'] === true}
+            {#if $bookmark_estimate_form_state['name'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
             {/if}
           </Label>
@@ -137,20 +148,25 @@
         
         
           <Label class="space-y-2">
-            <span>용도</span>
-            <Textarea type="text" id="last_name" rows="4"  bind:value={$process_form_state['status']}/>
+            <span>제품 사양</span>
+            <Textarea type="text" id="last_name" rows="4"  bind:value={$bookmark_estimate_form_state['product_spec']}/>
           </Label>
           <Label class="space-y-2">
-            <span>비고</span>
-            <Textarea type="text" id="last_name" rows="4"  bind:value={$process_form_state['description']}/>
+            <span>납품 장소</span>
+            <Textarea type="text" id="last_name" rows="4"  bind:value={$bookmark_estimate_form_state['ship_place']}/>
+          </Label>
+          
+          <Label class="space-y-2">
+            <span>발주조건 및 기타 특이사항</span>
+            <Textarea type="text" id="last_name" rows="4"  bind:value={$bookmark_estimate_form_state['description']}/>
            
           </Label>
 
          
-          {#if $process_modal_state['title'] === 'update'}
+          {#if $bookmark_estimate_modal_state['title'] === 'update'}
             <Label class="space-y-2">
               <span>사용유무</span>
-              <Select id="countries" class="mt-2" bind:value={$process_form_state['used']} placeholder="">
+              <Select id="countries" class="mt-2" bind:value={$bookmark_estimate_form_state['used']} placeholder="">
                     <option value={0}>{"사용안함"}</option>
                     <option value={1}>{"사용"}</option>
 
@@ -170,19 +186,19 @@
         
               
          
-              {#if $process_form_state['name'] !== ""}
+              {#if $bookmark_estimate_form_state['name'] !== ""}
               <div class="grid grid-cols-1 gap-4">
-                <p class="mb-4 font-semibold text-xl dark:text-white">공정검사 리스트</p>
+                <p class="mb-4 font-semibold text-xl dark:text-white">레시피 리스트</p>
               
               </div>
               
           
 
               <div class="flex justify-start">
-                <Button class="m-2 " outline color="blue" on:click={(e) =>processAddRow(e)}>행 추가</Button>
+                <Button class="m-2 " outline color="blue" on:click={(e) =>bookmarkEstimateAddRow(e)}>행 추가</Button>
                
-                <Button class="m-2" outline color="red" on:click={processDeleteRow}>행 삭제</Button>
-                <Button class="m-2" outline color="purple" on:click={processAllDeleteRow}>전체 삭제</Button>
+                <Button class="m-2" outline color="red" on:click={bookmarkEstimateDeleteRow}>행 삭제</Button>
+                <Button class="m-2" outline color="purple" on:click={bookmarkEstimateAllDeleteRow}>전체 삭제</Button>
               
               </div>
               
@@ -196,13 +212,15 @@
 
               {:else}
                 <div class="grid grid-cols-1 gap-4">
-                  <p class="mb-4 font-semibold text-xl dark:text-white">공정명을 선택해주십시오.</p>
+                  <p class="mb-4 font-semibold text-xl dark:text-white">견적명을 입력해주십시오.</p>
                 
                 </div>
           {/if}
              
             
-               
+          {#if $item_modal_state['title'] === 'bookmark_estimate_search'}
+          <ItemSearch title="bookmark_estimate_search" />
+          {/if}
    
 
 
@@ -230,7 +248,7 @@
       
         </form>
    <svelte:fragment slot='footer'> 
-    <Button  color={title === 'add' || title === 'update'  ? 'blue' : 'red'}  class="w-1/2" on:click={save($process_form_state,title)}>{label_title}</Button>
+    <Button  color={title === 'add' || title === 'update'  ? 'blue' : 'red'}  class="w-1/2" on:click={save($bookmark_estimate_form_state,title)}>{label_title}</Button>
     <Button  color='red'  class="w-1/2" on:click={modalClose(title)}>닫기</Button>
          
     {#if $common_alert_state['type'] === 'save' && $common_alert_state['value'] === true}
@@ -253,5 +271,6 @@
        
 
       </Modal>
+  
 
     

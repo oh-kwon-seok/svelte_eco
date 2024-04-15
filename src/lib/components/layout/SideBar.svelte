@@ -89,7 +89,7 @@
 
               <SidebarDropdownItem class={text_style} label="생산레시피 관리" href='/info/bom' active={activeUrl === '/info/bom'} on:click={handleToggle('bom')}/>
         
-             
+              <SidebarDropdownItem class={text_style} label="자동견적레시피 관리" href='/info/bookmark_estimate' active={activeUrl === '/info/bookmark_estimate'} on:click={handleToggle('bookmark_estimate')}/>
         
             </SidebarDropdownWrapper>
  
