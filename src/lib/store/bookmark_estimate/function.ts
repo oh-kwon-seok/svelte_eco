@@ -255,6 +255,7 @@ const bookmarkEstimateAddRow = (e) => {
     qty : 1,
     unit : "",
     price : 0,
+    buy_price : 0,
     supply_price : 0,
     vat_price : 0,
     description : "",
@@ -523,8 +524,8 @@ const save = (param,title) => {
       const url = `${api}/bookmark_estimate/update`
       
 
-     
-      
+    
+     console.log('data : ', data);
     
       try {
 
@@ -749,7 +750,8 @@ const save = (param,title) => {
       {header: '품목코드', key: 'item_code', width: 30},
       {header: '수량', key: 'qty', width: 30},
       {header: '단위', key: 'unit', width: 30},
-      {header: '단가', key: 'price', width: 30},
+      {header: '매입단가', key: 'buy_price', width: 30},
+      {header: '매출단가', key: 'price', width: 30},
       {header: '공급가액', key: 'supply_price', width: 30},
       {header: '부가세', key: 'vat_price', width: 30},
       

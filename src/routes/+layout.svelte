@@ -29,6 +29,8 @@
 		infoCallApi('department');
 		infoCallApi('employment');
 		infoCallApi('type');
+		infoCallApi('restric_material');
+		
 		// infoCallApi('factory');
 		// infoCallApi('factory_sub');
 		

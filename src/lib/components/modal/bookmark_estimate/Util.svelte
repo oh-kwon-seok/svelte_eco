@@ -78,6 +78,7 @@
        
         }else{
           if(title === 'add'){
+            console.log('d돌아가나 ? :  ',);
           
               if($bookmark_estimate_form_state['name'] !== ""){
                
@@ -144,6 +145,7 @@
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
             {/if}
           </Label>
+          
 
         
         

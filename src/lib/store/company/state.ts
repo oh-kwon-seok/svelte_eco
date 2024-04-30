@@ -11,7 +11,8 @@ import {v4 as uuid} from 'uuid';
     update : { use : false, title: ''},
     delete : { use : false, title: ''},
     check_delete : { use : false, title: ''},
-    
+      
+    estimate_company_search : {use : false, title: ''}, // 견적 기능에서 불러오는 company
      
    });
 

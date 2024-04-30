@@ -56,6 +56,7 @@ const CLIENT_INFO = {  // 업체정보
     address : "대전 유성구 전민동 461-6 한남대학교 대덕밸리캠퍼스 이노비즈파크 308호",
     type : "화장품 판매업",
     type2 : "",
+    tel : "010-3033-2000",
     fax : "042-825-8818",
 
 }
@@ -628,15 +629,45 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
 
         {title:"한글명", field:"item.ingr_kor_name", width:150, headerFilter:"input",},
        
-        {title:"수량", field:"qty", width:150, editor : "input",formatter: "money",  formatterParams: {
+        {title:"수량", field:"qty", width:150, editor : "input",formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
           
             thousand:",",
             precision:false,
 
         },cellEdited: updateSupplyPrice},
         {title:"용량", field:"unit", width:150, headerFilter:"input",editor : "input"},
+        
+        
+        
+        {title:"매입단가", field:"buy_price", width:150, editor : "input",formatter: "money",  
+        
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
 
-        {title:"단가", field:"price", width:150, editor : "input",formatter: "money",  formatterParams: {
+        formatterParams: {
+            
+            thousand:",",
+            symbol:"원",
+          symbolAfter:"p",
+          precision:false,
+      }},
+    
+        {title:"매출단가", field:"price", width:150, editor : "input",formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
             
               thousand:",",
               symbol:"원",
@@ -646,14 +677,26 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
       
 
 
-        {title:"공급가액", field:"supply_price", width:150, editor : "input",formatter: "money",  formatterParams: {
+        {title:"공급가액", field:"supply_price", width:150, editor : "input",formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
            
             thousand:",",
             symbol:"원",
             symbolAfter:"p",
             precision:false,
         }},
-        {title:"부가세", field:"vat_price", width:150, editor : "input",formatter: "money",  formatterParams: {
+        {title:"부가세", field:"vat_price", width:150, editor : "input",formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
            
             thousand:",",
             symbol:"원",

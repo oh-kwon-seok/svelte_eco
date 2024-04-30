@@ -84,7 +84,7 @@ const url_state : any = writable({ path : '', query : ''});
 
 
 
-  
+  // 기준정보
   const common_user_state : any = writable([]);
   const common_type_state : any = writable([]);
   const common_item_state : any = writable([]);
@@ -107,6 +107,12 @@ const url_state : any = writable({ path : '', query : ''});
   const common_process_state : any =  writable([]);
   
   const common_bookmark_estimate_state : any =  writable([]);
+
+  // 영업
+  const sales_estimate_state : any =  writable([]);
+
+
+  
 
   const common_company_filter_state : any = writable([]); // 매입매출이 아닌 사업장 데이터임
 
@@ -138,5 +144,8 @@ const url_state : any = writable({ path : '', query : ''});
     common_equipment_state,
     common_bom_state,
     common_process_state,
-    common_bookmark_estimate_state
+    common_bookmark_estimate_state,
+
+    sales_estimate_state ,
+
   };

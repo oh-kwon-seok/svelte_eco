@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state,common_bom_state } from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state,common_bom_state,common_restric_material_state } from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -47,6 +47,7 @@ let company_filter_data : any;
 
 let user_data : any;
 let type_data : any;
+let restric_material_data;
 
 const workbook = new Excel.Workbook();
 
@@ -122,6 +123,11 @@ common_user_state.subscribe((data) => {
   user_data = data;
 
 })
+common_restric_material_state.subscribe((data) => {
+  restric_material_data = data;
+
+})
+
 
 
 
@@ -173,17 +179,21 @@ const infoCallApi = (title) => {
           }
       }else if(title === 'employment'){
           employment_data = res.data;
-          console.log('employment_dat : ', res.data);
+     
           common_employment_state.update(()=> employment_data);
       }else if(title === 'department'){
           department_data = res.data;
-          console.log('depart : ', res.data);
           common_department_state.update(()=> department_data);
       }else if(title === 'type'){
         type_data = res.data;
-        console.log('depart : ', res.data);
+      
         common_type_state.update(()=> type_data);
-    }
+    } else if(title === 'restric_material'){
+      restric_material_data = res.data;
+      
+      console.log('restric_material_data : ', restric_material_data);
+      common_restric_material_state.update(()=> restric_material_data );
+  }
       }else {
       
       }

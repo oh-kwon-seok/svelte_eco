@@ -13,8 +13,9 @@ import {v4 as uuid} from 'uuid';
     check_delete : { use : false, title: ''},
     search : { use : false, title: ''}, // 팝업 불러오기
     bom_search : {use : false, title: ''}, // bom에서 불러오는 item_search
-    bookmark_estimate_search : {use : false, title: ''} // 자동견적레시피에서 불러오는 item_search
     
+    estimate_item_search : {use : false, title: ''}, // 견적 기능에서 불러오는 item_search
+    bookmark_estimate_search : {use : false, title: ''}, // 자동견적레시피에서 불러오는 item_search
 
    });
 

@@ -100,6 +100,7 @@
               <svelte:fragment slot="icon">
                 <Icon.StoreSolid size="20"/>
             </svelte:fragment>
+            <SidebarDropdownItem class={text_style} label="견적 관리" href='/sales/estimate' active={activeUrl === '/sales/estimate'} on:click={handleToggle('estimate')}/>
         
             </SidebarDropdownWrapper>
           </SidebarGroup>
