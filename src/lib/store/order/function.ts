@@ -3,16 +3,16 @@
 //@ts-nocheck
 
 import { writable } from 'svelte/store';
-import {estimate_modal_state,estimate_form_state} from './state';
+import {order_modal_state,order_form_state} from './state';
 import {item_modal_state} from '$lib/store/item/state';
 
-import {bookmark_estimate_modal_state} from '$lib/store/bookmark_estimate/state';
+import {estimate_modal_state} from '$lib/store/estimate/state';
 import {company_modal_state} from '$lib/store/company/state';
 import { businessNumber,phoneNumber,commaNumber,} from '$lib/module/common/function';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
-import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,table_modal_state,common_selected_state,sales_estimate_state,common_restric_material_state} from '$lib/store/common/state';
+import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,table_modal_state,common_selected_state,sales_order_state,common_restric_material_state} from '$lib/store/common/state';
 import moment from 'moment';
 import { setCookie, getCookie, removeCookie } from '$lib/cookies';
 import {TOAST_SAMPLE,CLIENT_INFO} from '$lib/module/common/constants';
@@ -36,9 +36,9 @@ let toast : any;
 let login_data : any;
 let table_list_data : any;
 let table_modal_data : any;
-let estimate_data : any;
-let estimate_upload_data : any;
-let estimate_sub_upload_data : any;
+let order_data : any;
+let order_upload_data : any;
+let order_sub_upload_data : any;
 let restric_material_data;
 
 let selected_data : any;
@@ -47,7 +47,7 @@ let item_modal : any;
 
 let company_modal : any;
 
-let bookmark_estimate_modal : any;
+let estimate_modal : any;
 
 
 let init_form_data:any = {
@@ -55,6 +55,7 @@ let init_form_data:any = {
     modal: false,
     company : '', // 사업장
     customer : '',
+    estimate : '', // 견적서
     customer_name : '',
     code : '',
     user : '',
@@ -62,23 +63,19 @@ let init_form_data:any = {
     product_spec : "", // 제품 사양
     ship_place : "", // 납품 장소
     description : "", // 발주조건 및 기타 특이사항
-    estimate_date : moment().format('YYYY-MM-DD'), // 견적일자
-    expire : "", //유효기간 
-
-    estimate_sub_array : [],
+    ship_date : moment().format('YYYY-MM-DD'), // 견적일자
+    order_sub_array : [],
     used : 1,
 
 }
 
-let init_estimate_uid :any ;
-let selected_estimate_sub_data :any ;
+let init_order_uid :any ;
 
-
-estimate_modal_state.subscribe((data) => {
+order_modal_state.subscribe((data) => {
     update_modal = data;
 })
 
-estimate_form_state.subscribe((data) => {
+order_form_state.subscribe((data) => {
     update_form = data;
 })
 
@@ -103,8 +100,8 @@ table_list_state.subscribe((data) => {
 table_modal_state.subscribe((data) => {
   table_modal_data = data;
 })
-sales_estimate_state.subscribe((data) => {
-  estimate_data = data;
+sales_order_state.subscribe((data) => {
+  order_data = data;
 })
 
 common_selected_state.subscribe((data) => {
@@ -117,8 +114,8 @@ item_modal_state.subscribe((data) => {
 company_modal_state.subscribe((data) => {
   company_modal = data;
 })
-bookmark_estimate_modal_state.subscribe((data) => {
-  bookmark_estimate_modal = data;
+estimate_modal_state.subscribe((data) => {
+  estimate_modal = data;
 })
 
 common_restric_material_state.subscribe((data) => {
@@ -127,7 +124,7 @@ common_restric_material_state.subscribe((data) => {
 
 
  
-const estimateModalTable = async(table_modal_state,type,tableComponent,select,title) => {
+const orderModalTable = async(table_modal_state,type,tableComponent,select,title) => {
 
   
   
@@ -174,18 +171,18 @@ const estimateModalTable = async(table_modal_state,type,tableComponent,select,ti
          update_form['modal'] = true;
 
          
-         estimate_form_state.update(()=> update_form);
+         order_form_state.update(()=> update_form);
 
          table_modal_state.update(()=> table_modal_data);
         
           
     }else if(title === 'update'){
-      const url = `${api}/estimate_sub/uid_select`
+      const url = `${api}/order_sub/uid_select`
 
      
       let params = 
       {
-        estimate_uid : update_form['uid'],
+        order_uid : update_form['uid'],
 
       };
       const config = {
@@ -244,7 +241,7 @@ const estimateModalTable = async(table_modal_state,type,tableComponent,select,ti
           }
 
 
-          update_form['estimate_sub_array'] = data;
+          update_form['order_sub_array'] = data;
           
         });
 
@@ -275,7 +272,7 @@ const estimateModalTable = async(table_modal_state,type,tableComponent,select,ti
       },
    
 
-      data : update_form['estimate_sub_array'].length > 0 ? update_form['estimate_sub_array'] : [],
+      data : update_form['order_sub_array'].length > 0 ? update_form['order_sub_array'] : [],
       placeholder:"데이터 없음",
       columns: MODAL_TABLE_HEADER_CONFIG[type],
       
@@ -284,7 +281,7 @@ const estimateModalTable = async(table_modal_state,type,tableComponent,select,ti
       update_form['modal'] = true;
 
          
-      estimate_form_state.update(()=> update_form);
+      order_form_state.update(()=> update_form);
     
       table_modal_state.update(()=> table_modal_data);
   
@@ -435,7 +432,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
 
 
-const estimateAddRow = (e) => {
+const orderAddRow = (e) => {
  
 
  
@@ -445,7 +442,7 @@ const estimateAddRow = (e) => {
 
 
   
-  let data = table_modal_data['estimate_sub'].getData();
+  let data = table_modal_data['order_sub'].getData();
 
   console.log('data : ', data);
   
@@ -467,14 +464,14 @@ const estimateAddRow = (e) => {
   }
 
 
-  update_form['estimate_sub_array'].push(new_obj);
+  update_form['order_sub_array'].push(new_obj);
   
-  estimate_form_state.update(()=> update_form);
+  order_form_state.update(()=> update_form);
 
   data.push(new_obj);
 
   console.log('data : ', data);
-  table_modal_data['estimate_sub'].setData(data);
+  table_modal_data['order_sub'].setData(data);
   table_modal_state.update(()=> table_modal_data);
   
 }
@@ -482,19 +479,19 @@ const estimateAddRow = (e) => {
 
 
 
-const estimateDeleteRow = () => {
+const orderDeleteRow = () => {
   // console.log('눌림');
-  let data = table_modal_data['estimate_sub'].getData();
+  let data = table_modal_data['order_sub'].getData();
   
   data.pop();
-  table_modal_data['estimate_sub'].setData(data);
+  table_modal_data['order_sub'].setData(data);
   table_modal_state.update(()=> table_modal_data);
 
 }
-const estimateAllDeleteRow = () => {
+const orderAllDeleteRow = () => {
  
 
-  table_modal_data['estimate_sub'].setData([]);
+  table_modal_data['order_sub'].setData([]);
 
   table_modal_state.update(()=> table_modal_data);
 
@@ -502,7 +499,7 @@ const estimateAllDeleteRow = () => {
 
 
 
-const estimateModalOpen = (data : any, title : any) => {
+const orderModalOpen = (data : any, title : any) => {
 
 
   
@@ -517,12 +514,13 @@ const estimateModalOpen = (data : any, title : any) => {
     common_alert_state.update(() => alert);
     update_modal['title'] = title;
     update_modal[title]['use'] = true;
-    estimate_modal_state.update(() => update_modal);
+    order_modal_state.update(() => update_modal);
    
       update_form = {
         uid : 0,
         modal: false,
         company : '', // 사업장
+        estimate : '',
         customer : '',
         customer_name : '',
         code : '',
@@ -531,15 +529,14 @@ const estimateModalOpen = (data : any, title : any) => {
         product_spec : "", // 제품 사양
         ship_place : "", // 납품 장소
         description : "", // 발주조건 및 기타 특이사항
-        estimate_date : moment().format('YYYY-MM-DD'), // 견적일자
-        expire : "", //유효기간 
-        estimate_sub_array : [],
+        ship_date : moment().format('YYYY-MM-DD'), // 견적일자
+        order_sub_array : [],
         used : 1,
       };
 
 
       console.log('update_form : ', update_form);
-      estimate_form_state.update(() => update_form);
+      order_form_state.update(() => update_form);
      
     }
     if(title === 'update' ){
@@ -549,12 +546,12 @@ const estimateModalOpen = (data : any, title : any) => {
     common_alert_state.update(() => alert);
     update_modal['title'] = title;
     update_modal[title]['use'] = true;
-    estimate_modal_state.update(() => update_modal);
+    order_modal_state.update(() => update_modal);
 
    
 
         Object.keys(update_form).map((item)=> {    
-            if(item === 'company' || item === 'customer' ){
+            if(item === 'company' || item === 'customer' || item === 'estimate' ){
               update_form[item] = data[item]['uid'];
              
             
@@ -573,8 +570,8 @@ const estimateModalOpen = (data : any, title : any) => {
         update_form['modal'] = false;
 
         console.log('update_form : ', update_form);
-            estimate_form_state.update(() => update_form);
-            estimate_modal_state.update(() => update_modal);
+            order_form_state.update(() => update_form);
+            order_modal_state.update(() => update_modal);
            
 
     }
@@ -585,17 +582,17 @@ const estimateModalOpen = (data : any, title : any) => {
       common_alert_state.update(() => alert);
       update_modal['title'] = title;
       update_modal[title]['use'] = true;
-      estimate_modal_state.update(() => update_modal);
+      order_modal_state.update(() => update_modal);
 
 
 
-      let data =  table_list_data['estimate'].getSelectedData();
+      let data =  table_list_data['order'].getSelectedData();
 
       common_selected_state.update(() => data);
     
   }
   if(title === 'print'){
-    let data =  table_list_data['estimate'].getSelectedData();
+    let data =  table_list_data['order'].getSelectedData();
 
     if(data.length > 0){
       alert['type'] = 'save';
@@ -604,7 +601,7 @@ const estimateModalOpen = (data : any, title : any) => {
       common_alert_state.update(() => alert);
       update_modal['title'] = title;
       update_modal[title]['use'] = true;
-      estimate_modal_state.update(() => update_modal);
+      order_modal_state.update(() => update_modal);
 
       common_selected_state.update(() => data);
     }else{
@@ -643,7 +640,7 @@ const select_query = (type) => {
     }
   }
     axios.get(url,config).then(res=>{
-      console.log('table_list_state : ', table_list_state['estimate']);
+      console.log('table_list_state : ', table_list_state['order']);
       table_list_data[type].setData(res.data);
       table_list_state.update(() => table_list_data);
       console.log('table_list_data : ', table_list_data);
@@ -662,19 +659,19 @@ const modalClose = (title) => {
   update_form = init_form_data;
   common_alert_state.update(() => alert);
 
-  if(table_modal_data['estimate_sub']){
-    table_modal_data['estimate_sub'].destroy();
+  if(table_modal_data['order_sub']){
+    table_modal_data['order_sub'].destroy();
     table_modal_state.update(()=> table_modal_data)
 
   }
-  estimate_modal_state.update(() => update_modal);
-  estimate_form_state.update(() => update_form);
+  order_modal_state.update(() => update_modal);
+  order_form_state.update(() => update_form);
   
 }
 
 
 
-const estimateSubSelectDelete = (row) => {
+const orderSubSelectDelete = (row) => {
    // 보완해야함
   let deleteCheck = confirm("정말로 삭제하시겠습니까?");
 
@@ -685,11 +682,11 @@ const estimateSubSelectDelete = (row) => {
     let new_data = row.getData();
     let filterd_data;
     
-     filterd_data = table_modal_data['estimate_sub'].getData().filter((item) => {
+     filterd_data = table_modal_data['order_sub'].getData().filter((item) => {
         return item.uid !== new_data.uid;
       })
       console.log('filterd_data : ', filterd_data);
-      table_modal_data['estimate_sub'].setData(filterd_data);
+      table_modal_data['order_sub'].setData(filterd_data);
       table_modal_state.update(()=> table_modal_data);
 
       }
@@ -711,19 +708,19 @@ const save =  (param,title) => {
     if(title === 'add'){
   
     
-      if( param['code'] === '' ||  param['company'] === ''  || param['customer'] === '' || param['name'] === '' || param['user'] === ''){
+      if( param['code'] === '' ||  param['company'] === ''  || param['customer'] === '' || param['name'] === '' || param['user'] === '' || param['estimate'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
-        estimate_modal_state.update(() => update_modal);
+        order_modal_state.update(() => update_modal);
  
         return common_alert_state.update(() => alert);
   
       }else {
-        let data = table_modal_data['estimate_sub'].getData();
+        let data = table_modal_data['order_sub'].getData();
   
 
-        const url = `${api}/estimate/save`
+        const url = `${api}/order/save`
         try {
   
           
@@ -731,18 +728,16 @@ const save =  (param,title) => {
           
             company_uid : parseInt(param['company']),
             customer_uid : parseInt(param['customer']),
+            estimate_uid : parseInt(param['estimate']),
             user_id : param['user'],
             code : param['code'],
             name  : param['name'],
             product_spec : param['product_spec'],
             ship_place : param['ship_place'],
             description : param['description'],
-            estimate_date : param['estimate_date'],
-            expire : param['expire'],
+            ship_date : param['ship_date'],
             
-            
-
-            estimate_sub : data,
+            order_sub : data,
             used : param.used,
             token : login_data['token'],
           };
@@ -761,10 +756,11 @@ const save =  (param,title) => {
             update_modal['title'] = '';
             update_modal['add']['use'] = !update_modal['add']['use'];
             
-            estimate_modal_state.update(() => update_modal);
+            order_modal_state.update(() => update_modal);
           update_form = {
               uid : 0,
               modal: false,
+              estimate : '', // 사업장
               company : '', // 사업장
               customer : '',
               customer_name : '',
@@ -774,13 +770,13 @@ const save =  (param,title) => {
               product_spec : "", // 제품 사양
               ship_place : "", // 납품 장소
               description : "", // 발주조건 및 기타 특이사항
-              estimate_date : moment().format('YYYY-MM-DD'), // 견적일자
-              expire : "", //유효기간 
-              estimate_sub_array : [],
+              ship_date : moment().format('YYYY-MM-DD'), // 견적일자
+              
+              order_sub_array : [],
               used : 1,
             };
-            console.log('update_form : ', update_form);
-            estimate_form_state.update(()=> update_form);
+           
+            order_form_state.update(()=> update_form);
 
 
             return common_toast_state.update(() => toast);
@@ -811,17 +807,17 @@ const save =  (param,title) => {
     
     if(title === 'update'){
 
-      if( param['code'] === '' ||  param['company'] === ''  || param['customer'] === '' || param['name'] === '' || param['user'] === ''){
+      if( param['code'] === '' ||  param['company'] === ''  || param['customer'] === '' || param['name'] === '' || param['user'] === '' || param['estimate'] === ''){
       
         alert['type'] = 'save';
         alert['value'] = true;
-        estimate_modal_state.update(() => update_modal);
+        order_modal_state.update(() => update_modal);
  
         return common_alert_state.update(() => alert);
   
       }else {
-        let data = table_modal_data['estimate_sub'].getData();
-        const url = `${api}/estimate/update`
+        let data = table_modal_data['order_sub'].getData();
+        const url = `${api}/order/update`
         
         if(data.length > 0){
           for(let i=0; i<data.length; i++){
@@ -829,9 +825,9 @@ const save =  (param,title) => {
               
               alert['type'] = 'save';
               alert['value'] = true;
-              // estimate_modal_state.update(() => update_modal);
+              // order_modal_state.update(() => update_modal);
               common_alert_state.update(() => alert)
-              console.log(`${i+1}번째 열의 품목정보가 비었습니다.`);
+              
               return window.alert(`${i+1}번째 열의 품목정보가 비었습니다.`);
 
             }
@@ -848,17 +844,17 @@ const save =  (param,title) => {
           let params = {
             uid : param.uid,
             company_uid : parseInt(param['company']),
-          
             customer_uid : parseInt(param['customer']),
+            estimate_uid : parseInt(param['estimate']),
             code : param['code'],
             user_id : param['user'],
             name  : param['name'],
             product_spec : param['product_spec'],
             ship_place : param['ship_place'],
             description : param['description'],
-            estimate_date : param['estimate_date'],
-            expire : param['expire'],
-            estimate_sub : data,
+            ship_date : param['ship_date'],
+           
+            order_sub : data,
             used : param.used,
             token : login_data['token'],
             
@@ -879,10 +875,10 @@ const save =  (param,title) => {
             toast['value'] = true;
             update_modal['title'] = '';
             update_modal['update']['use'] = false;
-            estimate_modal_state.update(() => update_modal);
+            order_modal_state.update(() => update_modal);
             update_form = init_form_data;
-            estimate_form_state.update(()=> update_form);
-            select_query('estimate');
+            order_form_state.update(()=> update_form);
+            select_query('order');
             return common_toast_state.update(() => toast);
   
           }else{
@@ -921,7 +917,7 @@ const save =  (param,title) => {
 
         if(uid_array.length > 0){
 
-          const url = `${api}/estimate/delete`
+          const url = `${api}/order/delete`
           try {
     
             let params = {
@@ -936,10 +932,10 @@ const save =  (param,title) => {
               toast['value'] = true;
               update_modal['title'] = 'check_delete';
               update_modal[title]['use'] = false;
-              estimate_modal_state.update(() => update_modal);
-              estimate_form_state.update(()=>update_form);
+              order_modal_state.update(() => update_modal);
+              order_form_state.update(()=>update_form);
 
-              select_query('estimate');
+              select_query('order');
     
               return common_toast_state.update(() => toast);
     
@@ -992,8 +988,8 @@ const save =  (param,title) => {
   
     if (Array.isArray(data) && data.length > 0) {
       for (const item of data) {
-        const url = `${api}/estimate_sub/uid_select`;
-        const params = { estimate_uid : item['uid'] };
+        const url = `${api}/order_sub/uid_select`;
+        const params = { order_uid : item['uid'] };
         const config = {
           params: params,
           headers: {
@@ -1012,15 +1008,15 @@ const save =  (param,title) => {
           for(let i =0; i<page_qty; i++){
             let newItem = { ...item }; // 객체의 복사본 생성 (spread 연산자 사용)
 
-            let estimate_sub = []; // 각 페이지별 들어갈 품목 데이터
+            let order_sub = []; // 각 페이지별 들어갈 품목 데이터
             for (let j = 0; j < dataArray.length; j += 14) {
              
               const slicedData = dataArray.slice(j, j + 14); // 14개씩 잘라낸 데이터
-              estimate_sub.push(slicedData); // 각 슬라이스된 배열을 독립적인 요소로 추가
+              order_sub.push(slicedData); // 각 슬라이스된 배열을 독립적인 요소로 추가
             }
               newItem['pageNo'] = i+1 // newItem에 first_data 배열을 추가
               newItem['pageQty'] = page_qty; 
-              newItem['estimate_sub'] = estimate_sub[i]; // newItem에 first_data 배열을 추가
+              newItem['order_sub'] = order_sub[i]; // newItem에 first_data 배열을 추가
               check_data.push(newItem); // test_data 배열에 newItem 추가
           
           }
@@ -1041,10 +1037,10 @@ const save =  (param,title) => {
   
         let theme = "black";
 
-          let estimate_sub_data = item['estimate_sub'];
+          let order_sub_data = item['order_sub'];
       
                   
-          const productDetails = estimate_sub_data.length > 0 && estimate_sub_data.map((item2, index2) => `
+          const productDetails = order_sub_data.length > 0 && order_sub_data.map((item2, index2) => `
            
   
   
@@ -1069,9 +1065,9 @@ const save =  (param,title) => {
             
           `).join('');
 
-          const tempDetails = Array.from({ length: 20 -  estimate_sub_data.length}, (_, index) => `
+          const tempDetails = Array.from({ length: 20 -  order_sub_data.length}, (_, index) => `
           <tr>
-            <td style="text-align: center;" class="info-bottom-border info-left-border info-right-border">${ estimate_sub_data.length+index+1}</td>
+            <td style="text-align: center;" class="info-bottom-border info-left-border info-right-border">${ order_sub_data.length+index+1}</td>
             <td style="text-align: left;" class="info-bottom-border"></td>
             <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
             <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
@@ -1289,12 +1285,12 @@ const save =  (param,title) => {
                                </div>
                                <div class="table_row">
                                    
-                                <div style="text-align : left; color : black;">1. 견적번호 : ${item['code'] !== '' ? item['code'] : '-'} </div>
+                                <div style="text-align : left; color : black;">1. 주문번호 : ${item['code'] !== '' ? item['code'] : '-'} </div>
                               
                               </div>
                               <div class="table_row">
                                       
-                              <div style="text-align : left; color : black;">2. 견적일자 : ${item['estimate_date'] !== '' ? item['estimate_date'] : '-'}</div>
+                              <div style="text-align : left; color : black;">2. 납기일자 : ${item['ship_date'] !== '' ? item['ship_date'] : '-'}</div>
                               
                           </div>
                            
@@ -1464,10 +1460,10 @@ const save =  (param,title) => {
 
 
 
-const estimateSubItemSearchModalOpen = (title : any, data:any) => {
+const orderSubItemSearchModalOpen = (title : any, data:any) => {
 
   console.log('data : ', data);
-  init_estimate_uid = data.getData();
+  init_order_uid = data.getData();
    
  
   alert['type'] = 'save';
@@ -1485,7 +1481,7 @@ const estimateSubItemSearchModalOpen = (title : any, data:any) => {
  }
 
  
-const bookmarkEstimateSearchModalOpen = (title : any) => {
+const estimateSearchModalOpen = (title : any) => {
 
 
     
@@ -1493,13 +1489,13 @@ const bookmarkEstimateSearchModalOpen = (title : any) => {
   alert['value'] = false;
   console.log('titme : ', title);
   common_alert_state.update(() => alert);
-  bookmark_estimate_modal['title'] = title;
-  bookmark_estimate_modal[title]['use'] = true;
-  bookmark_estimate_modal[title]['title'] = title;
+  estimate_modal['title'] = title;
+  estimate_modal[title]['use'] = true;
+  estimate_modal[title]['title'] = title;
  
   
  
-  bookmark_estimate_modal_state.update(() => bookmark_estimate_modal);
+  estimate_modal_state.update(() => estimate_modal);
  
  }
 
@@ -1571,7 +1567,7 @@ const itemSearchTable = (table_state,type,tableComponent,select,title) => {
    
              data :  data,
  
-             columns: MODAL_TABLE_HEADER_CONFIG['estimate_item_search'],
+             columns: MODAL_TABLE_HEADER_CONFIG['order_item_search'],
              
         
             
@@ -1583,7 +1579,7 @@ const itemSearchTable = (table_state,type,tableComponent,select,title) => {
        
 }
 
-const bookmarkEstimateSearchTable = (table_state,type,tableComponent,select,title) => {
+const estimateSearchTable = (table_state,type,tableComponent,select,title) => {
 
 
   const url = `${api}/${type}/${select}`; 
@@ -1596,15 +1592,15 @@ const bookmarkEstimateSearchTable = (table_state,type,tableComponent,select,titl
     }
   }
     axios.get(url,config).then(res=>{
-      if(table_modal_state['estimate_bookmark_estimate_search']){
-        table_modal_state['estimate_bookmark_estimate_search'].destory();
+      if(table_modal_state['order_estimate_search']){
+        table_modal_state['order_estimate_search'].destory();
       }
  
       if(res.data.length > 0){
       let data = res.data;
   
  
-            table_modal_data['estimate_bookmark_estimate_search'] =   new Tabulator(tableComponent, {
+            table_modal_data['order_estimate_search'] =   new Tabulator(tableComponent, {
               height:TABLE_TOTAL_CONFIG['height'],
               layout:TABLE_TOTAL_CONFIG['layout'],
               pagination:TABLE_TOTAL_CONFIG['pagination'],
@@ -1637,7 +1633,7 @@ const bookmarkEstimateSearchTable = (table_state,type,tableComponent,select,titl
     
               data :  data,
   
-              columns: MODAL_TABLE_HEADER_CONFIG['estimate_bookmark_estimate_search'],
+              columns: MODAL_TABLE_HEADER_CONFIG['order_estimate_search'],
               
          
              
@@ -1654,7 +1650,7 @@ const bookmarkEstimateSearchTable = (table_state,type,tableComponent,select,titl
 
 
 
-const estimateSubitemSelect = (row) => {
+const orderSubitemSelect = (row) => {
    
 
   
@@ -1664,7 +1660,7 @@ const estimateSubitemSelect = (row) => {
   
   
   let checkData ; 
-  checkData = table_modal_data['estimate_sub'].getData().find(item => item['item_uid'] === new_data['uid']);
+  checkData = table_modal_data['order_sub'].getData().find(item => item['item_uid'] === new_data['uid']);
 
   if(checkData){
     return window.alert('품목 리스트에 존재하는 품목입니다.');
@@ -1672,14 +1668,14 @@ const estimateSubitemSelect = (row) => {
 
   }else{
    
-    init_estimate_uid.item_uid = new_data.uid;
-    init_estimate_uid.item.ingr_kor_name = new_data.ingr_kor_name;
-    init_estimate_uid.item.ingr_eng_name = new_data.ingr_eng_name;
+    init_order_uid.item_uid = new_data.uid;
+    init_order_uid.item.ingr_kor_name = new_data.ingr_kor_name;
+    init_order_uid.item.ingr_eng_name = new_data.ingr_eng_name;
     
     let limit_country = [];
     let checkData = restric_material_data.filter((item) => {
       
-      return item['ingr_std_name'] === init_estimate_uid['item']['ingr_kor_name'] || item['ingr_eng_name'] === init_estimate_uid['item']['ingr_eng_name'] 
+      return item['ingr_std_name'] === init_order_uid['item']['ingr_kor_name'] || item['ingr_eng_name'] === init_order_uid['item']['ingr_eng_name'] 
     });
 
     if(checkData){
@@ -1697,33 +1693,33 @@ const estimateSubitemSelect = (row) => {
     });
     
      
-      init_estimate_uid['country_name'] = uniqueArr.toString();
+      init_order_uid['country_name'] = uniqueArr.toString();
 
 
       // data[i]['limit_cond'] = checkData['limit_cond'];
       // console.log('checkData  :', checkData['limit_cond']);
     }else{
-      init_estimate_uid['country_name']= "제한국가 없음"
+      init_order_uid['country_name']= "제한국가 없음"
     }
 
 
     
 
-    row.getRow().update(init_estimate_uid);
+    row.getRow().update(init_order_uid);
 
-    let final_data = table_modal_data['estimate_sub'].getData();
+    let final_data = table_modal_data['order_sub'].getData();
 
-    table_modal_data['estimate_sub'].setData(final_data)
+    table_modal_data['order_sub'].setData(final_data)
 
     table_modal_state.update(()=> table_modal_data);
 
-    item_modal['estimate_item_search']['use'] = !item_modal['estimate_item_search']['use'];
+    item_modal['order_item_search']['use'] = !item_modal['order_item_search']['use'];
     item_modal_state.update(() => item_modal);
   
   }
 }
 
-const bookmarkEstimateSelect = async(row) => {
+const estimateSelect = async(row) => {
    
 
 
@@ -1731,7 +1727,7 @@ const bookmarkEstimateSelect = async(row) => {
   
 
 
-
+  update_form['estimate'] = new_data['uid'];
   update_form['name'] = new_data['name'];
   update_form['product_spec'] = new_data['product_spec'];
   update_form['ship_place'] = new_data['ship_place'];
@@ -1739,12 +1735,12 @@ const bookmarkEstimateSelect = async(row) => {
   
   
   
-  const url = `${api}/bookmark_estimate_sub/uid_select`
+  const url = `${api}/estimate_sub/uid_select`
 
      
   let params = 
   {
-    bookmark_estimate_uid : new_data['uid'],
+    estimate_uid : new_data['uid'],
 
   };
   const config = {
@@ -1796,14 +1792,14 @@ const bookmarkEstimateSelect = async(row) => {
       }
 
     }
-    if(table_modal_state['estimate_sub']){
+    if(table_modal_state['order_sub']){
       
-      table_modal_data['estimate_sub'].setData(data);
+      table_modal_data['order_sub'].setData(data);
       table_modal_state.update(()=> table_modal_data);
     }else{
      
-      if(table_modal_data['estimate_sub'] ){
-        table_modal_data['estimate_sub'].setData(data);
+      if(table_modal_data['order_sub'] ){
+        table_modal_data['order_sub'].setData(data);
         table_modal_state.update(()=> table_modal_data);
       }
     
@@ -1825,28 +1821,28 @@ const bookmarkEstimateSelect = async(row) => {
 
   
  
-    bookmark_estimate_modal['estimate_bookmark_estimate_search']['use'] = !bookmark_estimate_modal['estimate_bookmark_estimate_search']['use'];
-    bookmark_estimate_modal_state.update(() => bookmark_estimate_modal);
+    estimate_modal['order_estimate_search']['use'] = !estimate_modal['order_estimate_search']['use'];
+    estimate_modal_state.update(() => estimate_modal);
     
-    estimate_form_state.update(()=> update_form);
+    order_form_state.update(()=> update_form);
 
   
   
 }
-const bookmarkEstimateSearchModalClose = (title) => {
-  bookmark_estimate_modal['title'] = '';
-  bookmark_estimate_modal[title]['use'] = !bookmark_estimate_modal[title]['use'];
+const estimateSearchModalClose = (title) => {
+  estimate_modal['title'] = '';
+  estimate_modal[title]['use'] = !estimate_modal[title]['use'];
 
   alert['type'] = 'save';
   alert['value'] = false;
 
   common_alert_state.update(() => alert);
-  bookmark_estimate_modal_state.update(() => bookmark_estimate_modal);
+  estimate_modal_state.update(() => estimate_modal);
  
 
 }
 
-const estimateCompanySelect = (row) => {
+const orderCompanySelect = (row) => {
   
 
   update_form['customer'] = row.uid;
@@ -1854,10 +1850,10 @@ const estimateCompanySelect = (row) => {
   
 
   
-  company_modal['estimate_company_search']['use'] = !company_modal['estimate_company_search']['use'];
+  company_modal['order_company_search']['use'] = !company_modal['order_company_search']['use'];
 
   company_modal_state.update(() => company_modal);
-  estimate_form_state.update(()=> update_form);
+  order_form_state.update(()=> update_form);
   
 }
 
@@ -1950,7 +1946,7 @@ const companySearchTable = (table_state,type,tableComponent,select,title) => {
     
               data :  data,
   
-              columns: MODAL_TABLE_HEADER_CONFIG['estimate_company_search'],
+              columns: MODAL_TABLE_HEADER_CONFIG['order_company_search'],
               
          
              
@@ -1969,4 +1965,4 @@ const companySearchTable = (table_state,type,tableComponent,select,title) => {
 
 
 
-export {  estimateModalOpen,save,modalClose,estimateModalTable,estimateAddRow,estimateDeleteRow,estimateAllDeleteRow,estimateSubSelectDelete,estimateSubItemSearchModalOpen,itemSearchTable,estimateSubitemSelect,itemSearchModalClose,makeCustomTable,bookmarkEstimateSearchModalOpen,bookmarkEstimateSelect,bookmarkEstimateSearchTable,bookmarkEstimateSearchModalClose ,companySearchTable, companySearchModalOpen,estimateCompanySelect, companySearchModalClose}
+export {  orderModalOpen,save,modalClose,orderModalTable,orderAddRow,orderDeleteRow,orderAllDeleteRow,orderSubSelectDelete,orderSubItemSearchModalOpen,itemSearchTable,orderSubitemSelect,itemSearchModalClose,makeCustomTable,estimateSearchModalOpen,estimateSelect,estimateSearchTable,estimateSearchModalClose ,companySearchTable, companySearchModalOpen,orderCompanySelect, companySearchModalClose}

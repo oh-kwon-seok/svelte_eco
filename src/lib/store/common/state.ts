@@ -110,8 +110,13 @@ const url_state : any = writable({ path : '', query : ''});
 
   // 영업
   const sales_estimate_state : any =  writable([]);
+  const sales_order_state : any =  writable([]);
 
-
+  
+  // 재고
+  const stock_stock_state : any =  writable([]);
+  const stock_stock_record_state : any =  writable([]);
+  
   
 
   const common_company_filter_state : any = writable([]); // 매입매출이 아닌 사업장 데이터임
@@ -147,5 +152,9 @@ const url_state : any = writable({ path : '', query : ''});
     common_bookmark_estimate_state,
 
     sales_estimate_state ,
+    sales_order_state ,
+
+    stock_stock_state,
+    stock_stock_record_state
 
   };

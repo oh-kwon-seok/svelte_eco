@@ -101,7 +101,17 @@
                 <Icon.StoreSolid size="20"/>
             </svelte:fragment>
             <SidebarDropdownItem class={text_style} label="견적 관리" href='/sales/estimate' active={activeUrl === '/sales/estimate'} on:click={handleToggle('estimate')}/>
-        
+            <SidebarDropdownItem class={text_style} label="주문 관리" href='/sales/order' active={activeUrl === '/sales/order'} on:click={handleToggle('order')}/>
+            </SidebarDropdownWrapper>
+          </SidebarGroup>
+          
+          <SidebarGroup border>
+            <SidebarDropdownWrapper class={text_style} label="재고 관리" isOpen={mainPath ==='stock' ? true : false} transitionType="fly" {transitionParams} >
+              <svelte:fragment slot="icon">
+                <Icon.TableCellsSolid size="20"/>
+            </svelte:fragment>
+            <SidebarDropdownItem class={text_style} label="재고 관리" href='/stock/stock' active={activeUrl === '/stock/stock'} on:click={handleToggle('stock')}/>
+          
             </SidebarDropdownWrapper>
           </SidebarGroup>
        

@@ -15,17 +15,17 @@
     import { ChevronDownSolid, SearchOutline } from 'flowbite-svelte-icons';
 
 
-    import Util from '$lib/components/modal/estimate/Util.svelte';
+    import Util from '$lib/components/modal/order/Util.svelte';
     
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {estimateModalOpen,makeCustomTable} from '$lib/store/estimate/function';
+    import {orderModalOpen,makeCustomTable} from '$lib/store/order/function';
     import {excelDownload} from '$lib/store/common/function';
     
-    import {estimate_form_state,estimate_modal_state} from '$lib/store/estimate/state';
+    import {order_form_state,order_modal_state} from '$lib/store/order/state';
 
-    import {url_state,cookie_state,sales_estimate_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
+    import {url_state,cookie_state,sales_order_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
     import {EXCEL_CONFIG} from '$lib/module/sales/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
@@ -48,7 +48,7 @@
     onMount(()=>{
         console.log('시점');
        
-        makeCustomTable(table_list_state,"estimate",tableComponent,"select");
+        makeCustomTable(table_list_state,"order",tableComponent,"select");
 
     });
 
@@ -57,9 +57,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/sales/estimate'){
+        }else if($url_state['path'] === '/sales/order'){
          
-            makeCustomTable(table_list_state,"estimate",tableComponent,"select");
+            makeCustomTable(table_list_state,"order",tableComponent,"select");
         }
       
     })
@@ -92,7 +92,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='영업 관리' subtitle='견적 관리'/>
+              <Title title='영업 관리' subtitle='주문 관리'/>
             </div>
 
           
@@ -102,46 +102,46 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">견적 관리</span>
+                      <span slot="title">주문 관리</span>
 
                 
-                      <SearchBar title="estimate"/>
+                      <SearchBar title="order"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {estimateModalOpen('','add')}}>
+                        <Button  on:click={() => {orderModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-                        <Button  color='red' on:click={() => estimateModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => orderModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='green' on:click={() =>excelDownload('estimate',EXCEL_CONFIG['estimate'])}>
+                        <Button  color='green' on:click={() =>excelDownload('order',EXCEL_CONFIG['order'])}>
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀다운
                       </Button>
 
                       
-                      <Button  color='light' on:click={() => estimateModalOpen('','print')}>
+                      <Button  color='light' on:click={() => orderModalOpen('','print')}>
                         <Icon.PrintSolid class='mr-2' size="20" />
-                        견적서 출력
+                        주문서 출력
                     </Button>
                       
                  
                   
 
                  
-                        {#if $estimate_modal_state['title'] === 'add'}
+                        {#if $order_modal_state['title'] === 'add'}
                           <Util title="add" />
-                        {:else if $estimate_modal_state['title'] === 'update'}
+                        {:else if $order_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $estimate_modal_state['title'] === 'check_delete'}
+                          {:else if $order_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
-                          {:else if $estimate_modal_state['title'] === 'print'}
+                          {:else if $order_modal_state['title'] === 'print'}
                           <Util  title="print"/>
                         {/if}
                         

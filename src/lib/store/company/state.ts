@@ -13,6 +13,7 @@ import {v4 as uuid} from 'uuid';
     check_delete : { use : false, title: ''},
       
     estimate_company_search : {use : false, title: ''}, // 견적 기능에서 불러오는 company
+    order_company_search : {use : false, title: ''}, // 주문 기능에서 불러오는 company
      
    });
 

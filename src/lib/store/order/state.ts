@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid';
 import moment from 'moment';
 
 
-  const estimate_modal_state : any = writable( {
+  const order_modal_state : any = writable( {
     title : '',
     add : { use : false, title: ''},
     update : { use : false, title: ''},
@@ -13,17 +13,16 @@ import moment from 'moment';
    
     check_delete : { use : false, title: ''},
     print : { use : false, title: ''},
-    order_estimate_search : {use : false, title: ''}, // 주문 기능에서 불러오는 견적 모달 
-
    
    
    });
 
-  const estimate_form_state : any = writable({
+  const order_form_state : any = writable({
     uid : 0,
     modal: false,
     company : '', // 사업장
-    customer : '',
+    customer : '', // 거래처
+    estimate : '', // 견적서
     customer_name : '',
 
     user : '',
@@ -32,12 +31,12 @@ import moment from 'moment';
     product_spec : "", // 제품 사양
     ship_place : "", // 납품 장소
     description : "", // 발주조건 및 기타 특이사항
-    estimate_date : moment().format('YYYY-MM-DD'), // 견적일자
-    expire : "", //유효기간 
-    estimate_sub_array : [],
+    ship_date : moment().format('YYYY-MM-DD'), // 견적일자
+   
+    order_sub_array : [],
     used : 1,
     
   })
   
 
-  export {estimate_modal_state,estimate_form_state};
+  export {order_modal_state,order_form_state};
