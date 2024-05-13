@@ -3,7 +3,7 @@
 //@ts-nocheck
 
 import { writable } from 'svelte/store';
-import {stock_modal_state,stock_form_state} from './state';
+import {stock_record_modal_state,stock_record_form_state} from './state';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
@@ -31,11 +31,11 @@ let search_data : any;
 let selected_data : any;
 
 
-stock_modal_state.subscribe((data) => {
+stock_record_modal_state.subscribe((data) => {
     update_modal = data;
 })
 
-stock_form_state.subscribe((data) => {
+stock_record_form_state.subscribe((data) => {
     update_form = data;
 })
 
@@ -70,57 +70,6 @@ common_selected_state.subscribe((data) => {
  
 
 
-
-const stockModalOpen = (data : any, title : any) => {
- 
- 
-   console.log('title : ', title);
-   console.log('data : ', data);
-   
-     alert['type'] = 'save';
-     alert['value'] = false;
-     
-     common_alert_state.update(() => alert);
-     update_modal['title'] = title;
-     update_modal[title]['use'] = true;
-     stock_modal_state.update(() => update_modal);
- 
-     if(title === 'update' ){
-
-         Object.keys(update_form).map((item)=> {    
-             if(item === 'company' ){
-               update_form[item] = data[item]['uid'];
-             }else if(item === 'prev_factory'){
-              update_form[item] = data['factory']['uid'];
-
-             }else if(item === 'factory_sub'){
-              update_form['prev_factory_sub'] = data[item]['uid'];
-             }
-             
-             
-             
-             
-             else{
-               update_form[item] = data[item];
-             }
-            
-         }); 
- 
-             stock_form_state.update(() => update_form);
-             stock_modal_state.update(() => update_modal);
-            
- 
-     }
-     if(title === 'check_delete'){
-       let data =  table_list_data['stock'].getSelectedData();
- 
-       common_selected_state.update(() => data);
-     
-   }
- }
-
-
-
 const modalClose = (title) => {
   update_modal['title'] = '';
   update_modal[title]['use'] = !update_modal[title]['use'];
@@ -128,83 +77,13 @@ const modalClose = (title) => {
   alert['type'] = 'save';
   alert['value'] = false;
   common_alert_state.update(() => alert);
-  stock_modal_state.update(() => update_modal);
+  stock_record_modal_state.update(() => update_modal);
 
 
 }
 
 
 
-const save = (param,title) => {
-
-
-  update_modal['title'] = 'add';
-  update_modal['add']['use'] = true;
- 
- if(title === 'check_delete'){
-      let data =  selected_data;
-      let uid_array = [];
-
-      console.log('deleted_data : ', data);
-      if(data.length === 0){
-        alert['type'] = 'check_delete';
-        alert['value'] = true;
-        common_alert_state.update(() => alert);
-
-      }else{
-        for(let i=0; i<data.length; i++){
-          uid_array.push(data[i]['uid']);
-        }
-      }
-
-        if(uid_array.length > 0){
-
-          const url = `${api}/stock/delete`
-          try {
-    
-            let params = {
-              uid : uid_array,
-            };
-          axios.post(url,
-            params,
-          ).then(res => {
-            console.log('res',res);
-            if(res.data !== undefined && res.data !== null && res.data !== '' ){
-              console.log('실행');
-              console.log('res:data', res.data);
-              
-              toast['type'] = 'success';
-              toast['value'] = true;
-              update_modal['title'] = title;
-              update_modal[title]['use'] = false;
-              stock_modal_state.update(() => update_modal);
-              stock_form_state.update(()=>update_form);
-
-              select_query('stock');
-    
-              return common_toast_state.update(() => toast);
-    
-            }else{
-            
-              alert['type'] = 'error';
-              alert['value'] = true;
-              
-              return common_alert_state.update(() => alert);
-            }
-          })
-          }catch (e:any){
-            alert['type'] = 'error';
-            alert['value'] = true;
-            return common_alert_state.update(() => alert);
-          };
-    
-
-        }
-    }
-  }
-
-
-  
 const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
        
@@ -344,4 +223,4 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
 
 
-export {stockModalOpen,save,modalClose,makeCustomTable}
+export {modalClose,makeCustomTable}

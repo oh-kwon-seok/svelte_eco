@@ -111,7 +111,7 @@
                 <Icon.TableCellsSolid size="20"/>
             </svelte:fragment>
             <SidebarDropdownItem class={text_style} label="재고 관리" href='/stock/stock' active={activeUrl === '/stock/stock'} on:click={handleToggle('stock')}/>
-          
+            <SidebarDropdownItem class={text_style} label="재고 수불부" href='/stock/stock_record' active={activeUrl === '/stock/stock_record'} on:click={handleToggle('stock_record')}/>
             </SidebarDropdownWrapper>
           </SidebarGroup>
        

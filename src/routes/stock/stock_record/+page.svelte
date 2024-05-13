@@ -9,13 +9,11 @@
     import SideBar from '$lib/components/layout/SideBar.svelte';
     import Footer from '$lib/components/layout/Footer.svelte';
     import Title from '$lib/components/layout/Title.svelte';
-    import Util from '$lib/components/modal/stock/Util.svelte';
+    
 
     import { Tabs, TabItem} from 'flowbite-svelte';
    
     import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state,load_state} from '$lib/store/common/state';
-    import {stock_modal_state} from '$lib/store/stock/state';
-    
  
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
@@ -33,7 +31,7 @@
 
     onMount(()=>{
         
-        makeCustomTable(table_list_state,"stock",tableComponent,"select");
+        makeCustomTable(table_list_state,"stock_record",tableComponent,"select");
 
     });
 
@@ -42,9 +40,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/stock/stock'){
+        }else if($url_state['path'] === '/stock_record/stock'){
          
-            makeCustomTable(table_list_state,"stock",tableComponent,"select");
+            makeCustomTable(table_list_state,"stock_record",tableComponent,"select");
         }
       
     })
@@ -77,7 +75,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='재고 관리' subtitle='재고 관리'/>
+              <Title title='재고 관리' subtitle='재고 수불부'/>
             </div>
 
            
@@ -88,18 +86,13 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">재고 관리</span>
+                      <span slot="title">재고 수불부</span>
 
                 
                       <SearchBar title="stock"/>
 
 
-                      {#if $stock_modal_state['title'] === 'update'}
-                      <Util title="update" />
-                    {:else if $stock_modal_state['title'] === 'check_delete'}
-                      <Util  title="check_delete"/>
                     
-                    {/if}
 
                       <div id="example-table-theme" bind:this={tableComponent}></div>
                     </TabItem>

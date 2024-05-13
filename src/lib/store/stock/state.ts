@@ -20,13 +20,19 @@ import {v4 as uuid} from 'uuid';
     lot : "",
     item : '',
     company : '',
-    factory : '',
-    factory_sub : '',
+    prev_factory : '',
+    prev_factory_sub : '',
+    after_factory : '',
+    after_factory_sub : '',
     user : '',
-    qty : 0,
-    unit : "",
-    status : "",
-    used : 1,
+    prev_qty : 0,
+    after_qty : 0,
+    unit : '',
+    status : '',
+    control_reason : '',
+
+
+    
   })
 
 

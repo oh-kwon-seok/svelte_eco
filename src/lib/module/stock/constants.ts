@@ -4,9 +4,9 @@ import { DateTime } from 'luxon';
 
 import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from '$lib/module/common/function';
 
-import { estimateModalOpen,estimateSubitemSelect,estimateSubItemSearchModalOpen,estimateSubSelectDelete, bookmarkEstimateSelect,estimateCompanySelect} from '$lib/store/estimate/function';
 
-import { orderModalOpen,orderSubitemSelect,orderSubItemSearchModalOpen,orderSubSelectDelete, estimateSelect,orderCompanySelect} from '$lib/store/order/function';
+
+import { stockModalOpen} from '$lib/store/stock/function';
 
 
 
@@ -20,6 +20,11 @@ import axios from 'axios'
 const TABLE_FILTER : any = {
    
     stock : [
+        {value : "all",name : "전체"},
+        {value : "lot", name : "로트"},
+        {value : "ingr_eng_name", name : "영문명"},
+    ],   
+    stock_record : [
         {value : "all",name : "전체"},
         {value : "lot", name : "로트"},
         {value : "ingr_eng_name", name : "영문명"},
@@ -81,10 +86,13 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
              
                 // "+" 아이콘 버튼
                 var deleteButton = document.createElement("button");
-                deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.innerHTML = "<i class='fas fa-pen'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
                 deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
                 deleteButton.addEventListener("click", function () {
-                  
+               
+                 
+                     
+        
                     // estimateSubSelectDelete(cell); -> 재고조정 로직 추가
                 });
             
@@ -109,10 +117,7 @@ const TABLE_HEADER_CONFIG : any = {
         
         {title:"LOT", field:"lot", width:150, headerFilter:"input", 
         
-        formatter:function(cell : any){
-            var value = cell.getValue();
-        return "<p style='color:red; font-weight:bold; white-space : pre-line; '>" + value + "</p>";
-        }
+      
         },
 
 
@@ -132,10 +137,12 @@ const TABLE_HEADER_CONFIG : any = {
              
                 // "+" 아이콘 버튼
                 var deleteButton = document.createElement("button");
-                deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.innerHTML = "<i class='fas fa-pen'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
                 deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
                 deleteButton.addEventListener("click", function () {
-                  
+                    let row = cell.getRow();
+                    stockModalOpen(row.getData(),"update");
+
                     // estimateSubSelectDelete(cell); -> 재고조정 로직 추가
                 });
             
@@ -147,6 +154,33 @@ const TABLE_HEADER_CONFIG : any = {
                 return container;
             }
         },
+    ],
+    stock_record : [
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        
+        
+        {title:"LOT", field:"lot", width:150, headerFilter:"input", 
+        
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<p style='color:red; font-weight:bold; white-space : pre-line; '>" + value + "</p>";
+        }
+        },
+
+
+        {title:"한글명", field:"item.ingr_kor_name", width:150, headerFilter:"input",},
+        {title:"영문명", field:"item.ingr_eng_name", width:150, headerFilter:"input",},
+        {title:"불출공장", field:"out_factory.name", width:150, headerFilter:"input",},
+        {title:"불출창고", field:"out_factory_sub.name", width:150, headerFilter:"input",},
+        
+        {title:"수령공장", field:"in_factory.name", width:150, headerFilter:"input",},
+        {title:"수령창고", field:"in_factory_sub.name", width:150, headerFilter:"input",},
+    
+        {title:"수불수량", field:"qty", width:150, formatter: "money",  formatterParams: { thousand:",",precision:false,}},
+        {title:"단위", field:"unit", width:150, headerFilter:"input", },
+
+    
     ],
 
 

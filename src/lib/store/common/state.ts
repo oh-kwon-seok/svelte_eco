@@ -118,6 +118,7 @@ const url_state : any = writable({ path : '', query : ''});
   const stock_stock_record_state : any =  writable([]);
   
   
+  
 
   const common_company_filter_state : any = writable([]); // 매입매출이 아닌 사업장 데이터임
 

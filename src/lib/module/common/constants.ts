@@ -50,7 +50,7 @@ const LOGIN_ALERT = {
 
 const CLIENT_INFO = {  // 업체정보
    
-    code  : " 314-86-46990",
+    code  : "314-86-46990",
     company_name : "주식회사 에코바이오의학연구소",
     name : "구태규",
     address : "대전 유성구 전민동 461-6 한남대학교 대덕밸리캠퍼스 이노비즈파크 308호",
