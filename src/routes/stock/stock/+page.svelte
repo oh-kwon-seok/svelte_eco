@@ -11,16 +11,17 @@
     import Title from '$lib/components/layout/Title.svelte';
     import Util from '$lib/components/modal/stock/Util.svelte';
 
-    import { Tabs, TabItem} from 'flowbite-svelte';
+    import { Tabs, TabItem, Timeline, TimelineItem, Button,ButtonGroup,Dropdown,DropdownItem,Input,Label,Select,Search} from 'flowbite-svelte';
    
     import {url_state,cookie_state,common_item_state,table_list_state,common_toast_state,common_search_state,load_state} from '$lib/store/common/state';
     import {stock_modal_state} from '$lib/store/stock/state';
     
+    import * as Icon from 'svelte-awesome-icons';
  
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
     import Toast from '$lib/components/toast/Toast.svelte'
     
-    import {makeCustomTable} from '$lib/store/stock/function';
+    import {makeCustomTable,stockModalOpen} from '$lib/store/stock/function';
     
 	import { afterUpdate, onMount } from 'svelte';
 	import moment from 'moment';
@@ -92,21 +93,35 @@
 
                 
                       <SearchBar title="stock"/>
+                      <div class='m-5'>
+                        
+                        <Button  color='red' on:click={() => stockModalOpen('','check_delete')}>
+                          <Icon.BanSolid class='mr-2' size="20" />
+                          선택삭제
+                        </Button>
+                      
+                      
+                      
+                      </div>
 
 
-                      {#if $stock_modal_state['title'] === 'update'}
-                      <Util title="update" />
-                    {:else if $stock_modal_state['title'] === 'check_delete'}
-                      <Util  title="check_delete"/>
-                    
-                    {/if}
-
+                 
                       <div id="example-table-theme" bind:this={tableComponent}></div>
                     </TabItem>
                    
                   
           
                   </Tabs>
+
+
+                  {#if $stock_modal_state['title'] === 'update'}
+                  <Util title="update" />
+                  {:else if $stock_modal_state['title'] === 'check_delete'}
+                    <Util  title="check_delete"/>
+                  
+                  {/if}
+
+
                 <Footer />
             </div>
          

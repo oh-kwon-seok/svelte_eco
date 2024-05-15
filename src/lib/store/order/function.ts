@@ -1085,6 +1085,12 @@ const save =  (param,title) => {
             <html>
               <head>
               <style>
+              @media screen {
+              
+                body {
+                  visibility: hidden;
+                }
+              }
               @media print {
                  @page {
                    size: A4;
@@ -1092,6 +1098,7 @@ const save =  (param,title) => {
                    margin: 0.5cm;
                  }
                  body {
+                  visibility: visible;
                    font-family: 'Nanum Gothic', sans-serif;
                    margin: 0;
                    padding: 0px 30px 0px 5px;
@@ -1424,34 +1431,38 @@ const save =  (param,title) => {
     };
     
    
-    const printWindow: any = window.open('', '_blank');
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
   
     generateA4Pages(check_data)
       .then(content => {
         printWindow.document.write(content);
         printWindow.document.close();
+        // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+        printWindow.onload = () => {
+        
+          // 프린트 다이얼로그 호출
+          printWindow.print();
+        };
+
+        // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
+        printWindow.onafterprint = () => {
+          
+          printWindow.close();
+        };
+
+
+
+        // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+      
+
         // 프린트 다이얼로그 호출
         printWindow.print();
+       
       })
       .catch(error => {
         console.error(error);
       });
-  
-  
-    // 팝업이 열린 후에 프린트 다이얼로그가 뜨면서 팝업이 닫히지 않도록 설정
-    printWindow.onbeforeunload = (event) => {
-      // 이벤트를 취소하여 팝업이 닫히지 않도록 함
-      // event.preventDefault();
-      closePopup();
-      
-    };
-  
-  
-  
-    // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
-    printWindow.onafterprint = () => {
-      printWindow.close();
-    };
   
    
   };

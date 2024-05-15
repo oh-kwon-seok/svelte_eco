@@ -7,6 +7,7 @@ import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from '$lib/m
 
 
 import { stockModalOpen} from '$lib/store/stock/function';
+import { stockInoutSubItemSearchModalOpen,stockInoutSubSelectDelete,stockInoutModalOpen} from '$lib/store/stock_inout/function';
 
 
 
@@ -28,6 +29,11 @@ const TABLE_FILTER : any = {
         {value : "all",name : "전체"},
         {value : "lot", name : "로트"},
         {value : "ingr_eng_name", name : "영문명"},
+    ],
+    stock_inout : [
+        {value : "all",name : "전체"},
+        {value : "doc_type", name : "입출고 사유"},
+        {value : "status", name : "입출고"},
     ],
     
 }
@@ -106,11 +112,80 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
         },
     ],
 
+    stock_inout_sub : [
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        {title:"LOT", field:"lot", width:150, headerFilter:"input",editor : "input"},
+       
+        {title:"성분명", field:"item.ingr_eng_name", width:150, headerFilter:"input", 
+        
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+        cellClick:function(e : any, cell:any){
+                let row = cell.getRow();
+                if(row){
+                  
+                    stockInoutSubItemSearchModalOpen('stock_inout_item_search',row);
+                }else{
+                    
+                }
+        }
+        },
+
+        {title:"한글명", field:"item.ingr_kor_name", width:150, headerFilter:"input",},
+       
+        {title:"수량", field:"qty", width:150, editor : "input",formatter: "money",  formatterParams: {
+          
+            thousand:",",
+            precision:false,
+
+        }},
+        {title:"용량", field:"unit", width:150, headerFilter:"input",editor : "input"},
+       
+       
+    
+        {
+            title: "삭제",
+            headerSort: false,
+            formatter: function (cell:any, formatterParams:any, onRendered:any) {
+             
+                // "+" 아이콘 버튼
+                var deleteButton = document.createElement("button");
+                deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+                deleteButton.addEventListener("click", function () {
+                    // let add_qty = parseInt(rowData.qty) + 1;
+                    // row.update({qty : add_qty});
+                    stockInoutSubSelectDelete(cell);
+                });
+            
+                var container = document.createElement("div");
+                container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+                container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+                container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+                container.appendChild(deleteButton);
+            
+             
+                return container;
+            }
+
+        },
+        
+
+
+    ],
+
 }
 const TABLE_HEADER_CONFIG : any = {
   
 
     stock : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+
         {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
         
         
@@ -143,7 +218,7 @@ const TABLE_HEADER_CONFIG : any = {
                     let row = cell.getRow();
                     stockModalOpen(row.getData(),"update");
 
-                    // estimateSubSelectDelete(cell); -> 재고조정 로직 추가
+                
                 });
             
                 var container = document.createElement("div");
@@ -182,6 +257,37 @@ const TABLE_HEADER_CONFIG : any = {
 
     
     ],
+
+    stock_inout: [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        {title:"상태", field:"status", width:150, headerFilter:"input"},
+         {title:"입출고유형", field:"doc_type", width:150, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                stockInoutModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
 
 
 }

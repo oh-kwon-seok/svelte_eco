@@ -25,14 +25,14 @@
 		// 기준정보 select용 데이터들을 호출한다.
 
 		
-		infoCallApi('company');
-		infoCallApi('department');
-		infoCallApi('employment');
-		infoCallApi('type');
-		infoCallApi('restric_material');
+		infoCallApi('company','info_select');
+		infoCallApi('department','info_select');
+		infoCallApi('employment','info_select');
+		infoCallApi('type','info_select');
+		infoCallApi('restric_material','info_select');
 		
-		infoCallApi('factory');
-		// infoCallApi('factory_sub');
+		infoCallApi('factory','info_select');
+		infoCallApi('factory_sub','info_total_select');
 		
 	
 	});

@@ -9,9 +9,9 @@
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
     import {stock_modal_state, stock_form_state} from '$lib/store/stock/state';
-    import {common_alert_state, common_toast_state,common_company_state,common_type_state,common_factory_state} from '$lib/store/common/state';
+    import {common_alert_state, common_toast_state,common_company_state,common_type_state,common_factory_state,common_factory_sub_state,common_factory_sub_filter_state} from '$lib/store/common/state';
     import {fileButtonClick} from '$lib/store/common/function';
-    import {save,modalClose,} from '$lib/store/stock/function';
+    import {save,modalClose,factoryChange} from '$lib/store/stock/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     import {handleSubmit} from '$lib/store/common/function';
     export let title;
@@ -50,66 +50,83 @@
         <div class="grid grid-cols-2 gap-4">
           <Label class="space-y-2">
             <span>이전 공장</span>
-            <Select id="countrie" class="mt-2" bind:value={$stock_form_state['prev_factory']} placeholder="">
+            <Select id="countrie" disabled class="mt-2" bind:value={$stock_form_state['prev_factory']} placeholder="">
                 {#each $common_factory_state as item}
                   <option value={item.uid}>{item.name}</option>
                 {/each}
               </Select>
           </Label>
+          <Label class="space-y-2">
+            <span>이전 창고</span>
+            <Select id="countrie" disabled class="mt-2" bind:value={$stock_form_state['prev_factory_sub']} placeholder="">
+                {#each $common_factory_sub_state as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
+          </Label>
+          <Label class="space-y-2">
+            <span>변경 공장</span>
+            <Select id="countrie" class="mt-2" bind:value={$stock_form_state['after_factory']} placeholder="" on:change={factoryChange($stock_form_state['after_factory'])}>
+                {#each $common_factory_state as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
+          </Label>
+          <Label class="space-y-2">
+            <span>변경 창고</span>
+            <Select id="countrie"  class="mt-2" bind:value={$stock_form_state['after_factory_sub']} placeholder="">
+                {#each $common_factory_sub_filter_state as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
+          </Label>
+
+
 
        
 
-
+          <Label class="space-y-2">
+            <span>LOT</span>
+            <Input type="text" id="last_name" readOnly placeholder="로트를 입력하세요" required bind:value={$stock_form_state['lot']}/>
+          </Label>
         
           <Label class="space-y-2">
             <span>품목코드</span>
-            <Input type="text" id="last_name" placeholder="품목코드를 입력하세요" required bind:value={$stock_form_state['item']['code']}/>
-            
-            {#if $stock_form_state['code'] === '' && $common_alert_state['value'] === true}
-            <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
-            {/if}
+            <Input type="text" id="last_name" readOnly placeholder="품목코드를 입력하세요" required bind:value={$stock_form_state['item']['code']}/>
           </Label>
-          <Label class="space-y-2">
-            <span>약호</span>
-            <Textarea type="text" id="last_name" rows="4"  placeholder="약호를 입력하세요" required bind:value={$stock_form_state['item']['simple_code']}/>
-            
-           
-          </Label>
+       
 
           <Label class="space-y-2">
             <span>한글 품목명</span>
-            <Textarea type="text" id="last_name" rows="4"  placeholder="한글 품목명을 입력하세요" required bind:value={$stock_form_state['item']['ingr_kor_name']}/>
+            <Textarea type="text" id="last_name" readOnly rows="4"  placeholder="한글 품목명을 입력하세요" required bind:value={$stock_form_state['item']['ingr_kor_name']}/>
             
            
           </Label>
+          
           <Label class="space-y-2">
             <span>영문 품목명</span>
-            <Textarea type="text" id="last_name" rows="4"  placeholder="영문 품목명을 입력하세요" required bind:value={$stock_form_state['item']['ingr_eng_name']}/>
+            <Textarea type="text" id="last_name" readOnly rows="4"  placeholder="영문 품목명을 입력하세요" required bind:value={$stock_form_state['item']['ingr_eng_name']}/>
             
            
           </Label>
-      
-          
 
           <Label class="space-y-2">
-            <span>유형코드</span>
-            <Input type="text" id="last_name" placeholder="유형코드를 입력하세요" required bind:value={$stock_form_state['item']['classify_code']}/>
+            <span>기존 수량 {$stock_form_state['unit'] !== "" ? "[단위 : " + $stock_form_state['unit'] + "]" : ""}</span>
+            <Input type="number" id="last_name" disabled  required bind:value={$stock_form_state['prev_qty']}/>
           </Label>
           <Label class="space-y-2">
-            <span>성분코드</span>
-            <Input type="text" id="last_name" placeholder="성분코드를 입력하세요" required bind:value={$stock_form_state['item']['component_code']}/>
+            <span>조정후 수량</span>
+            <Input type="number" id="last_name" required bind:value={$stock_form_state['after_qty']}/>
           </Label>
           <Label class="space-y-2">
-            <span>HS코드</span>
-            <Input type="text" id="last_name" placeholder="HS코드를 입력하세요" required bind:value={$stock_form_state['item']['hs_code']}/>
+            <span>재고 상태</span>
+            <Input type="text" id="last_name" readOnly placeholder="재고 상태를 입력하세요" required bind:value={$stock_form_state['status']}/>
           </Label>
+
+
           <Label class="space-y-2">
-            <span>국세청 코드</span>
-            <Input type="text" id="last_name" placeholder="국세청 코드를 입력하세요" required bind:value={$stock_form_state['item']['nts_code']}/>
-          </Label>
-          <Label class="space-y-2">
-            <span>비고</span>
-            <Textarea type="text" id="last_name" rows="4" required bind:value={$stock_form_state['item']['description']}/>
+            <span>조정 사유</span>
+            <Textarea type="text" id="last_name" rows="4" required bind:value={$stock_form_state['control_reason']}/>
            
           </Label>
 

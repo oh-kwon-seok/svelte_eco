@@ -153,10 +153,10 @@ const handleSubmit = (e) => {
 }
 
 
-const infoCallApi = (title) => {
+const infoCallApi = (title,select) => {
 
  
-  const url = `${api}/${title}/info_select`; 
+  const url = `${api}/${title}/${select}`; 
   
   const config = {
     headers:{
@@ -191,6 +191,11 @@ const infoCallApi = (title) => {
         factory_data = res.data;
     
         common_factory_state.update(()=> factory_data);
+
+    } else if(title === 'factory_sub'){
+      factory_sub_data = res.data;
+      console.log('factory_sub_data   : ', res.data);
+      common_factory_sub_state.update(()=> factory_sub_data);
 
     } 
     
