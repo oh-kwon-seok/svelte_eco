@@ -5,14 +5,14 @@
 import { writable } from 'svelte/store';
 import {stock_inout_modal_state,stock_inout_form_state} from './state';
 import {item_modal_state} from '$lib/store/item/state';
-
+import {stock_modal_state} from '$lib/store/stock/state';
 import {estimate_modal_state} from '$lib/store/estimate/state';
 import {company_modal_state} from '$lib/store/company/state';
 import { businessNumber,phoneNumber,commaNumber,} from '$lib/module/common/function';
 
 import {v4 as uuid} from 'uuid';
 import axios from 'axios'
-import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,table_modal_state,common_selected_state,stock_stock_inout_state} from '$lib/store/common/state';
+import {common_alert_state, common_toast_state,common_search_state,login_state,table_list_state,table_modal_state,common_selected_state,stock_stock_inout_state, common_factory_sub_filter_state, common_factory_sub_state} from '$lib/store/common/state';
 import moment from 'moment';
 import { setCookie, getCookie, removeCookie } from '$lib/cookies';
 import {TOAST_SAMPLE,CLIENT_INFO} from '$lib/module/common/constants';
@@ -44,10 +44,17 @@ let restric_material_data;
 let selected_data : any;
 let search_data : any;
 let item_modal : any;
+let stock_modal : any;
 
 let company_modal : any;
 
 let estimate_modal : any;
+
+let factory_data : any;
+
+let factory_sub_data : any;
+let factory_sub_filter_data : any ;
+
 
 
 let init_form_data:any = {
@@ -55,8 +62,8 @@ let init_form_data:any = {
   modal: false,
   user : '',
   company : '',
-  doc_type : '출고',
-  status : '생산',
+  doc_type : '입고',
+  status : '입고',
   stock_inout_sub_array : [],
  
 
@@ -104,12 +111,25 @@ common_selected_state.subscribe((data) => {
 item_modal_state.subscribe((data) => {
   item_modal = data;
 })
+
+stock_modal_state.subscribe((data) => {
+  stock_modal = data;
+})
 company_modal_state.subscribe((data) => {
   company_modal = data;
 })
 estimate_modal_state.subscribe((data) => {
   estimate_modal = data;
 })
+
+common_factory_sub_state.subscribe((data) => {
+  factory_sub_data = data;
+})
+
+common_factory_sub_filter_state.subscribe((data) => {
+  factory_sub_filter_data = data;
+})
+ 
 
 
  
@@ -135,7 +155,7 @@ const stockInoutSubModalTable = async(table_modal_state,type,tableComponent,sele
             paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
             locale: TABLE_TOTAL_CONFIG['locale'],
             langs: TABLE_TOTAL_CONFIG['langs'],
-            rowHeight:100, //set rows to 40px height
+            rowHeight:40, //set rows to 40px height
 
             // selectable: true,
           rowClick:function(e, row){
@@ -384,11 +404,46 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
   
 }
 
+const factoryChange = (key) => {
+  let data = factory_sub_data.filter((item) => {
+    return item['factory']['uid'] === key;
+  })
+  console.log('filter_data : ', data);
+  factory_sub_filter_data = data;
+  common_factory_sub_filter_state.update(()=> factory_sub_filter_data);
+  if(data.length > 0){
+    update_form['factory_sub'] = data[0]['uid'];
+    update_form['factory_name'] = data[0]['factory']['name'];
+    update_form['factory_sub_name'] = data[0]['name'];
+  
+    console.log('update_form : ',update_form);
+
+    stock_inout_form_state.update(() => update_form);
+    
+  
+  }
+ }
+
+ const factorySubChange = (key) => {
+  
+ 
+  if(data.length > 0){
+    update_form['factory_sub'] = key;
+    update_form['factory_name'] = data[0]['factory']['name'];
+  }
+ }
+
+
 
 
 const stockInoutAddRow = (e) => {
  
 
+  if(update_form['factory'] === undefined || update_form['factory'] === "" || update_form['factory'] === null ){
+    return window.alert('공장을 선택해주세요.');
+  }else if(update_form['factory_sub'] === undefined || update_form['factory_sub'] === "" || update_form['factory_sub'] === null ){
+    return window.alert('창고를 선택해주세요.');
+  }
  
 
 
@@ -398,15 +453,18 @@ const stockInoutAddRow = (e) => {
   
   let data = table_modal_data['stock_inout_sub'].getData();
 
-  console.log('data : ', data);
+
   
   let new_obj = {
     uid : parseInt(data.length) + 1, 
     company_uid : company_uid,
     item : { ingr_eng_name : ""},
     item_uid : 0,
-    factory : { name : ""},
-    factory_uid : 0,
+    factory : update_form['factory'],
+    factory_name : update_form['factory_name'],
+    factory_sub : update_form['factory_sub'],
+    factory_sub_name : update_form['factory_sub_name'],
+    
     lot : "",
     qty : 0,
     unit : '',
@@ -466,8 +524,12 @@ const stockInoutModalOpen = (data : any, title : any) => {
         modal: false,
         user : '',
         company : '',
-        doc_type : '출고',
-        status : '생산',
+        factory : '',
+        factory_name : '',
+        factory_sub : '',
+        factory_sub_name : '',
+        doc_type : '입고',
+      status : '입고',
         stock_inout_sub_array : [],
       };
 
@@ -633,7 +695,7 @@ const save =  (param,title) => {
   
       }else {
         let data = table_modal_data['stock_inout_sub'].getData();
-  
+      
         const url = `${api}/stock_inout/save`
         try {
   
@@ -645,7 +707,7 @@ const save =  (param,title) => {
             doc_type : param['doc_type'],
             status : param['status'],
             stock_inout_sub : data,
-            used : param.used,
+          
             token : login_data['token'],
           };
 
@@ -669,8 +731,8 @@ const save =  (param,title) => {
             modal: false,
             user : '',
             company : '',
-            doc_type : '출고',
-            status : '생산',
+            doc_type : '입고',
+            status : '입고',
         
           
             stock_inout_sub_array : [],
@@ -876,14 +938,25 @@ const stockInoutSubItemSearchModalOpen = (title : any, data:any) => {
   alert['value'] = false;
   console.log('titme : ', title);
   common_alert_state.update(() => alert);
-  item_modal['title'] = title;
-  item_modal[title]['use'] = true;
-  item_modal[title]['title'] = title;
- 
   
+    if(update_form['status'] === '입고'){
+      item_modal['title'] = title;
+      item_modal[title]['use'] = true;
+      item_modal[title]['title'] = title;
+      item_modal_state.update(() => item_modal);
+
+    }else if(update_form['status'] === '출고'){
+      stock_modal['title'] = title;
+      stock_modal[title]['use'] = true;
+      stock_modal[title]['title'] = title;
+      stock_modal_state.update(() => stock_modal);
+
+    }else{
+      return window.alert();
+    }
+
  
-  item_modal_state.update(() => item_modal);
- 
+
  }
 
  
@@ -968,6 +1041,73 @@ const itemSearchTable = (table_state,type,tableComponent,select,title) => {
        
 }
 
+const stockSearchTable = (table_state,type,tableComponent,select,title) => {
+
+
+  const url = `${api}/${type}/${select}`; 
+ 
+  const config = {
+  
+    headers:{
+      "Content-Type": "application/json",
+      
+    }
+  }
+    axios.get(url,config).then(res=>{
+      if(table_modal_state['stock']){
+        table_modal_state['stock'].destory();
+      }
+ 
+      if(res.data.length > 0){
+      let data = res.data;
+  
+ 
+            table_modal_data['stock'] =   new Tabulator(tableComponent, {
+              height:TABLE_TOTAL_CONFIG['height'],
+              layout:TABLE_TOTAL_CONFIG['layout'],
+              pagination:TABLE_TOTAL_CONFIG['pagination'],
+              paginationSize:1000,
+              paginationSizeSelector:[10, 50, 100,1000,5000],
+              movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+              paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+              paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+              locale: TABLE_TOTAL_CONFIG['locale'],
+              langs: TABLE_TOTAL_CONFIG['langs'],
+              selectable: true,
+              rowClick:function(e, row){
+              
+                row.toggleSelect(); //toggle row selected state on row click,
+            },
+    
+              rowFormatter:function(row){
+                    row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+                    let selected = row.getData().selected;
+ 
+                    if(selected){
+                      console.log('selected : ', selected);
+                      row.getElement().classList.add("tabulator-selected");
+                      row.toggleSelect();
+                      console.log('selected : ', row.getData());
+                    }
+              },
+           
+           
+    
+              data :  data,
+  
+              columns: MODAL_TABLE_HEADER_CONFIG['stock_inout_stock_search'],
+              
+         
+             
+              });
+              table_modal_state.update(()=> table_modal_data);
+           
+    }
+  })
+        
+ }
+ 
+
 
 
 
@@ -1022,4 +1162,4 @@ const stockInoutSubitemSelect = (row) => {
 
 
 
-export { stockInoutModalOpen,save,modalClose,stockInoutSubModalTable,stockInoutAddRow,stockInoutDeleteRow,stockInoutAllDeleteRow,stockInoutSubSelectDelete,stockInoutSubItemSearchModalOpen,itemSearchTable,stockInoutSubitemSelect,itemSearchModalClose,makeCustomTable}
+export { stockInoutModalOpen,save,modalClose,stockInoutSubModalTable,stockInoutAddRow,stockInoutDeleteRow,stockInoutAllDeleteRow,stockInoutSubSelectDelete,stockInoutSubItemSearchModalOpen,itemSearchTable,stockInoutSubitemSelect,itemSearchModalClose,makeCustomTable,factoryChange,factorySubChange,stockSearchTable}

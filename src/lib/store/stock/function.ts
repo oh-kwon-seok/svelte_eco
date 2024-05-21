@@ -156,15 +156,7 @@ const stockModalOpen = (data : any, title : any) => {
 
 
 
- const factoryChange = (key) => {
-  let data = factory_sub_data.filter((item) => {
-    return item['factory']['uid'] === key;
-  })
-  console.log('filter_data : ', data);
-  factory_sub_filter_data = data;
-  common_factory_sub_filter_state.update(()=> factory_sub_filter_data);
-  
- }
+
 
 const modalClose = (title) => {
   update_modal['title'] = '';
@@ -374,6 +366,24 @@ const save = (param,title) => {
     }
   }
 
+
+  
+  const factoryChange = (key) => {
+    let data = factory_sub_data.filter((item) => {
+      return item['factory']['uid'] === key;
+    })
+    console.log('filter_data : ', data);
+    factory_sub_filter_data = data;
+    common_factory_sub_filter_state.update(()=> factory_sub_filter_data);
+    if(data.length > 0){
+      update_form['after_factory_sub'] = data[0]['uid'];
+    }else{
+      update_form['after_factory_sub'] = "";
+    }
+   
+
+    
+   }
 
   
 const makeCustomTable = (table_list_state,type,tableComponent,select) => {

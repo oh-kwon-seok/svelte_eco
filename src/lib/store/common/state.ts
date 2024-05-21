@@ -115,7 +115,13 @@ const url_state : any = writable({ path : '', query : ''});
   const stock_stock_state : any =  writable([]);
   const stock_stock_record_state : any =  writable([]);
   const stock_stock_inout_state : any =  writable([]);
-  
+
+    
+  // 생산
+  const production_work_plan_state : any =  writable([]);
+ 
+  const production_work_task_state : any =  writable([]);
+ 
   
   // filter Data 해당 항목을 선택했을 때 하위로 나오는 데이터들임
   const common_company_filter_state : any = writable([]); // 매입매출이 아닌 사업장 데이터임
@@ -160,6 +166,8 @@ const url_state : any = writable({ path : '', query : ''});
     stock_stock_record_state,
     stock_stock_inout_state,
 
+    production_work_plan_state,
+    production_work_task_state,
     common_company_filter_state,
     common_factory_sub_filter_state
     

@@ -17,7 +17,7 @@ import {v4 as uuid} from 'uuid';
     bookmark_estimate_search : {use : false, title: ''}, // 자동견적레시피에서 불러오는 item_search
     estimate_item_search : {use : false, title: ''}, // 견적 기능에서 불러오는 item_search
     order_item_search : {use : false, title: ''}, // 주문 기능에서 불러오는 item_search
-
+    stock_inout_item_search :  {use : false, title: ''}, // 자재 입출고관리에서 불러오는 item_search
    });
 
   const item_form_state : any = writable({

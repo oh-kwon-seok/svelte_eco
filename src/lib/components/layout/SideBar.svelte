@@ -109,12 +109,23 @@
             
             <SidebarDropdownWrapper class={text_style} label="재고 관리" isOpen={mainPath ==='stock' ? true : false} transitionType="fly" {transitionParams} >
               <svelte:fragment slot="icon">
-                <Icon.TableCellsSolid size="20"/>
+                <Icon.BoxesStackedSolid size="20"/>
             </svelte:fragment>
             <SidebarDropdownItem class={text_style} label="입출고 관리" href='/stock/stock_inout' active={activeUrl === '/stock/stock_inout'} on:click={handleToggle('stock_inout')} />
            
             <SidebarDropdownItem class={text_style} label="재고 관리" href='/stock/stock' active={activeUrl === '/stock/stock'} on:click={handleToggle('stock')}/>
             <SidebarDropdownItem class={text_style} label="재고 수불부" href='/stock/stock_record' active={activeUrl === '/stock/stock_record'} on:click={handleToggle('stock_record')} />
+            </SidebarDropdownWrapper>
+          </SidebarGroup>
+
+
+          <SidebarGroup border>  
+            <SidebarDropdownWrapper class={text_style} label="생산 관리" isOpen={mainPath ==='production' ? true : false} transitionType="fly" {transitionParams} >
+              <svelte:fragment slot="icon">
+                <Icon.IndustrySolid size="20"/>
+            </svelte:fragment>
+            <SidebarDropdownItem class={text_style} label="생산계획" href='/production/work_plan' active={activeUrl === '/production/work_plan'} on:click={handleToggle('work_plan')} />
+            <SidebarDropdownItem class={text_style} label="생산지시" href='/production/work_task' active={activeUrl === '/production/work_task'} on:click={handleToggle('work_task')} />
             </SidebarDropdownWrapper>
           </SidebarGroup>
        

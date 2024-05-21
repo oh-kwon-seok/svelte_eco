@@ -8,11 +8,10 @@
     
     import Toast from '$lib/components/toast/Toast.svelte';
     import Alert from '$lib/components/alert/Alert.svelte';
-    import {item_modal_state, } from '$lib/store/item/state';
-    import {stock_modal_state, } from '$lib/store/stock/state';
+    import {work_plan_modal_state, } from '$lib/store/work_plan/state';
     import {common_alert_state, common_toast_state,table_list_state,table_modal_state,common_type_state} from '$lib/store/common/state';
     
-    import {itemSearchTable,modalClose,itemSearchModalClose, stockSearchTable} from '$lib/store/stock_inout/function';
+    import {workPlanSearchTable,modalClose,workPlanSearchModalClose} from '$lib/store/work_task/function';
 
     
     import {handleSubmit} from '$lib/store/common/function';
@@ -21,7 +20,6 @@
 
     import {onMount,afterUpdate } from 'svelte';
     export let title;
-    export let type;
 
 
 
@@ -38,28 +36,18 @@
 
 
       onMount(()=>{
-        if(type === '입고'){
-          itemSearchTable(table_modal_state,"item",tableComponent,"info_select",title);
-        }else{
-          stockSearchTable(table_modal_state,"stock",tableComponent,"info_select",title);
-        }
-       
+        workPlanSearchTable(table_modal_state,"work_plan",tableComponent,"info_select",title);
       });
 
       afterUpdate(()=> {
-        if(type === '입고'){
-          itemSearchTable(table_modal_state,"item",tableComponent,"info_select",title);
-        }else{
-          stockSearchTable(table_modal_state,"stock",tableComponent,"info_select",title);
-        }
-        
+        workPlanSearchTable(table_modal_state,"work_plan",tableComponent,"info_select",title);
       })
 
     </script>
 
  
 
-    <Modal title={`품목 선택`}  permanent={true} color={color} bind:open={$item_modal_state[title]['use'] } size="xl" placement={ 'center'}   class="w-full">
+    <Modal title={`생산계획 선택`}  permanent={true} color={color} bind:open={$work_plan_modal_state[title]['use']} size="xl" placement={ 'center'}   class="w-full">
        
           <!-- grid grid-cols-2 gap-4 -->
          <form action="#" on:submit={handleSubmit} >
@@ -79,7 +67,7 @@
         <svelte:fragment slot='footer'>
         
        
-        <Button  class="w-full" color='red' on:click={itemSearchModalClose(title)}>닫기</Button>
+        <Button  class="w-full" color='red' on:click={workPlanSearchModalClose(title)}>닫기</Button>
        
       
         </svelte:fragment>

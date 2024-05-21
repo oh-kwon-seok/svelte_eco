@@ -224,7 +224,7 @@
                 <p class="mb-4 font-semibold text-xl dark:text-white">레시피 리스트</p>
               
               </div>
-              
+                
           
 
               <div class="flex justify-start">

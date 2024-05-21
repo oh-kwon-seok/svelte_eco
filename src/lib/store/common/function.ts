@@ -2,7 +2,7 @@
 
 
 import { writable } from 'svelte/store';
-import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state,common_bom_state,common_restric_material_state ,common_factory_state, common_factory_sub_state} from './state';
+import {common_alert_state,common_toast_state, menu_state,url_state,load_state,common_search_state,login_state,common_item_state,  common_company_state,common_user_state,table_list_state,common_company_filter_state,common_department_state, common_employment_state,common_type_state,common_bom_state,common_restric_material_state ,common_factory_state, common_factory_sub_state,common_factory_sub_filter_state} from './state';
 
 // import {item_data,item_form_state} from '$lib/store/info/item/state';
 
@@ -51,7 +51,7 @@ let restric_material_data;
 
 let factory_data : any;
 let factory_sub_data : any;
-
+let factory_sub_filter_data : any;
 
 const workbook = new Excel.Workbook();
 
@@ -131,6 +131,14 @@ common_restric_material_state.subscribe((data) => {
   restric_material_data = data;
 
 })
+common_factory_sub_state.subscribe((data) => {
+  factory_sub_data = data;
+})
+
+common_factory_sub_filter_state.subscribe((data) => {
+  factory_sub_filter_data = data;
+})
+ 
 
 
 
@@ -226,7 +234,6 @@ const infoCallApi = (title,select) => {
 
 
 
- 
 
 
   const logout = () => {
@@ -912,5 +919,6 @@ export {handleToggle,
   select_query,
   selectCustomQuery,
   logout,
-  handleSubmit
+  handleSubmit,
+ 
 }

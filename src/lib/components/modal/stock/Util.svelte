@@ -47,8 +47,8 @@
          <form action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
-        <div class="grid grid-cols-2 gap-4">
-          <Label class="space-y-2">
+        <div class="grid grid-cols-3 gap-4">
+          <Label class="space-y-1">
             <span>이전 공장</span>
             <Select id="countrie" disabled class="mt-2" bind:value={$stock_form_state['prev_factory']} placeholder="">
                 {#each $common_factory_state as item}

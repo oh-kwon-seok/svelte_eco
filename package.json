@@ -58,7 +58,6 @@
 		"naver-id-login": "2.0.0",
 		"sheetjs": "2.0.0",
 		"svelte-awesome-icons": "^0.3.2",
-		"svelte-chartjs": "^3.1.2",
 		"svelte-frappe-charts": "^1.10.0",
 		"svelte-kit-cookie-session": "^3.3.2",
 		"svelte-sheets": "^1.0.0",

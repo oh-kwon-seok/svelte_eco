@@ -7,7 +7,7 @@ import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from '$lib/m
 
 
 import { stockModalOpen} from '$lib/store/stock/function';
-import { stockInoutSubItemSearchModalOpen,stockInoutSubSelectDelete,stockInoutModalOpen} from '$lib/store/stock_inout/function';
+import { stockInoutSubItemSearchModalOpen,stockInoutSubSelectDelete,stockInoutModalOpen,stockInoutSubitemSelect} from '$lib/store/stock_inout/function';
 
 
 
@@ -53,6 +53,12 @@ const EXCEL_CONFIG : any = {
             {header: '단위', key: 'unit', width: 30},
             {header: '용도', key: 'status', width: 30},
         ],
+        stock_inout : [
+            {header: '입출고유형', key: 'doc_type', width: 30},
+            {header: '상태', key: 'status', width: 30},
+            {header: '작업자', key: 'user.user_id', width: 30},
+        
+        ],
      
     
     
@@ -61,6 +67,79 @@ const EXCEL_CONFIG : any = {
 
 
 const MODAL_TABLE_HEADER_CONFIG : any = {
+
+    stock_inout_item_search : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"품목구분", field:"type.name", width:150, headerFilter:"input"},
+
+        {title:"코드", field:"code", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(cell){
+                stockInoutSubitemSelect(cell);
+            }else{
+                
+            }
+            }
+        },
+        {title:"취급사", field:"company.name", width:150, headerFilter:"input"},
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+    stock_inout_stock_search : [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"품목구분", field:"item.type.name", width:150, headerFilter:"input"},
+
+        {title:"코드", field:"item.code", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(cell){
+                stockInoutSubitemSelect(cell);
+            }else{
+                
+            }
+            }
+        },
+        {title:"공장", field:"factory.name", width:150, headerFilter:"input"},
+        {title:"창고", field:"factory_sub.name", width:150, headerFilter:"input"},
+        
+        
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+
     
     stock : [
         {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
@@ -142,8 +221,9 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
 
         }},
         {title:"용량", field:"unit", width:150, headerFilter:"input",editor : "input"},
-       
-       
+    
+        {title:"공장명", field:"factory_name", width:150, headerFilter:"input",},
+        {title:"창고명", field:"factory_sub_name", width:150, headerFilter:"input",},
     
         {
             title: "삭제",
@@ -199,7 +279,7 @@ const TABLE_HEADER_CONFIG : any = {
         {title:"한글명", field:"item.ingr_kor_name", width:150, headerFilter:"input",},
         {title:"영문명", field:"item.ingr_eng_name", width:150, headerFilter:"input",},
         {title:"공장명", field:"factory.name", width:150, headerFilter:"input",},
-        {title:"창고명", field:"factory_sub.name", width:150, headerFilter:"input",},
+        {title:"창고명", field:"factorySub.name", width:150, headerFilter:"input",},
     
         {title:"수량", field:"qty", width:150, formatter: "money",  formatterParams: { thousand:",",precision:false,}},
         {title:"단위", field:"unit", width:150, headerFilter:"input", },
@@ -246,11 +326,11 @@ const TABLE_HEADER_CONFIG : any = {
 
         {title:"한글명", field:"item.ingr_kor_name", width:150, headerFilter:"input",},
         {title:"영문명", field:"item.ingr_eng_name", width:150, headerFilter:"input",},
-        {title:"불출공장", field:"out_factory.name", width:150, headerFilter:"input",},
-        {title:"불출창고", field:"out_factory_sub.name", width:150, headerFilter:"input",},
+        {title:"불출공장", field:"outFactory.name", width:150, headerFilter:"input",},
+        {title:"불출창고", field:"outFactorySub.name", width:150, headerFilter:"input",},
         
-        {title:"수령공장", field:"in_factory.name", width:150, headerFilter:"input",},
-        {title:"수령창고", field:"in_factory_sub.name", width:150, headerFilter:"input",},
+        {title:"수령공장", field:"inFactory.name", width:150, headerFilter:"input",},
+        {title:"수령창고", field:"inFactory_sub.name", width:150, headerFilter:"input",},
     
         {title:"수불수량", field:"qty", width:150, formatter: "money",  formatterParams: { thousand:",",precision:false,}},
         {title:"단위", field:"unit", width:150, headerFilter:"input", },

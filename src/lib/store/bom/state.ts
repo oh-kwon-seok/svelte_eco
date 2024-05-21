@@ -12,8 +12,8 @@ import {v4 as uuid} from 'uuid';
     delete : { use : false, title: ''},
 
     check_delete : { use : false, title: ''},
-   
-     
+    work_plan_bom_search : { use : false, title: ''}, // 생산계획에서 사용하는 팝업
+
    });
 
   const bom_form_state : any = writable({

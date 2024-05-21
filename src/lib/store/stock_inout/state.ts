@@ -13,7 +13,7 @@ import moment from 'moment';
    
     check_delete : { use : false, title: ''},
     print : { use : false, title: ''},
-   
+
    
    });
 
@@ -22,8 +22,13 @@ import moment from 'moment';
     modal: false,
     user : '',
     company : '',
-    doc_type : '출고',
-    status : '생산',
+    factory : '',
+    factory_name : '',
+    
+    factory_sub : '',
+    factory_sub_name : '',
+    doc_type : '입고',
+    status : '입고',
 
   
     stock_inout_sub_array : [],

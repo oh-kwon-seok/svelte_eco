@@ -11,13 +11,13 @@
   
     import {stock_inout_modal_state, stock_inout_form_state} from '$lib/store/stock_inout/state';
     import CompanySearch from '$lib/components/modal/stock_inout/Company.svelte';
-    import ItemSearch from '$lib/components/modal/stock_inout/Item.svelte';
+    import ItemSearch from '$lib/components/modal/stock_inout/item.svelte';
 
     import EstimateSearch from '$lib/components/modal/stock_inout/Estimate.svelte';
     
-    import {common_alert_state, common_toast_state,common_company_state,common_type_state, table_modal_state} from '$lib/store/common/state';
+    import {common_alert_state, common_toast_state,common_company_state,common_type_state, table_modal_state,common_factory_state,common_factory_sub_state,common_factory_sub_filter_state} from '$lib/store/common/state';
     import {fileButtonClick,handleSubmit} from '$lib/store/common/function';
-    import {save,modalClose,stockInoutSubModalTable,stockInoutAddRow, stockInoutDeleteRow, stockInoutAllDeleteRow} from '$lib/store/stock_inout/function';
+    import {save,modalClose,stockInoutSubModalTable,stockInoutAddRow, stockInoutDeleteRow, stockInoutAllDeleteRow,factoryChange,factorySubChange} from '$lib/store/stock_inout/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     import {onMount,afterUpdate } from 'svelte';
     import {item_modal_state} from '$lib/store/item/state';
@@ -150,6 +150,22 @@
                 <option value={"출하"}>{"출하"}</option>
               </Select>
           </Label>
+          <Label class="space-y-2">
+            <span>{$stock_inout_form_state['status']} 공장</span>
+            <Select id="countrie" class="mt-2" bind:value={$stock_inout_form_state['factory']} placeholder="" on:change={factoryChange($stock_inout_form_state['factory'])}>
+                {#each $common_factory_state as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
+          </Label>
+          <Label class="space-y-2">
+            <span>{$stock_inout_form_state['status']} 창고</span>
+            <Select id="countrie"  class="mt-2" bind:value={$stock_inout_form_state['factory_sub']} placeholder="" on:change={factorySubChange($stock_inout_form_state['factory_sub'])}>
+                {#each $common_factory_sub_filter_state as item}
+                  <option value={item.uid}>{item.name}</option>
+                {/each}
+              </Select>
+          </Label>
           </div>
       
           <div class="grid grid-cols-1 gap-4">
@@ -165,7 +181,7 @@
       </div>
 
               <div class="grid grid-cols-1 gap-4">
-                <p class="mb-4 font-semibold text-xl dark:text-white">입출고 리스트</p>
+                <p class="mb-4 font-semibold text-xl dark:text-white">{$stock_inout_form_state['status']} 리스트</p>
               
               </div>
                 
@@ -185,9 +201,11 @@
               <div  class="w-full" id="example-table-theme" bind:this={tableComponent}></div>
             </div>
           
-          <!-- {#if $item_modal_state['title'] === 'stock_inout_item_search'}
-              <ItemSearch title="stock_inout_item_search" />
-          {/if} -->
+          {#if $item_modal_state['title'] === 'stock_inout_item_search'}
+              <ItemSearch title="stock_inout_item_search" type={$stock_inout_form_state['status']}/>
+              {:else if $item_modal_state['title'] === 'stock_inout_stock_search'}
+              <ItemSearch title="stock_inout_stock_search" type={$stock_inout_form_state['status']}/>
+          {/if}
        
 
    

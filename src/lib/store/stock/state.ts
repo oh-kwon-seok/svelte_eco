@@ -11,7 +11,8 @@ import {v4 as uuid} from 'uuid';
     update : { use : false, title: ''},
     delete : { use : false, title: ''},
     check_delete : { use : false, title: ''},
-    
+    stock_inout_stock_search :  {use : false, title: ''}, // 자재 입출고관리에서 불러오는 stock_search
+   
      
    });
 
