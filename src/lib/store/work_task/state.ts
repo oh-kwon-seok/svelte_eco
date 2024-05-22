@@ -20,6 +20,7 @@ import moment from 'moment';
   const work_task_form_state : any = writable({
     uid : 0,
     company : '', // 사업장
+    user : '', // 계정정보
     work_plan_code : '',
     work_plan : '',
     

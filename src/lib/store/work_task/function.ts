@@ -51,6 +51,7 @@ let estimate_modal : any;
 let init_form_data:any = {
   uid : 0,
   company : '', // 사업장
+  user : '', // 계정정보
   work_plan : '',
   work_plan_code : '',
   bom_code : '',
@@ -249,7 +250,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select) => {
 
 
 const workTaskModalOpen = (data : any, title : any) => {
-
+    console.log('data : ', data);
     if(title === 'add'){
        
     alert['type'] = 'save';
@@ -264,6 +265,7 @@ const workTaskModalOpen = (data : any, title : any) => {
         uid : 0,
         work_plan : '',
         work_plan_code : '',
+        user : '', // 계정정보
         company : '', // 사업장
         bom_code : '',
         bom : '', // BOM
@@ -292,18 +294,31 @@ const workTaskModalOpen = (data : any, title : any) => {
     update_modal[title]['use'] = true;
     work_task_modal_state.update(() => update_modal);
 
-   
+    console.log('update_form : ', update_form);
 
         Object.keys(update_form).map((item)=> {    
             if(item === 'company' ){
               update_form[item] = data[item]['uid'];
              
         
+            }else if(item === 'user'){
+              update_form[item] = data['user']['id'];
+            
+          
+
             }else if(item === 'work_plan'){
-              update_form[item] = data[item]['uid'];
-              update_form['work_plan_code'] = data[item]['code'];
-              
+              update_form[item] = data['workPlan']['uid'];
+            
+              console.log('data[item] : ', data[item]);
+
+            }else if(item === 'work_plan_code'){
+              update_form['work_plan_code'] = data['workPlan']['code'];
+              console.log('data[item] : ', data[item]);
+
             }else if(item === 'bom'){
+              
+            
+
               update_form[item] = data[item]['uid'];
               update_form['bom_code'] = data[item]['code'];
               
@@ -384,11 +399,7 @@ const modalClose = (title) => {
   update_form = init_form_data;
   common_alert_state.update(() => alert);
 
-  if(table_modal_data['work_task_sub']){
-    table_modal_data['work_task_sub'].destroy();
-    table_modal_state.update(()=> table_modal_data)
 
-  }
   work_task_modal_state.update(() => update_modal);
   work_task_form_state.update(() => update_form);
   
@@ -409,7 +420,7 @@ const save =  (param,title) => {
     if(title === 'add'){
   
     
-      if( param['bom'] === '' ||  param['company'] === ''  || param['work_plan'] === ''){
+      if( param['bom'] === '' ||  param['company'] === ''  || param['work_plan'] === '' || param['user'] === ''){
         //return common_toast_state.update(() => TOAST_SAMPLE['fail']);
         alert['type'] = 'save';
         alert['value'] = true;
@@ -430,7 +441,7 @@ const save =  (param,title) => {
             company_uid : parseInt(param['company']),
             work_plan_uid : param['work_plan'],
             bom_uid : param['bom'],
-          
+            user_id : param['user'],
             task_qty : parseFloat(param['task_qty']),
 
             
@@ -466,6 +477,7 @@ const save =  (param,title) => {
             work_plan : '',
             work_plan_code : '',
             company : '', // 사업장
+            user : '', // 계정정보
             bom_code : '',
             bom : '', // BOM
             task_qty : 1,
@@ -533,7 +545,7 @@ const save =  (param,title) => {
             company_uid : parseInt(param['company']),
             work_plan_uid : param['work_plan'],
             bom_uid : param['bom'],
-         
+            user_id : param['user'],
             task_qty : parseFloat(param['task_qty']),
             success_qty : parseFloat(param['success_qty']),
             fail_qty : parseFloat(param['fail_qty']),

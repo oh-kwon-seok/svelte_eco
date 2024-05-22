@@ -173,6 +173,7 @@ const TABLE_HEADER_CONFIG : any = {
         
         {title:"단위", field:"unit", width:150, headerFilter:"input"},
         
+        
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
         formatter: function(cell : any, formatterParams: any, onRendered: any) {
             // Luxon을 사용하여 datetime 값을 date로 변환
@@ -189,9 +190,8 @@ const TABLE_HEADER_CONFIG : any = {
         }},
         {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
         
-        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
-
-        {title:"제품명", field:"bom.code", width:500, headerFilter:"input", 
+        
+        {title:"제품명", field:"bom.code", width:300, headerFilter:"input", 
         formatter:function(cell : any){
             var value = cell.getValue();
         return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
@@ -221,6 +221,70 @@ const TABLE_HEADER_CONFIG : any = {
         },
         
         {title:"단위", field:"unit", width:150, headerFilter:"input"},
+        {title:"자재출고구분", field:"material_order", width:150, headerFilter:"input",
+        
+         formatter:function(cell : any){
+            var value = cell.getValue();
+         if(value === 0){
+                value = '자재출고반려';
+         }else if(value === 1){
+                value = '자재출고요청완료';
+
+            }else if(value === 2){
+                value = '자재출고승인완료';
+            }
+            return "<span style='font-weight:bold;'>" + value + "</span>";
+            },
+        },
+        
+   
+       {title:"계량구분", field:"measure_order", width:150, headerFilter:"input",
+        
+       formatter:function(cell : any){
+          var value = cell.getValue();
+        
+          if(value === 0){
+              value = '계량지시대기'
+          }
+          else if(value === 1){
+              value = '계량지시'
+          }else if(value === 2){
+            value = '계량완료'
+        }
+          return "<span style='font-weight:bold;'>" + value + "</span>";
+          },
+      },{title:"제조구분", field:"measure_order", width:150, headerFilter:"input",
+        
+      formatter:function(cell : any){
+         var value = cell.getValue();
+       
+         if(value === 0){
+             value = '제조지시대기'
+         }
+         else if(value === 1){
+             value = '제조지시'
+         }else if(value === 2){
+           value = '제조완료'
+       }
+         return "<span style='font-weight:bold;'>" + value + "</span>";
+         },
+     },
+     ,{title:"포장구분", field:"packing_order", width:150, headerFilter:"input",
+        
+      formatter:function(cell : any){
+         var value = cell.getValue();
+       
+         if(value === 0){
+             value = '포장지시대기'
+         }
+         else if(value === 1){
+             value = '포장지시'
+         }else if(value === 2){
+           value = '포장완료'
+       }
+         return "<span style='font-weight:bold;'>" + value + "</span>";
+         },
+     },
         
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
         formatter: function(cell : any, formatterParams: any, onRendered: any) {

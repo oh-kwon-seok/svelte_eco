@@ -87,7 +87,7 @@
         <div class="grid grid-cols-3 gap-4 ">
           
           <Label class="space-y-2">
-            <span>생산계획번호{$work_task_form_state['bom_code']}</span>
+            <span>생산계획번호</span>
             <Input type="text" id="last_name" placeholder="생산계획을 입력하세요" required bind:value={$work_task_form_state['work_plan_code']} on:click={() => {workPlanSearchModalOpen('work_task_work_plan_search')}}/>
             
             {#if $work_task_form_state['work_plan_code'] === '' && $common_alert_state['value'] === true}
