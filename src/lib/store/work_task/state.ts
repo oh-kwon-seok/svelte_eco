@@ -9,6 +9,10 @@ import moment from 'moment';
     title : 'add',
     add : { use : false, title: ''},
     update : { use : false, title: ''},
+    
+    stock_request : { use : false, title: ''},
+    
+    
     delete : { use : false, title: ''},
 
     check_delete : { use : false, title: ''},
@@ -19,6 +23,7 @@ import moment from 'moment';
 
   const work_task_form_state : any = writable({
     uid : 0,
+    modal: false,
     company : '', // 사업장
     user : '', // 계정정보
     work_plan_code : '',
@@ -27,6 +32,10 @@ import moment from 'moment';
     bom_code : '',
     bom : '', // BOM
     task_qty : 1,
+    barcode_scan : '',
+    factory : '',
+    factory_sub : '',
+    
     success_qty : 0,
     fail_qty : 0,
     unit : "G",

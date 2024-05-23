@@ -64,7 +64,8 @@
       
     })
      
- 
+    
+    let test = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAcpJREFUaEPtmeFuxCAMg8v7P3SnTkKKWHC+cO0GHfdvdxTiOHFMV87zPI8XfMoGMhmLm5HJCDk2I0sxUkpJxdtTcrtPu+a2M5T83naIScifAiEz8wKtGKm/1eTYv+n+V3l0zyCM0IOWAeKVmsqsWl+bzzIZ7X8bI9FBpP69NW3ZWYXplWSrQnKOePXcbkBqnSYgWvfrjIwmYAM5Dm1R2syq6ejJr32+zTYpSXteFEuqR5YHQn0KGXqkf9R5QwORAvghhY5HI0N19LzruUdsPBmEnwTtPZsCknWxlgVlQOnQkz2aefmwLJBeY5J7h53CNAHKqlQ2hpr9tUA8x2q/69XwlcXeQPxWnEblRhRuaCD2SoU0dAucBv3IZF8OiBp02TsE8VqK0Y+a/bVA6DT2sq8UMKp/KwhD8ksDj7yWVS1vij8OhNQsuV9HdxWlZARkaBrpJpV6JaW9vRRIzx0MldZrgSh77mWWOIHIt1FnnJrs/w6IKkniuSJvlr5Ykfu19zaEBBupXaY/06pFS2t6IPKqKf6tQJ/zzCi1+KlmpwFlHIFVu8eB0MAiKfX6IvJRtFcQI8sDoQBmWJd6rzVDwL0YNpDZ2NmMzMbIF2BaJZiKzh3rAAAAAElFTkSuQmCC"
 
  
 
@@ -124,7 +125,7 @@
                           <Icon.FileCsvSolid class='mr-2' size="20" />
                           엑셀다운
                       </Button>
-
+              
                   
                   
                  

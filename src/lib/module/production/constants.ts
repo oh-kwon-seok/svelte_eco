@@ -124,6 +124,99 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
             return date;
         },
     }],
+
+
+    stock_request : [
+       
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        {title:"생산계획번호", field:"workTask.workPlan.code", width:150, headerFilter:"input"},
+        {title:"품목코드", field:"item.code", width:300, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+         },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                workPlanSelect(row.getData());
+            }else{
+                
+            }
+            }
+        },
+        {title:"요청수량", field:"req_qty", width:150, headerFilter:"input",
+        
+         formatter:function(cell : any){
+            var value = cell.getValue();
+            return "<span>" + commaNumber(value) + "</span>";
+            },
+            bottomCalc:"sum", 
+            bottomCalcFormatter:function(cell : any){
+                var value = cell.getValue();
+            return commaNumber(value);
+             },
+
+        },
+        {title:"단위", field:"unit", width:150, headerFilter:"input"},
+
+        {title:"요청자", field:"user.name", width:150, headerFilter:"input"},
+      
+        {title:"생산지시일", field:"workTask.work_start_date", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+       
+        }
+     
+
+
+
+],
+stock_approval : [
+       
+    {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+    {title:"LOT", field:"lot", width:150, headerFilter:"input"},
+    {title:"품목코드", field:"item.code", width:300, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+     },
+
+    },
+    {title:"현재고", field:"now_qty", width:150, headerFilter:"input",
+    
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        return "<span>" + commaNumber(value) + "</span>";
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+    },
+    {title:"출고수량", field:"out_qty", width:150,  editor : "input",
+    
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        let row = cell.getRow().getData();
+        if(row.now_qty < value){
+            return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+        }else{
+            return "<span>" + commaNumber(value) + "</span>";
+        }
+
+       
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+    },
+    {title:"단위", field:"unit", width:150, headerFilter:"input"},
+    {title:"불출담당자", field:"user.name", width:150, headerFilter:"input"},
+   
+],
+
    
 
     
@@ -204,7 +297,7 @@ const TABLE_HEADER_CONFIG : any = {
             }else{
                 
             }
-            }
+        }
         },
         {title:"지시수량", field:"task_qty", width:150, headerFilter:"input",
         
@@ -227,14 +320,36 @@ const TABLE_HEADER_CONFIG : any = {
             var value = cell.getValue();
          if(value === 0){
                 value = '자재출고반려';
+                return "<span style='color : red; font-weight:bold;'>" + value + "</span>";
          }else if(value === 1){
                 value = '자재출고요청완료';
+                return "<span style='color : green; font-weight:bold;'>" + value + "</span>";
 
             }else if(value === 2){
                 value = '자재출고승인완료';
+                return "<span style='color : blue; font-weight:bold;'>" + value + "</span>";
             }
-            return "<span style='font-weight:bold;'>" + value + "</span>";
+          
             },
+
+            cellClick:function(e : any, cell:any){
+                
+                let row = cell.getRow();
+                let data = row.getData();
+                if(data['material_order'] === 1){
+                    console.log('row.getData()', '출고하기');
+                    if(row){
+                        workTaskModalOpen(row.getData(),"stock_request");
+                    }else{
+                        
+                    }
+                }else if(data['material_order'] === 0){
+                    window.alert('반려상태에서는 확인하실수 없습니다.');
+
+                }
+                
+                
+            }
         },
         
    

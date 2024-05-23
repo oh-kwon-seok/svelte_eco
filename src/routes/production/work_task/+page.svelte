@@ -16,6 +16,8 @@
 
 
     import Util from '$lib/components/modal/work_task/Util.svelte';
+    import UtilStockRequest from '$lib/components/modal/work_task/UtilStockRequest.svelte';
+    
     
 
     import * as Icon from 'svelte-awesome-icons';
@@ -129,6 +131,8 @@
                           <Util  title="update"/>
                           {:else if $work_task_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
+                          {:else if $work_task_modal_state['title'] === 'stock_request'}
+                          <UtilStockRequest  title="stock_request"/>
                        
                         {/if}
                         

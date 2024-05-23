@@ -7,7 +7,7 @@ import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from '$lib/m
 
 
 import { stockModalOpen} from '$lib/store/stock/function';
-import { stockInoutSubItemSearchModalOpen,stockInoutSubSelectDelete,stockInoutModalOpen,stockInoutSubitemSelect} from '$lib/store/stock_inout/function';
+import { stockInoutSubItemSearchModalOpen,stockInoutSubSelectDelete,stockInoutModalOpen,stockInoutSubitemSelect,stockInoutPrint} from '$lib/store/stock_inout/function';
 
 
 
@@ -367,7 +367,39 @@ const TABLE_HEADER_CONFIG : any = {
             const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
             return date;
         },
-    }],
+        },
+        
+        {
+            title: "바코드인쇄",
+            headerSort: false,
+            formatter: function (cell:any, formatterParams:any, onRendered:any) {
+                
+                let row = cell.getRow();
+
+                // "+" 아이콘 버튼
+                var utilButton = document.createElement("button");
+                utilButton.innerHTML = "<i class='fas fa-print'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                utilButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+                utilButton.addEventListener("click", function () {
+               
+                    stockInoutPrint(row.getData());
+                     
+        
+                    // estimateSubSelectDelete(cell); -> 재고조정 로직 추가
+                });
+            
+                var container = document.createElement("div");
+                container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+                container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+                container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+                container.appendChild(utilButton);
+                return container;
+            }
+        },
+
+
+
+    ],
 
 
 }

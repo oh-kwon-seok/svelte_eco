@@ -19,8 +19,10 @@ import {TOAST_SAMPLE,CLIENT_INFO} from '$lib/module/common/constants';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
 
+
 import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/stock/constants';
 import Excel from 'exceljs';
+import QRCode from 'qrcode';
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -696,6 +698,7 @@ const save =  (param,title) => {
       }else {
         let data = table_modal_data['stock_inout_sub'].getData();
       
+       
         const url = `${api}/stock_inout/save`
         try {
   
@@ -801,23 +804,17 @@ const save =  (param,title) => {
       
       
         try {
-  
+          
+       
         
           let params = {
             uid : param.uid,
             company_uid : parseInt(param['company']),
-            customer_uid : parseInt(param['customer']),
-            estimate_uid : parseInt(param['estimate']),
-            code : param['code'],
             user_id : param['user'],
-            name  : param['name'],
-            product_spec : param['product_spec'],
-            ship_place : param['ship_place'],
-            description : param['description'],
-            ship_date : param['ship_date'],
-           
+            doc_type : param['doc_type'],
+            status : param['status'],
             stock_inout_sub : data,
-            used : param.used,
+           
             token : login_data['token'],
             
           };
@@ -1154,6 +1151,198 @@ const stockInoutSubitemSelect = (row) => {
 
 
 
+const stockInoutPrint = async(data) => {
+  let check_data ;
+
+  let test_sub_data = [];
+
+
+      const url = `${api}/stock_inout_sub/uid_select`;
+      const params = { stock_inout_uid : data['uid'] };
+      const config = {
+        params: params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      try {
+        const res = await axios.get(url, config);
+          
+    
+        
+        
+        check_data = res.data;
+
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    
+  
+  const generateA4Pages = async(check_data) => {
+    
+    const pages = await Promise.all(check_data.map(async(item, index) => {
+     
+      let theme = "black";
+      let qrCodeDataURL;
+      try {
+        // QR 코드 데이터 생성
+        qrCodeDataURL = await QRCode.toDataURL(item['lot'], { errorCorrectionLevel: 'H', width: 100, height: 100 });
+
+        console.log('qrURL : ', qrCodeDataURL);
+      } catch (err) {
+        console.error("QR 코드 생성 중 오류 발생:", err);
+        qrCodeDataURL = '';
+      }
+
+  
+    
+          
+        return `
+          <html>
+            <head>
+            <style>
+            @media screen {
+            
+              body {
+                visibility: hidden;
+              }
+            }
+            @media print {
+              * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+
+               @page {
+                size: calc(100% - 2px) calc(100% - 2px) landscape;
+                margin: 0; /* 필요에 따라 margin을 조정할 수 있습니다 */
+               }
+               body {
+                visibility: visible;
+                 font-family: 'Nanum Gothic', sans-serif;
+               
+                 padding: 0px 0px 0px 0px;-
+                 box-sizing: border-box;
+   
+                 background-color: #fff;
+                 display: flex;
+                 flex-direction: column;
+                 justify-content: center;
+                 align-items: center;
+
+                 margin: 0;
+
+               }
+               .container {
+                 width: 100%;
+                 height: 95%;
+                  
+               }
+               .theme-border {
+                 border: 0px solid ${theme};
+                 border-radius: 0px;
+                 padding: 1px; /* 예시로 padding을 추가하여 테두리가 둥글게 나타날 수 있도록 함 */
+                 padding-top : 1px;
+   
+               }
+         
+      
+               
+             }
+            </style>
+            </head>
+            <body class="page">
+              <div style ="justify-content:center; text-align:center;" class="container theme-border">  
+                  
+                
+                  <img width='100' height='100' src="${qrCodeDataURL}" alt="QR Code"  />
+                  <br/>
+                  <span>LOT [ ${item['lot']} ]</span>
+                  <br/>
+                  <span>코드 [ ${item['item']['code']} ]</span>
+                  
+
+                </div>
+            </body>
+          </html>
+        `;
+      
+    })
+  );
+  
+    // pages는 Promise 객체의 배열이므로 Promise.all을 사용하여 모든 페이지의 HTML을 얻은 뒤 반환합니다.
+    //return Promise.all(pages).then(htmlPages => htmlPages.join(''));
+    return pages.join('');
+   
+  }
+  
+ 
+  const originalContent = document.body.innerHTML;
+
+  const closePopup = () => {
+    document.body.innerHTML = originalContent;
+    printWindow.close();
+    
+  };
+  
+ 
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
+
+  generateA4Pages(check_data)
+    .then(content => {
+     
+      printWindow.document.write(content);
+      printWindow.document.close();
+      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+      printImagesWhenLoaded(printWindow);
+
+      // printWindow.onload = () => {
+      
+      //   // 프린트 다이얼로그 호출
+      //   printWindow.print();
+      // };
+
+      // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
+      printWindow.onafterprint = () => {
+        
+        printWindow.close();
+      };
+
+
+
+      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+    
+
+      // 프린트 다이얼로그 호출
+      printWindow.print();
+     
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  };
+
+
+
+  const printImagesWhenLoaded = (printWindow) => {
+    // 프린트 창에서 이미지가 모두 로드될 때까지 대기
+    const images = printWindow.document.querySelectorAll('img');
+    const promises = Array.from(images).map(image => {
+        return new Promise((resolve) => {
+            image.onload = () => {
+                resolve();
+            };
+        });
+    });
+    // 모든 이미지가 로드되면 프린트
+    Promise.all(promises).then(() => {
+        // 프린트 창에서 프린트 실행
+        printWindow.print();
+    });
+};
 
 
 
@@ -1162,4 +1351,9 @@ const stockInoutSubitemSelect = (row) => {
 
 
 
-export { stockInoutModalOpen,save,modalClose,stockInoutSubModalTable,stockInoutAddRow,stockInoutDeleteRow,stockInoutAllDeleteRow,stockInoutSubSelectDelete,stockInoutSubItemSearchModalOpen,itemSearchTable,stockInoutSubitemSelect,itemSearchModalClose,makeCustomTable,factoryChange,factorySubChange,stockSearchTable}
+
+
+
+
+
+export { stockInoutModalOpen,save,modalClose,stockInoutSubModalTable,stockInoutAddRow,stockInoutDeleteRow,stockInoutAllDeleteRow,stockInoutSubSelectDelete,stockInoutSubItemSearchModalOpen,itemSearchTable,stockInoutSubitemSelect,itemSearchModalClose,makeCustomTable,factoryChange,factorySubChange,stockSearchTable,stockInoutPrint}
