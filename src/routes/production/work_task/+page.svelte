@@ -18,7 +18,11 @@
     import Util from '$lib/components/modal/work_task/Util.svelte';
     import UtilStockRequest from '$lib/components/modal/work_task/UtilStockRequest.svelte';
     
-    
+    import UtilMeasure from '$lib/components/modal/work_task/UtilMeasure.svelte';
+
+    import UtilProduct from '$lib/components/modal/work_task/UtilProduct.svelte';
+    import UtilPacking from '$lib/components/modal/work_task/UtilPacking.svelte';
+
 
     import * as Icon from 'svelte-awesome-icons';
 
@@ -133,6 +137,12 @@
                           <Util  title="check_delete"/>
                           {:else if $work_task_modal_state['title'] === 'stock_request'}
                           <UtilStockRequest  title="stock_request"/>
+                          {:else if $work_task_modal_state['title'] === 'measure'}
+                          <UtilMeasure  title="measure"/>
+                          {:else if $work_task_modal_state['title'] === 'production'}
+                          <UtilProduct  title="production"/>
+                          {:else if $work_task_modal_state['title'] === 'packing'}
+                          <UtilPacking  title="packing"/>
                        
                         {/if}
                         

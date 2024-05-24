@@ -15,7 +15,7 @@ import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from '$lib/m
 
 import { bomSelect, workPlanModalOpen} from '$lib/store/work_plan/function';
 
-import { workPlanSelect, workTaskModalOpen} from '$lib/store/work_task/function';
+import { workPlanSelect, workTaskModalOpen,workTaskProductSelectDelete} from '$lib/store/work_task/function';
 
 import moment from 'moment';
 
@@ -181,7 +181,7 @@ stock_approval : [
      },
 
     },
-    {title:"현재고", field:"now_qty", width:150, headerFilter:"input",
+    {title:"현재고", field:"prev_qty", width:150, headerFilter:"input",
     
      formatter:function(cell : any){
         var value = cell.getValue();
@@ -198,7 +198,7 @@ stock_approval : [
      formatter:function(cell : any){
         var value = cell.getValue();
         let row = cell.getRow().getData();
-        if(row.now_qty < value){
+        if(row.prev_qty < value){
             return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
         }else{
             return "<span>" + commaNumber(value) + "</span>";
@@ -213,7 +213,189 @@ stock_approval : [
          },
     },
     {title:"단위", field:"unit", width:150, headerFilter:"input"},
-    {title:"불출담당자", field:"user.name", width:150, headerFilter:"input"},
+    {title:"출고담당자", field:"user.name", width:150, headerFilter:"input"},
+   
+],
+measure : [
+       
+    {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+    {title:"LOT", field:"lot", width:150, headerFilter:"input"},
+    {title:"품목코드", field:"item.code", width:300, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+     },
+
+    },
+    {title:"구분", field:"item.type_code", width:300, headerFilter:"input", 
+   
+    },
+    {title:"출고수량", field:"out_qty", width:150,   
+    formatter:function(cell : any){
+       var value = cell.getValue();
+       let row = cell.getRow().getData();
+       if(row.prev_qty < value){
+           return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+       }else{
+           return "<span>" + commaNumber(value) + "</span>";
+       }
+
+      
+       },
+       bottomCalc:"sum", 
+       bottomCalcFormatter:function(cell : any){
+           var value = cell.getValue();
+       return commaNumber(value);
+        },
+   },
+    {title:"계량값", field:"measure_qty", width:150,  editor : "input",
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        let row = cell.getRow().getData();
+        if(row.out_qty < value){
+            return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+        }else{
+            return "<span>" + commaNumber(value) + "</span>";
+        }
+
+       
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+    },
+    {title:"단위", field:"unit", width:150, headerFilter:"input"},
+    {title:"출고담당자", field:"user.name", width:150, headerFilter:"input"},
+   
+],
+work_task_product : [
+       
+    {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+    {title:"LOT", field:"lot", width:150, headerFilter:"input"},
+    {title:"제품코드", field:"bom_code", width:300, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+     },
+    },
+    {title:"제조수량", field:"product_qty", width:150,  editor : "input",
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        let row = cell.getRow().getData();
+        if(row.out_qty < value){
+            return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+        }else{
+            return "<span>" + commaNumber(value) + "</span>";
+        }
+
+       
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+    },
+    {title:"단위", field:"unit", width:150, headerFilter:"input",editor:"input",},   
+    {title:"합불", field:"status", width:150, editor:"list", editorParams:{values:{"합격":"합격", "불합격":"불합격"}}},   
+    {
+        title: "삭제",
+        headerSort: false,
+        formatter: function (cell:any, formatterParams:any, onRendered:any) {
+         
+            // "+" 아이콘 버튼
+            var deleteButton = document.createElement("button");
+            deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+            deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+            deleteButton.addEventListener("click", function () {
+                // let add_qty = parseInt(rowData.qty) + 1;
+                // row.update({qty : add_qty});
+                workTaskProductSelectDelete(cell);
+            });
+        
+            var container = document.createElement("div");
+            container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+            container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+            container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+            container.appendChild(deleteButton);
+        
+         
+            return container;
+        }
+
+    },
+],
+work_task_packing : [
+       
+    {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+    {title:"LOT", field:"lot", width:150, headerFilter:"input"},
+    {title:"제품코드", field:"bom_code", width:300, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+     },
+    },
+    {title:"제조수량", field:"product_qty", width:150,  
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        let row = cell.getRow().getData();
+        if(row.out_qty < value){
+            return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+        }else{
+            return "<span>" + commaNumber(value) + "</span>";
+        }
+
+       
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+    },
+    {title:"구성수량", field:"inbox_qty", width:150,  
+    editor : "input",
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        let row = cell.getRow().getData();
+        if(row.out_qty < value){
+            return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+        }else{
+            return "<span>" + commaNumber(value) + "</span>";
+        }
+
+       
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         }
+    },
+    {title:"박스갯수", field:"inbox_qty", width:150,  
+    editor : "input",
+     formatter:function(cell : any){
+        var value = cell.getValue();
+        let row = cell.getRow().getData();
+        if(row.out_qty < value){
+            return "<span style='color:red; font-weight:bold;'>" + commaNumber(value) + "</span>";
+        }else{
+            return "<span>" + commaNumber(value) + "</span>";
+        }
+
+       
+        },
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+    },
+    
+    {title:"단위", field:"unit", width:150, headerFilter:"input",},   
+   
    
 ],
 
@@ -337,7 +519,7 @@ const TABLE_HEADER_CONFIG : any = {
                 let row = cell.getRow();
                 let data = row.getData();
                 if(data['material_order'] === 1){
-                    console.log('row.getData()', '출고하기');
+                   
                     if(row){
                         workTaskModalOpen(row.getData(),"stock_request");
                     }else{
@@ -368,11 +550,29 @@ const TABLE_HEADER_CONFIG : any = {
         }
           return "<span style='font-weight:bold;'>" + value + "</span>";
           },
-      },{title:"제조구분", field:"measure_order", width:150, headerFilter:"input",
-        
+          cellClick:function(e : any, cell:any){
+                
+            let row = cell.getRow();
+            let data = row.getData();
+            if(data['measure_order'] === 1){
+             
+                if(row){
+                    workTaskModalOpen(row.getData(),"measure");
+                }else{
+                    
+                }
+            }else if(data['measure_order'] === 0){
+                window.alert('계량완료 및 지시 상태가 아닙니다.');
+            }
+            
+            
+        }
+      
+      
+        },
+      {title:"제조구분", field:"production_order", width:150, headerFilter:"input",
       formatter:function(cell : any){
          var value = cell.getValue();
-       
          if(value === 0){
              value = '제조지시대기'
          }
@@ -383,6 +583,24 @@ const TABLE_HEADER_CONFIG : any = {
        }
          return "<span style='font-weight:bold;'>" + value + "</span>";
          },
+         cellClick:function(e : any, cell:any){
+                
+            let row = cell.getRow();
+            let data = row.getData();
+            if(data['production_order'] === 1){
+             
+                if(row){
+                    workTaskModalOpen(row.getData(),"production");
+                }else{
+                    
+                }
+            }else if(data['production_order'] === 0){
+                window.alert('제조완료 및 지시 상태가 아닙니다.');
+            }
+            
+            
+        }
+      
      },
      ,{title:"포장구분", field:"packing_order", width:150, headerFilter:"input",
         
@@ -399,6 +617,23 @@ const TABLE_HEADER_CONFIG : any = {
        }
          return "<span style='font-weight:bold;'>" + value + "</span>";
          },
+         cellClick:function(e : any, cell:any){
+                
+            let row = cell.getRow();
+            let data = row.getData();
+            if(data['packing_order'] === 1){
+             
+                if(row){
+                    workTaskModalOpen(row.getData(),"packing");
+                }else{
+                    
+                }
+            }else if(data['packing_order'] === 0){
+                window.alert('포장완료 및 지시 상태가 아닙니다.');
+            }
+            
+            
+        }
      },
         
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 

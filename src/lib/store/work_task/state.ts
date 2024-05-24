@@ -10,14 +10,15 @@ import moment from 'moment';
     add : { use : false, title: ''},
     update : { use : false, title: ''},
     
-    stock_request : { use : false, title: ''},
+    stock_request : { use : false, title: ''},  // 자재불출승인 팝업
+    measure : { use : false, title: ''}, // 계량지시 팝업
+    production : { use : false, title: ''}, // 제조지시 팝업
+    packing : { use : false, title: ''}, // 포장지시 팝업
     
     
     delete : { use : false, title: ''},
 
     check_delete : { use : false, title: ''},
-    
-   
      
    });
 

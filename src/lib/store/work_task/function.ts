@@ -402,7 +402,163 @@ const workTaskModalOpen = (data : any, title : any) => {
             work_task_modal_state.update(() => update_modal);
            
 
+    }  if(title === 'measure' ){
+      alert['type'] = 'save';
+      alert['value'] = false;
+    
+    common_alert_state.update(() => alert);
+    update_modal['title'] = title;
+    update_modal[title]['use'] = true;
+    work_task_modal_state.update(() => update_modal);
+
+    console.log('update_form : ', update_form);
+
+        Object.keys(update_form).map((item)=> {    
+            if(item === 'company' ){
+              update_form[item] = data[item]['uid'];
+             
+        
+            }else if(item === 'user'){
+              update_form[item] = data['user']['id'];
+            
+          
+
+            }else if(item === 'work_plan'){
+              update_form[item] = data['workPlan']['uid'];
+            
+              console.log('data[item] : ', data[item]);
+
+            }else if(item === 'work_plan_code'){
+              update_form['work_plan_code'] = data['workPlan']['code'];
+              console.log('data[item] : ', data[item]);
+
+            }else if(item === 'bom'){
+              
+            
+
+              update_form[item] = data[item]['uid'];
+              update_form['bom_code'] = data[item]['code'];
+              
+            } else{
+              update_form[item] = data[item];
+            
+            }
+           
+        }); 
+        update_form['modal'] = false;
+       
+        update_form['barcode_scan'] = '',
+        update_form['factory'] = '',
+        update_form['factory_sub'] = '',
+        
+            work_task_form_state.update(() => update_form);
+            work_task_modal_state.update(() => update_modal);
+           
+
     }
+    if(title === 'production' ){
+      alert['type'] = 'save';
+      alert['value'] = false;
+    
+    common_alert_state.update(() => alert);
+    update_modal['title'] = title;
+    update_modal[title]['use'] = true;
+    work_task_modal_state.update(() => update_modal);
+
+   
+        Object.keys(update_form).map((item)=> {    
+            if(item === 'company' ){
+              update_form[item] = data[item]['uid'];
+             
+        
+            }else if(item === 'user'){
+              update_form[item] = data['user']['id'];
+            
+          
+
+            }else if(item === 'work_plan'){
+              update_form[item] = data['workPlan']['uid'];
+            
+         
+
+            }else if(item === 'work_plan_code'){
+              update_form['work_plan_code'] = data['workPlan']['code'];
+         
+            }else if(item === 'bom'){
+              
+            
+              update_form[item] = data[item]['uid'];
+              update_form['bom_code'] = data[item]['code'];
+              
+            } else{
+              update_form[item] = data[item];
+            
+            }
+           
+        }); 
+        update_form['modal'] = false;
+       
+        update_form['barcode_scan'] = '',
+        update_form['factory'] = '',
+        update_form['factory_sub'] = '',
+        
+            work_task_form_state.update(() => update_form);
+            work_task_modal_state.update(() => update_modal);
+           
+
+    }
+    if(title === 'packing' ){
+      alert['type'] = 'save';
+      alert['value'] = false;
+    
+    common_alert_state.update(() => alert);
+    update_modal['title'] = title;
+    update_modal[title]['use'] = true;
+    work_task_modal_state.update(() => update_modal);
+
+   
+        Object.keys(update_form).map((item)=> {    
+            if(item === 'company' ){
+              update_form[item] = data[item]['uid'];
+             
+        
+            }else if(item === 'user'){
+              update_form[item] = data['user']['id'];
+            
+          
+
+            }else if(item === 'work_plan'){
+              update_form[item] = data['workPlan']['uid'];
+            
+         
+
+            }else if(item === 'work_plan_code'){
+              update_form['work_plan_code'] = data['workPlan']['code'];
+         
+            }else if(item === 'bom'){
+              
+            
+              update_form[item] = data[item]['uid'];
+              update_form['bom_code'] = data[item]['code'];
+              
+            } else{
+              update_form[item] = data[item];
+            
+            }
+           
+        }); 
+        update_form['modal'] = false;
+       
+        update_form['barcode_scan'] = '',
+        update_form['factory'] = '',
+        update_form['factory_sub'] = '',
+        
+            work_task_form_state.update(() => update_form);
+            work_task_modal_state.update(() => update_modal);
+           
+
+    }
+
     if(title === 'check_delete'){
       alert['type'] = 'check_delete';
       alert['value'] = false;
@@ -845,7 +1001,7 @@ const save =  (param,title) => {
           let itemCheck = stock_request_data.find(item => item['item']['uid'] === stock_approval_data[i]['item']['uid']);
           stock_approval_data[i]['out_qty'] = parseFloat(stock_approval_data[i]['out_qty']);
           if(itemCheck){
-            if(stock_approval_data[i]['now_qty'] < stock_approval_data[i]['out_qty']){
+            if(stock_approval_data[i]['prev_qty'] < stock_approval_data[i]['out_qty']){
               return window.alert(stock_approval_data[i]['lot'] + '는 현재고보다 불출수량이 많습니다.');
 
             }
@@ -862,19 +1018,22 @@ const save =  (param,title) => {
         
         const url = `${api}/work_task/material_approval`
 
-        return console.log('stock_approval_data : ', stock_approval_data);
+        console.log('stock_approval_data : ', stock_approval_data);
 
         try {
           
           let params = {
             uid : param.uid,
             company_uid : parseInt(param['company']),
-            stock_approval_data : stock_approval_data,
-        
+            user_id : param['user'],
+            
+            
+            task_qty : parseFloat(param['task_qty']),
+            stock_approval : stock_approval_data,
             unit : param['unit'],
             status : param['status'],
             material_order : 2, // 자재 출고 승인처리함
-            measure_order : parseInt(param['measure_order']),
+            
             prodution_order : parseInt(param['production_order']),
             packing_order : parseInt(param['packing_order']),
             token : login_data['token'],
@@ -922,6 +1081,261 @@ const save =  (param,title) => {
   
         
       }
+
+
+
+      const measureSave =  (param,title) => {
+
+        param['company'] = getCookie('company_uid');
+        param['user'] = getCookie('my-cookie');
+  
+      
+        let measure_data = table_modal_data['measure'].getData();
+  
+  
+        if(measure_data.length > 0){
+          for(let i=0; i<measure_data.length; i++){
+             
+            if(measure_data[i]['item']['type_code'] === '원료'){
+              if(parseFloat(measure_data[i]['measure_qty']) === 0 || parseFloat(measure_data[i]['measure_qty']) === null || parseFloat(measure_data[i]['measure_qty']) === undefined){
+                return window.alert('계량이 안된 원료가 있습니다.');
+              }
+            }  
+          }
+
+          const url = `${api}/work_task/measure_update`
+  
+    
+          try {
+            
+            let params = {
+              uid : param.uid,
+              company_uid : parseInt(param['company']),
+              user_id : param['user'],
+              
+              stock_approval : measure_data,
+              unit : param['unit'],
+              status : param['status'],
+              measure_order : 2, // 자재 출고 승인처리함
+              prodution_order : parseInt(param['production_order']),
+              packing_order : parseInt(param['packing_order']),
+              token : login_data['token'],
+            };
+    
+          axios.post(url,
+            params,
+          ).then(res => {
+            console.log('res',res);
+            if(res.data !== undefined && res.data !== null && res.data !== '' ){
+              console.log('실행');
+              console.log('res:data', res.data);
+              
+              toast['type'] = 'success';
+              toast['value'] = true;
+              update_modal['title'] = '';
+              update_modal['update']['use'] = false;
+              work_task_modal_state.update(() => update_modal);
+              update_form = init_form_data;
+              work_task_form_state.update(()=> update_form);
+              select_query('work_task');
+              return common_toast_state.update(() => toast);
+    
+            }else{
+            
+              return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+            }
+          })
+          }catch (e:any){
+            return console.log('에러 : ',e);
+          };
+  
+      
+  
+  
+        }else{
+          return window.alert('출고할 품목이 없습니다.');
+        }
+  
+    
+         
+         
+      
+            
+    
+          
+        }
+        
+      const productSave =  (param,title) => {
+
+        param['company'] = getCookie('company_uid');
+        param['user'] = getCookie('my-cookie');
+  
+      
+        let production_data = table_modal_data['work_task_product'].getData();
+  
+  
+        if(production_data.length > 0){
+          for(let i=0; i<production_data.length; i++){
+             
+           
+            if(parseFloat(production_data[i]['product_qty']) === 0 || parseFloat(production_data[i]['product_qty']) === null || parseFloat(production_data[i]['product_qty']) === undefined){
+                return window.alert('제조수량이 0개인 LOT가 있습니다.');
+              }else{
+                production_data[i]['product_qty'] = parseFloat(production_data[i]['product_qty']);
+              }
+            
+          }
+
+          const url = `${api}/work_task/production_update`
+  
+    
+          try {
+            
+            let params = {
+              uid : param.uid,
+              company_uid : parseInt(param['company']),
+              user_id : param['user'],
+              
+              work_task_product : production_data,
+              unit : param['unit'],
+              status : param['status'],
+           
+              production_order : 2, // 제조완료처리함
+              packing_order : parseInt(param['packing_order']),
+              token : login_data['token'],
+            };
+    
+          axios.post(url,
+            params,
+          ).then(res => {
+            console.log('res',res);
+            if(res.data !== undefined && res.data !== null && res.data !== '' ){
+              console.log('실행');
+              console.log('res:data', res.data);
+              
+              toast['type'] = 'success';
+              toast['value'] = true;
+              update_modal['title'] = '';
+              update_modal['update']['use'] = false;
+              work_task_modal_state.update(() => update_modal);
+              update_form = init_form_data;
+              work_task_form_state.update(()=> update_form);
+              select_query('work_task');
+              return common_toast_state.update(() => toast);
+    
+            }else{
+            
+              return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+            }
+          })
+          }catch (e:any){
+            return console.log('에러 : ',e);
+          };
+  
+      
+  
+  
+        }else{
+          return window.alert('출고할 품목이 없습니다.');
+        }
+  
+
+       
+  
+    
+
+        }
+
+        const packingSave = () => {
+          param['company'] = getCookie('company_uid');
+          param['user'] = getCookie('my-cookie');
+    
+        
+          let packing_data = table_modal_data['work_task_packing'].getData();
+          
+          let box_packing_data = [];
+    
+          if(packing_data_data.length > 0){
+            for(let i=0; i<packing_data.length; i++){
+               
+             
+              if(parseInt(production_data[i]['box_qty']) === 0 || parseInt(packing_data[i]['box_qty']) === null || parseInt(production_data[i]['box_qty']) === undefined){
+                  return window.alert('박스갯수를 설정해주십시오.');
+                }else if(parseInt(production_data[i]['inbox_qty']) === 0 || parseInt(packing_data[i]['in_box_qty']) === null || parseInt(production_data[i]['in_box_qty'])){
+                  return window.alert('구성수량을 설정해주십시오.');
+                }
+                else{
+
+                  let newItem = { ...packing_data[i] };
+
+                  let total_qty = parseInt(newItem['product_qty']); // 총생산량 (낱개 갯수임)
+                  
+                  let total_box_qty = 0;
+               
+
+
+
+        
+
+                
+                }
+              
+            }
+  
+            const url = `${api}/work_task/production_update`
+    
+      
+            try {
+              
+              let params = {
+                uid : param.uid,
+                company_uid : parseInt(param['company']),
+                user_id : param['user'],
+                
+                work_task_product : production_data,
+                unit : param['unit'],
+                status : param['status'],
+             
+                production_order : 2, // 제조완료처리함
+                packing_order : parseInt(param['packing_order']),
+                token : login_data['token'],
+              };
+      
+            axios.post(url,
+              params,
+            ).then(res => {
+              console.log('res',res);
+              if(res.data !== undefined && res.data !== null && res.data !== '' ){
+                console.log('실행');
+                console.log('res:data', res.data);
+                
+                toast['type'] = 'success';
+                toast['value'] = true;
+                update_modal['title'] = '';
+                update_modal['update']['use'] = false;
+                work_task_modal_state.update(() => update_modal);
+                update_form = init_form_data;
+                work_task_form_state.update(()=> update_form);
+                select_query('work_task');
+                return common_toast_state.update(() => toast);
+      
+              }else{
+              
+                return common_toast_state.update(() => TOAST_SAMPLE['fail']);
+              }
+            })
+            }catch (e:any){
+              return console.log('에러 : ',e);
+            };
+    
+        
+    
+    
+          }else{
+            return window.alert('출고할 품목이 없습니다.');
+          }
+
+        }
 
 
   const factoryChange = (key) => {
@@ -994,11 +1408,14 @@ const save =  (param,title) => {
                   return item['item']['uid'] === newItem['item']['uid'];
                 })
                 
+                newItem['item_uid'] = newItem['item']['uid'];
+                newItem['factory_uid'] = newItem['factory']['uid'];
+                newItem['factory_sub_uid'] = newItem['factorySub']['uid'];
                 
-                newItem['now_qty'] = newItem['qty']; // 현재고
+                newItem['prev_qty'] = newItem['qty']; // 현재고
                 newItem['out_qty'] = parseFloat(item_array[0]['req_qty']); // 불출수량
               
-                if(newItem['now_qty'] < newItem['out_qty']){
+                if(newItem['prev_qty'] < newItem['out_qty']){
                   window.alert('출고수량보다 현재고 보유량이 더 적습니다. 출고수량을 확인해서 수정바랍니다.');
 
                 }
@@ -1165,6 +1582,212 @@ const save =  (param,title) => {
   
 }
 
+const measureModalTable = async(table_modal_state,type,tableComponent) => {
+  let data ;
+
+    const url = `${api}/stock_approval/uid_select`
+
+   
+    let params = 
+    {
+      work_task_uid : update_form['uid'],
+
+    };
+    const config = {
+      params : params,
+      headers:{
+        "Content-Type": "application/json",
+        
+      }
+    }
+    if(table_modal_state[type]){
+      table_modal_state[type].destory();
+    }
+
+      await axios.get(url,config).then(res=>{
+          
+     
+       data =  res.data;
+      
+       console.log('data : ', data);
+      });
+
+    table_modal_data[type] =   new Tabulator(tableComponent, {
+    
+      height:TABLE_TOTAL_CONFIG['height'],
+      layout:TABLE_TOTAL_CONFIG['layout'],
+      pagination:TABLE_TOTAL_CONFIG['pagination'],
+      paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+      paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+      movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+      paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+      paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+      locale: TABLE_TOTAL_CONFIG['locale'],
+      langs: TABLE_TOTAL_CONFIG['langs'],
+      rowHeight:40, //set rows to 40px height
+      // selectable: true,
+    rowClick:function(e, row){
+      //e - the click event object
+      //row - row component
+
+   
+      row.toggleSelect(); //toggle row selected state on row click
+  },
+
+    rowFormatter:function(row){
+          row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+    },
+ 
+
+    data : data,
+    placeholder:"데이터 없음",
+    columns: MODAL_TABLE_HEADER_CONFIG[type],
+    
+    });
+
+    update_form['modal'] = true;
+
+    work_task_form_state.update(()=> update_form);      
+    table_modal_state.update(()=> table_modal_data);
+
+}
+
+
+const workTaskProductModalTable = async(table_modal_state,type,tableComponent) => {
+ 
+  if(table_modal_state[type]){
+    table_modal_state[type].destory();
+  }
+
+
+  table_modal_data[type] =   new Tabulator(tableComponent, {
+  
+    height:TABLE_TOTAL_CONFIG['height'],
+    layout:TABLE_TOTAL_CONFIG['layout'],
+    pagination:TABLE_TOTAL_CONFIG['pagination'],
+    paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+    paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+    movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+    paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+    paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+    locale: TABLE_TOTAL_CONFIG['locale'],
+    langs: TABLE_TOTAL_CONFIG['langs'],
+    rowHeight:40, //set rows to 40px height
+    // selectable: true,
+  rowClick:function(e, row){
+    //e - the click event object
+    //row - row component
+
+ 
+    row.toggleSelect(); //toggle row selected state on row click
+},
+
+  rowFormatter:function(row){
+        row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+  },
+
+
+  data : [],
+  placeholder:"데이터 없음",
+  columns: MODAL_TABLE_HEADER_CONFIG[type],
+  
+  });
+
+  update_form['modal'] = true;
+
+  work_task_form_state.update(()=> update_form);      
+  table_modal_state.update(()=> table_modal_data);
+
+}
+
+
+const workTaskPackingModalTable = async(table_modal_state,type,tableComponent) => {
+  let data = [] ;
+
+    const url = `${api}/work_task_product/uid_select`
+
+   
+    let params = 
+    {
+      work_task_uid : update_form['uid'],
+
+    };
+    const config = {
+      params : params,
+      headers:{
+        "Content-Type": "application/json",
+        
+      }
+    }
+    if(table_modal_state[type]){
+      table_modal_state[type].destory();
+    }
+
+      await axios.get(url,config).then(res=>{
+          
+     
+       data =  res.data;
+
+       if(data.length > 0){
+        for(let i= 0; i<data.length; i++){
+          data[i]['bom_code'] = data[i]['bom']['code'];
+          data[i]['bom_uid'] = data[i]['bom']['uid'];
+          
+        }
+
+       }
+      
+      
+      });
+
+    table_modal_data[type] =   new Tabulator(tableComponent, {
+    
+      height:TABLE_TOTAL_CONFIG['height'],
+      layout:TABLE_TOTAL_CONFIG['layout'],
+      pagination:TABLE_TOTAL_CONFIG['pagination'],
+      paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+      paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+      movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+      paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+      paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+      locale: TABLE_TOTAL_CONFIG['locale'],
+      langs: TABLE_TOTAL_CONFIG['langs'],
+      rowHeight:40, //set rows to 40px height
+      // selectable: true,
+    rowClick:function(e, row){
+      //e - the click event object
+      //row - row component
+
+   
+      row.toggleSelect(); //toggle row selected state on row click
+  },
+
+    rowFormatter:function(row){
+          row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+    },
+ 
+
+    data : data,
+    placeholder:"데이터 없음",
+    columns: MODAL_TABLE_HEADER_CONFIG[type],
+    
+    });
+
+    update_form['modal'] = true;
+
+    work_task_form_state.update(()=> update_form);      
+    table_modal_state.update(()=> table_modal_data);
+
+}
+
+
+
+
+
+
+
+
+
 
   
 
@@ -1291,7 +1914,73 @@ const workPlanSelect = (row) => {
   
 }
 
+const workTaskProductAddRow = (e) => {
+ 
+  let company_uid = getCookie('company_uid');  
+  let data = table_modal_data['work_task_product'].getData();
+  
+  console.log('update_form : ', update_form);
+  let new_obj = {
+    uid : parseInt(data.length) + 1, 
+    company_uid : company_uid,
+    
+    bom_uid :  update_form['bom'],
+    bom_code : update_form['bom_code'],
+    work_task_uid : update_form['uid'],
+    lot : update_form['bom_code'] + moment().format('YYYYMMDD') + parseInt(data.length),
+    status : '합격',
+    product_qty : 0, 
+    unit : '',
+  }
+
+  data.push(new_obj);
+
+  table_modal_data['work_task_product'].setData(data);
+  table_modal_state.update(()=> table_modal_data);
+  
+}
 
 
 
-export {  workTaskModalOpen,save,modalClose,workPlanSearchTable,workPlanSearchModalClose,makeCustomTable,workPlanSelect,workPlanSearchModalOpen,stockRequestModalTable,barcodeScan,factoryChange,stockApprovalModalTable,cancelSave,approvalSave}
+
+const workTaskProductDeleteRow = () => {
+  // console.log('눌림');
+  let data = table_modal_data['work_task_product'].getData();
+  
+  data.pop();
+  table_modal_data['work_task_product'].setData(data);
+  table_modal_state.update(()=> table_modal_data);
+
+}
+const workTaskProductAllDeleteRow = () => {
+ 
+
+  table_modal_data['work_task_product'].setData([]);
+
+  table_modal_state.update(()=> table_modal_data);
+
+}
+
+
+const workTaskProductSelectDelete = (row) => {
+
+
+
+   let new_data = row.getData();
+   let filterd_data;
+   
+    filterd_data = table_modal_data['work_task_product'].getData().filter((item) => {
+       return item.uid !== new_data.uid;
+     })
+    
+     table_modal_data['work_task_product'].setData(filterd_data);
+     table_modal_state.update(()=> table_modal_data);
+
+     
+ }
+
+
+
+
+
+export {  workTaskModalOpen,save,modalClose,workPlanSearchTable,workPlanSearchModalClose,makeCustomTable,workPlanSelect,workPlanSearchModalOpen,stockRequestModalTable,barcodeScan,factoryChange,stockApprovalModalTable,cancelSave,approvalSave,measureModalTable,measureSave, productSave,workTaskProductModalTable,workTaskProductAddRow,workTaskProductDeleteRow,workTaskProductAllDeleteRow,workTaskProductSelectDelete,packingSave,workTaskPackingModalTable}

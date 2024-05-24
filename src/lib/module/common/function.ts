@@ -66,6 +66,10 @@ function updateSupplyPrice(cell:any) {
     cell.getRow().update({ supply_price: supplyPrice, vat_price : vatPrice });
 }
 
+
+// 생산지시중, 포장지시에서만 가능함
+
+
 const commaNumber = (number:any) => {
     if (number)
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -85,5 +89,6 @@ export {
     businessNumber,
     phoneNumber,
     validEmail,
-    updateSupplyPrice,commaNumber
+    updateSupplyPrice,commaNumber,
+    
 }
