@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid';
 import moment from 'moment';
 
 
-  const order_modal_state : any = writable( {
+  const ship_order_modal_state : any = writable( {
     title : '',
     add : { use : false, title: ''},
     update : { use : false, title: ''},
@@ -13,31 +13,31 @@ import moment from 'moment';
    
     check_delete : { use : false, title: ''},
     print : { use : false, title: ''},
-    ship_order_order_search : {use : false, title: ''}, // 출하지시에서 불러오는 주문 모달 
-
+   
    
    });
 
-  const order_form_state : any = writable({
+  const ship_order_form_state : any = writable({
     uid : 0,
     modal: false,
     company : '', // 사업장
     customer : '', // 거래처
-    estimate : '', // 견적서
+    order : '', // 주문서
     customer_name : '',
-
+    barcode_scan : '',
     user : '',
     code : '', // 견적코드
     name : '',
     product_spec : "", // 제품 사양
     ship_place : "", // 납품 장소
     description : "", // 발주조건 및 기타 특이사항
-    ship_date : moment().format('YYYY-MM-DD'), // 견적일자
-   
-    order_sub_array : [],
+    order_ship_date : moment().format('YYYY-MM-DD'), //  계약상 납품일자
+    ship_date : moment().format('YYYY-MM-DD'), //  실제납품일자
+    order_count : 0, // 납기일자 차이
+    ship_order_sub_array : [],
     used : 1,
     
   })
   
 
-  export {order_modal_state,order_form_state};
+  export {ship_order_modal_state,ship_order_form_state};

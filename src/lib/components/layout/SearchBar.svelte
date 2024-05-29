@@ -32,7 +32,7 @@
   <slot />
 </main>
 
-<form class="flex gap-2">
+<div class="flex gap-2">
   {#if $page.url.pathname.split('/')[1] !== 'info'}
   <div class="w-1/5">
     <Label for="first_name" class="mb-2">시작일자</Label>
@@ -82,4 +82,4 @@
   {/if}
  
   
-</form>
+</div>

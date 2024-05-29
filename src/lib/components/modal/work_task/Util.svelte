@@ -16,7 +16,7 @@
     
     import {common_alert_state, common_toast_state,common_company_state,common_type_state, table_modal_state} from '$lib/store/common/state';
     import {fileButtonClick,handleSubmit} from '$lib/store/common/function';
-    import {save,modalClose,workPlanSearchModalOpen } from '$lib/store/work_task/function';
+    import {save,modalClose,workPlanSearchModalOpen,workTaskPerformanceModalTable } from '$lib/store/work_task/function';
     import {DATA_FAIL_ALERT,DATA_SELECT_ALERT} from '$lib/module/common/constants';
     
     import {work_plan_modal_state} from '$lib/store/work_plan/state';
@@ -25,7 +25,7 @@
     export let title;
 
     import { setCookie, getCookie, removeCookie } from '$lib/cookies';
-
+    import {onMount,afterUpdate } from 'svelte';
   
 
     
@@ -35,13 +35,15 @@
    
    
     if(title === 'add'){
-      label_title = '추가';
+      label_title = '생산지시 추가';
     }else if(title === 'update'){
-      label_title = '수정';
+      label_title = '생산지시 수정';
     }else if(title === 'delete'){
-      label_title = '삭제';
+      label_title = '생산지시 삭제';
     }else if(title === 'check_delete'){
-      label_title = '선택 삭제';
+      label_title = '생산지시 선택 삭제';
+    }else if(title === 'print'){
+      label_title = '생산실적 출력';
     }
 
     let color ; 
@@ -63,6 +65,35 @@
     let tableComponent = "example-table-theme";
 
     
+    afterUpdate(() => {
+
+if($work_task_form_state['modal'] === false){
+    if($work_task_form_state['production_order'] === 2 && $work_task_modal_state['title'] === 'update'){
+     
+      workTaskPerformanceModalTable(table_modal_state,"work_task_performance",tableComponent);
+  
+
+    }
+   
+  
+  }
+});
+onMount(()=>{
+
+if($work_task_form_state['modal'] === false){
+  if($work_task_form_state['production_order'] === 2 && $work_task_modal_state['title'] === 'update'){
+   
+      workTaskPerformanceModalTable(table_modal_state,"work_task_performance",tableComponent);
+  
+
+    }
+   
+  }
+});
+
+
+
+    
 
     </script>
       
@@ -78,7 +109,7 @@
 
  
       
-    <Modal  class="w-full" title={`생산지시 ${label_title}`} permanent={true} color={color}  bind:open={$work_task_modal_state[title]['use']} size="xl"  placement={'center'}   >
+    <Modal  class="w-full" title={`${label_title}`} permanent={true} color={color}  bind:open={$work_task_modal_state[title]['use']} size="xl"  placement={'center'}   >
        
           <!-- grid grid-cols-2 gap-4 -->
         <form  action="#" on:submit={handleSubmit} >
@@ -148,8 +179,20 @@
                 </Select>
             </Label>
           {/if}
+
+
           </div>
 
+
+          {#if $work_task_modal_state['title'] === 'update' && $work_task_form_state['production_order'] === 2}
+          <div class="grid grid-cols-1 gap-4">
+            <p class="mb-4 font-semibold text-xl dark:text-white">생산실적 리스트</p>
+          
+          </div>
+          <div class="flex flex-row">
+            <div  class="w-full" id="example-table-theme" bind:this={tableComponent}></div>
+          </div>
+          {/if}
           
   
 

@@ -15,9 +15,8 @@ import moment from 'moment';
     production : { use : false, title: ''}, // 제조지시 팝업
     packing : { use : false, title: ''}, // 포장지시 팝업
     
+    print : { use : false, title: ''}, // 생산실적 팝업
     
-    delete : { use : false, title: ''},
-
     check_delete : { use : false, title: ''},
      
    });

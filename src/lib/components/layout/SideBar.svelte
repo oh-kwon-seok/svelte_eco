@@ -102,6 +102,7 @@
             </svelte:fragment>
             <SidebarDropdownItem class={text_style} label="견적 관리" href='/sales/estimate' active={activeUrl === '/sales/estimate'} on:click={handleToggle('estimate')}/>
             <SidebarDropdownItem class={text_style} label="주문 관리" href='/sales/order' active={activeUrl === '/sales/order'} on:click={handleToggle('order')}/>
+            <SidebarDropdownItem class={text_style} label="출하 지시" href='/sales/ship_order' active={activeUrl === '/sales/ship_order'} on:click={handleToggle('ship_order')}/>
             </SidebarDropdownWrapper>
           </SidebarGroup>
           
@@ -132,6 +133,18 @@
             <SidebarDropdownItem class={text_style} label="생산지시" href='/production/work_task' active={activeUrl === '/production/work_task'} on:click={handleToggle('work_task')} />
             </SidebarDropdownWrapper>
           </SidebarGroup>
+          <SidebarGroup border>  
+            <SidebarDropdownWrapper class={text_style} label="통계 분석" isOpen={mainPath ==='stats' ? true : false} transitionType="fly" {transitionParams} >
+              <svelte:fragment slot="icon">
+                <Icon.CalculatorSolid size="20"/>
+            </svelte:fragment>
+            <SidebarDropdownItem class={text_style} label="생산/불량 현황" href='/stats/product_status' active={activeUrl === '/stats/product_status'} on:click={handleToggle('product_status')} />
+            <SidebarDropdownItem class={text_style} label="납기 현황" href='/stats/delivery' active={activeUrl === '/stats/delivery'} on:click={handleToggle('delivery')} />
+            <SidebarDropdownItem class={text_style} label="센서 데이터 현황" href='/stats/sensor' active={activeUrl === '/stats/sensor'} on:click={handleToggle('sensor')} />
+
+            </SidebarDropdownWrapper>
+          </SidebarGroup>
+       
        
         </SidebarWrapper>
       </Sidebar>

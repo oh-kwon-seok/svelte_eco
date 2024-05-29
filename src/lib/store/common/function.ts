@@ -704,7 +704,7 @@ const excelDownload = (type,config) => {
           }
         }
           axios.get(url,config).then(res=>{
-            
+              console.log('resData : ', res.data);
             table_list_data[type].setData(res.data);
             table_list_state.update(() => table_list_data);
            

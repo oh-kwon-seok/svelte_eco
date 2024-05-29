@@ -17,6 +17,9 @@ import { estimateModalOpen,estimateSubitemSelect,estimateSubItemSearchModalOpen,
 
 import { orderModalOpen,orderSubitemSelect,orderSubItemSearchModalOpen,orderSubSelectDelete, estimateSelect,orderCompanySelect} from '$lib/store/order/function';
 
+import { shipOrderModalOpen,orderSelect } from '$lib/store/ship_order/function';
+
+
 
 
 import moment from 'moment';
@@ -46,6 +49,15 @@ const TABLE_FILTER : any = {
             
 
     ],
+    ship_order : [
+        {value : "all",name : "전체"},
+        {value : "code", name : "출하코드"},
+        {value : "name", name : "출하명"},
+        {value : "client", name : "납품처"},
+        {value : "description", name : "비고"},
+            
+
+    ],
 }
 
 
@@ -64,6 +76,13 @@ const EXCEL_CONFIG : any = {
         order : [
             {header: '주문코드', key: 'code', width: 30},
             {header: '주문명', key: 'name', width: 30},
+            {header: '용도', key: 'status', width: 30},
+            {header: '비고', key: 'description', width: 30},
+              
+        ],
+        ship_order : [
+            {header: '출하코드', key: 'code', width: 30},
+            {header: '출하명', key: 'name', width: 30},
             {header: '용도', key: 'status', width: 30},
             {header: '비고', key: 'description', width: 30},
               
@@ -567,6 +586,271 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
 
     ],
 
+ 
+    ship_order_order_search :[
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+
+        {title:"주문명", field:"name", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(cell){
+                orderSelect(cell);
+            }else{
+                
+            }
+            }
+        },
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+    ship_order_sub : [
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+      
+        {title:"성분명", field:"item.ingr_eng_name", width:150, headerFilter:"input", 
+        
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+        },
+
+        {title:"한글명", field:"item.ingr_kor_name", width:150, headerFilter:"input",},
+       
+        {title:"수량", field:"qty", width:150,formatter: "money",  formatterParams: {
+          
+            thousand:",",
+            precision:false,
+
+        },cellEdited: updateSupplyPrice},
+        {title:"용량", field:"unit", width:150, headerFilter:"input"},
+       
+        {title:"매입단가", field:"buy_price", width:150, formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
+            
+            thousand:",",
+            symbol:"원",
+          symbolAfter:"p",
+          precision:0,
+      }},
+
+        {title:"매출단가", field:"price", width:150, 
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+
+        formatter: "money",  formatterParams: {
+            
+              thousand:",",
+              symbol:"원",
+            symbolAfter:"p",
+            precision:false,
+
+        },cellEdited: updateSupplyPrice},
+      
+
+
+        {title:"공급가액", field:"supply_price", width:150, formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
+           
+            thousand:",",
+            symbol:"원",
+            symbolAfter:"p",
+            precision:false,
+        }},
+        {title:"부가세", field:"vat_price", width:150, formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+
+        formatterParams: {
+           
+            thousand:",",
+            symbol:"원",
+            symbolAfter:"p",
+            precision:false,
+        }},
+        {title:"비고", field:"description", width:150, headerFilter:"input",editor : "input"},
+
+    
+        {
+            title: "삭제",
+            headerSort: false,
+            formatter: function (cell:any, formatterParams:any, onRendered:any) {
+             
+                // "+" 아이콘 버튼
+                var deleteButton = document.createElement("button");
+                deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+                deleteButton.addEventListener("click", function () {
+                    // let add_qty = parseInt(rowData.qty) + 1;
+                    // row.update({qty : add_qty});
+                    shipOrderSubSelectDelete(cell);
+                });
+            
+                var container = document.createElement("div");
+                container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+                container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+                container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+                container.appendChild(deleteButton);
+            
+             
+                return container;
+            }
+
+        },
+        
+
+
+    ],
+
+    real_ship_order_sub : [
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        {title:"품목코드", field:"item.code", width:150, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+        },
+        {title:"LOT", field:"lot", width:150, headerFilter:"input", 
+        
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+        },
+
+        {title:"공장", field:"factory.name", width:150, headerFilter:"input",},
+        {title:"창고", field:"factorySub.name", width:150, headerFilter:"input",},
+        
+
+
+        {title:"수량", field:"qty", width:150,
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+
+        formatter: "money",  formatterParams: {
+            
+              thousand:",",
+              symbol:"EA",
+            symbolAfter:"p",
+            precision:false,
+
+        },cellEdited: updateSupplyPrice},
+        {title:"매출단가", field:"price", width:150,
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+
+        formatter: "money",  formatterParams: {
+            
+              thousand:",",
+              symbol:"원",
+            symbolAfter:"p",
+            precision:false,
+
+        },cellEdited: updateSupplyPrice},
+        {title:"공급가액", field:"supply_price", width:150, formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+        formatterParams: {
+           
+            thousand:",",
+            symbol:"원",
+            symbolAfter:"p",
+            precision:false,
+        }},
+
+
+        {title:"부가세", field:"vat_price", width:150, formatter: "money",  
+        bottomCalc:"sum", 
+        bottomCalcFormatter:function(cell : any){
+            var value = cell.getValue();
+        return commaNumber(value);
+         },
+
+        formatterParams: {
+           
+            thousand:",",
+            symbol:"원",
+            symbolAfter:"p",
+            precision:false,
+        }},
+
+
+        {title:"용량", field:"unit", width:150, headerFilter:"input"},
+
+
+      
+    
+        {
+            title: "삭제",
+            headerSort: false,
+            formatter: function (cell:any, formatterParams:any, onRendered:any) {
+             
+                // "+" 아이콘 버튼
+                var deleteButton = document.createElement("button");
+                deleteButton.innerHTML = "<i class='fas fa-trash'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+                deleteButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+                deleteButton.addEventListener("click", function () {
+                    // let add_qty = parseInt(rowData.qty) + 1;
+                    // row.update({qty : add_qty});
+                    shipOrderSubSelectDelete(cell);
+                });
+            
+                var container = document.createElement("div");
+                container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+                container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+                container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+                container.appendChild(deleteButton);
+            
+             
+                return container;
+            }
+
+        },
+        
+
+
+    ],
+
 
 }
 const TABLE_HEADER_CONFIG : any = {
@@ -623,6 +907,39 @@ const TABLE_HEADER_CONFIG : any = {
             let row = cell.getRow();
             if(row){
                 orderModalOpen(row.getData(),"update");
+            }else{
+                
+            }
+            }
+        },
+        {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
+        formatter: function(cell : any, formatterParams: any, onRendered: any) {
+            // Luxon을 사용하여 datetime 값을 date로 변환
+            const datetimeValue = cell.getValue();
+            const date = DateTime.fromISO(datetimeValue).toFormat("yyyy-MM-dd");
+            return date;
+        },
+    }],
+
+    ship_order: [
+        {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
+        cellClick:function(e : any, cell:any){
+            cell.getRow().toggleSelect()
+        }},
+        {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+        
+        {title:"사업장", field:"company.name", width:150, headerFilter:"input"},
+
+        {title:"출하명", field:"name", width:500, headerFilter:"input", 
+        formatter:function(cell : any){
+            var value = cell.getValue();
+        return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+        },
+
+        cellClick:function(e : any, cell:any){
+            let row = cell.getRow();
+            if(row){
+                shipOrderModalOpen(row.getData(),"update");
             }else{
                 
             }

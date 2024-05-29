@@ -15,7 +15,7 @@ import { phoneNumber,businessNumber,updateSupplyPrice ,commaNumber} from '$lib/m
 
 import { bomSelect, workPlanModalOpen} from '$lib/store/work_plan/function';
 
-import { workPlanSelect, workTaskModalOpen,workTaskProductSelectDelete} from '$lib/store/work_task/function';
+import { workPlanSelect, workTaskModalOpen,workTaskProductSelectDelete,workTaskPackingPrint} from '$lib/store/work_task/function';
 
 import moment from 'moment';
 
@@ -355,7 +355,7 @@ work_task_packing : [
         return commaNumber(value);
          },
     },
-    {title:"구성수량", field:"inbox_qty", width:150,  
+    {title:"박스구성수량", field:"inbox_qty", width:150,  
     editor : "input",
      formatter:function(cell : any){
         var value = cell.getValue();
@@ -374,8 +374,25 @@ work_task_packing : [
         return commaNumber(value);
          }
     },
-    {title:"박스갯수", field:"inbox_qty", width:150,  
-    editor : "input",
+
+
+    
+    {title:"단위", field:"unit", width:150, headerFilter:"input",},   
+   
+   
+],
+
+work_task_performance : [
+       
+    {title:"ID", formatter: "rownum", width:150, headerFilter:"input"},
+    {title:"LOT", field:"lot", width:250, headerFilter:"input"},
+    {title:"제품코드", field:"bom.code", width:300, headerFilter:"input", 
+    formatter:function(cell : any){
+        var value = cell.getValue();
+    return "<span style='color:#3FB449; font-weight:bold;'>" + value + "</span>";
+     },
+    },
+    {title:"제조수량", field:"product_qty", width:150,  
      formatter:function(cell : any){
         var value = cell.getValue();
         let row = cell.getRow().getData();
@@ -393,10 +410,9 @@ work_task_packing : [
         return commaNumber(value);
          },
     },
-    
-    {title:"단위", field:"unit", width:150, headerFilter:"input",},   
-   
-   
+    {title:"단위", field:"unit", width:150, headerFilter:"input"},   
+    {title:"합불", field:"status", width:150, },   
+
 ],
 
    
@@ -635,6 +651,44 @@ const TABLE_HEADER_CONFIG : any = {
             
         }
      },
+     {
+        title: "바코드인쇄",
+        headerSort: false,
+        formatter: function (cell:any, formatterParams:any, onRendered:any) {
+            
+            let row = cell.getRow();
+            let data = row.getData();
+            if(data['packing_order'] === 2){
+                
+            // "+" 아이콘 버튼
+            var utilButton = document.createElement("button");
+            utilButton.innerHTML = "<i class='fas fa-print'></i>"; // Font Awesome 등의 아이콘을 사용하는 예시
+            utilButton.classList.add("icon-button"); // 아이콘 버튼에 클래스 추가
+            utilButton.addEventListener("click", function () {
+           
+                workTaskPackingPrint(row.getData());
+                 
+    
+                // estimateSubSelectDelete(cell); -> 재고조정 로직 추가
+            });
+        
+            var container = document.createElement("div");
+            container.style.display = "flex"; // 아이콘 버튼들을 가로로 나란히 표시하기 위해 Flexbox 사용
+            container.style.justifyContent = "space-between"; // 좌우로 간격 주기
+            container.style.margin = "0 5px"; // 좌우 마진 5px 주기
+            container.appendChild(utilButton);
+            return container;
+
+              
+            }else{
+                return "<span style='font-weight:bold;'>-</span>";
+            
+
+            }
+
+
+        }
+    },
         
         {title:"등록일", field:"created", hozAlign:"center", sorter:"date",  headerFilter:"input", 
         formatter: function(cell : any, formatterParams: any, onRendered: any) {

@@ -19,6 +19,9 @@ import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
 import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/production/constants';
 import Excel from 'exceljs';
+import { fail } from '@sveltejs/kit';
+import QRCode from 'qrcode';
+
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -343,7 +346,7 @@ const workTaskModalOpen = (data : any, title : any) => {
             }
            
         }); 
-
+        update_form['modal'] = false;
             work_task_form_state.update(() => update_form);
             work_task_modal_state.update(() => update_modal);
            
@@ -560,6 +563,7 @@ const workTaskModalOpen = (data : any, title : any) => {
     }
 
     if(title === 'check_delete'){
+
       alert['type'] = 'check_delete';
       alert['value'] = false;
     
@@ -574,6 +578,26 @@ const workTaskModalOpen = (data : any, title : any) => {
 
       common_selected_state.update(() => data);
     
+  }
+  if(title === 'print'){
+    let data =  table_list_data['work_task'].getSelectedData();
+
+    if(data.length > 0){
+      alert['type'] = 'save';
+      alert['value'] = false;
+    
+      common_alert_state.update(() => alert);
+      update_modal['title'] = title;
+      update_modal[title]['use'] = true;
+      work_task_modal_state.update(() => update_modal);
+
+      common_selected_state.update(() => data);
+    }else{
+      window.alert("데이터를 1개 이상 선택해주십시오.");
+    }
+    
+
+
   }
  
 }
@@ -904,6 +928,402 @@ const save =  (param,title) => {
 
 
   }
+  const printContent = async(data) => {
+  
+    let check_data = [];
+    let test_sub_data = [];
+  
+  
+    if (Array.isArray(data) && data.length > 0) {
+      for (const item of data) {
+        const url = `${api}/work_task_product/uid_select`;
+        const params = { work_task_uid : item['uid'] };
+        const config = {
+          params: params,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+  
+        try {
+          const res = await axios.get(url, config);
+            
+      
+          let page_qty = 0; 
+          page_qty = Math.ceil(res.data.length / 30);
+          const  dataArray = res.data;
+        
+          for(let i =0; i<page_qty; i++){
+            let newItem = { ...item }; // 객체의 복사본 생성 (spread 연산자 사용)
+
+            let work_task_product = []; // 각 페이지별 들어갈 품목 데이터
+            for (let j = 0; j < dataArray.length; j += 30) {
+             
+              const slicedData = dataArray.slice(j, j + 30); // 14개씩 잘라낸 데이터
+              work_task_product.push(slicedData); // 각 슬라이스된 배열을 독립적인 요소로 추가
+            }
+              newItem['pageNo'] = i+1 // newItem에 first_data 배열을 추가
+              newItem['pageQty'] = page_qty; 
+              newItem['work_task_product'] = work_task_product[i]; // newItem에 first_data 배열을 추가
+              check_data.push(newItem); // test_data 배열에 newItem 추가
+          
+          }
+
+
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+    }
+  
+    
+  
+    const generateA4Pages = (check_data) => {
+      
+      const pages = check_data.map((item, index) => {
+       
+  
+        let theme = "black";
+
+          let work_task_product_data = item['work_task_product'];
+      
+                  
+          const productDetails = work_task_product_data.length > 0 && work_task_product_data.map((item2, index2) => `
+           
+  
+  
+        <tr>
+    
+          <td style="text-align : center; "class="info-bottom-border info-left-border info-right-border">${index2+1}</td>
+          <td style="text-align : left; "class="info-bottom-border">${item2.lot}</td>
+          <td style="text-align : right; "class="info-bottom-border info-left-border">${commaNumber(item2.product_qty)}</td>
+          <td style="text-align : right; "class="info-bottom-border info-left-border">${item2.unit}</td>
+          <td style="text-align : right; "class="info-bottom-border info-left-border">${item2.status}</td>
+          
+          <td style="text-align : right; "class="info-bottom-border info-left-border info-right-border">${item2.created}</td>
+          
+        </tr>
+            
+          `).join('');
+
+          const tempDetails = Array.from({ length: 30 -  work_task_product_data.length}, (_, index) => `
+          <tr>
+            <td style="text-align: center;" class="info-bottom-border info-left-border info-right-border">${ work_task_product_data.length+index+1}</td>
+            <td style="text-align: left;" class="info-bottom-border"></td>
+            <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
+            <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
+            <td style="text-align: right;" class="info-bottom-border info-left-border"></td>
+            <td style="text-align: right;" class="info-bottom-border info-left-border info-right-border"></td>
+          </tr>
+         `).join('');
+  
+  
+    
+          return `
+            <html>
+              <head>
+              <style>
+              @media screen {
+              
+                body {
+                  visibility: hidden;
+                }
+              }
+              @media print {
+                 @page {
+                   size: A4;
+                  
+                   margin: 0.5cm;
+                 }
+                 body {
+                  visibility: visible;
+                   font-family: 'Nanum Gothic', sans-serif;
+                   margin: 0;
+                   padding: 0px 30px 0px 5px;
+                 box-sizing: border-box;
+     
+                   background-color: #fff;
+                   display: flex;
+                   flex-direction: column;
+                 }
+                 .container {
+                   width: 100%;
+                   height: 95%;
+                    
+                 }
+                 .theme-border {
+                   border: 3px solid ${theme};
+                   border-radius: 10px;
+                   padding: 10px; /* 예시로 padding을 추가하여 테두리가 둥글게 나타날 수 있도록 함 */
+                   padding-top : 10px;
+     
+                 }
+           
+                 .header {
+                   text-align: center;
+                   padding: 10px 0;
+                   
+                 }
+                 .header_sub {
+                     text-align: center;
+                     display : flex;
+                     flex-direction : row;
+                     padding: 10px 0;
+                     
+                   }
+                 .top_title {
+                     text-align: center;
+                     font-size : 24px;
+                     font-weight : bold;
+                     text-decoration: underline;
+                     color : ${theme};
+                   }
+                   .top_title_sub {
+                     width : "30%",
+                     text-align: center;
+                     font-size : 16px;
+                     color : ${theme};
+                   
+                   }
+               
+     
+     
+              
+     
+                 .content {
+                   padding: 20px 0;
+                 }
+                 .bottom_footer {
+                   text-align: left;
+                   padding: 10px 0 10px 0;
+                   
+                 }
+     
+                 .table-container {
+                     //border-collapse: collapse;
+                   }
+               
+                   .table-container table, .table-container th, .table-container td {
+                     border: none;
+                   }
+               
+                   .table-container th, .table-container td {
+                     padding: 3px; /* 원하는 패딩 값 설정 */
+                   }
+     
+                   .table_row {
+                     padding: 5px; 
+     
+                     display:flex; flex-direction : row;
+                   }
+     
+     
+                   .info-table-container {
+                     border: 2px solid ${theme}; /* 테이블의 전체 border 색상 설정 */
+                     border-collapse: collapse;
+                   
+                   }
+                
+               
+                   .info-table-container th, .info-table-container td {
+                     border: 1px solid ${theme}; /* 각 셀의 border 색상 설정 */
+                     padding: 1px; /* 원하는 패딩 값 설정 */
+                     font-size:12px;
+                   }
+                  
+                   
+                     td.info-no-border{
+                         border: none; /* 모든 테두리 없애기 */
+                     }
+                 
+                     td.info-top-border {
+                         border-top: none; /* 위쪽 테두리 없애기 */
+                     }
+                 
+                     td.info-right-border {
+                         border-right: none; /* 오른쪽 테두리 없애기 */
+                     }
+                 
+                     td.info-bottom-border {
+                         border-bottom: none; /* 아래쪽 테두리 없애기 */
+                     }
+                 
+                     td.info-left-border {
+                         border-left: none; /* 왼쪽 테두리 없애기 */
+                     }
+     
+     
+                     .info-sub-table-container {
+                         margin-top : 10px;
+                         border: 2px solid ${theme}; /* 테이블의 전체 border 색상 설정 */
+                         border-collapse: collapse;
+                         width: 100%;
+                       }
+                    
+                   
+                       .info-sub-table-container th, .info-sub-table-container td {
+                         border: 1px solid ${theme}; /* 각 셀의 border 색상 설정 */
+                         padding: 1px; /* 원하는 패딩 값 설정 */
+                         font-size:12px;
+                       }
+                       td.info-no-border{
+                         border: none; /* 모든 테두리 없애기 */
+                     }
+                 
+                     td.info-top-border {
+                         border-top: none; /* 위쪽 테두리 없애기 */
+                     }
+                 
+                     td.info-right-border {
+                         border-right: none; /* 오른쪽 테두리 없애기 */
+                     }
+                 
+                     td.info-bottom-border {
+                         border-bottom: none; /* 아래쪽 테두리 없애기 */
+                     }
+                 
+                     td.info-left-border {
+                         border-left: none; /* 왼쪽 테두리 없애기 */
+                     }
+     
+     
+     
+     
+         
+         
+               
+                      
+                 
+     
+               }
+              </style>
+              </head>
+              <body class="page">
+              <div class="container theme-border">
+              <div class="header">
+                <span class="top_title">생&nbsp;&nbsp;산&nbsp;&nbsp;실&nbsp;&nbsp;적</span>
+               </div>
+              
+               
+                   
+       
+              
+       
+
+       
+                       <div style="display:flex; flex-direction : row; width : 100%;" class="table-container">
+                       <div class="info-sub-table-container">
+                          
+                       <table>
+                       <tbody>
+                       <tr >
+                       <td style="width : 40px; text-align:center; font-weight : 600" class="info-no-border">순 서</td>
+                       <td style="width : 300px; text-align:center; font-weight : 600" class="info-bottom-border info-top-border">LOT</td>
+                       <td style="width : 200px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">생산수량</td>
+                       
+                       <td style="width : 100px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">단위</td>
+                       <td style="width : 100px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border">합불</td>
+                       <td style="width : 200px; text-align:center; font-weight : 600" class="info-left-border info-bottom-border info-top-border info-right-border">생산일</td>
+                       
+                       
+                       </tr>
+       
+                       ${productDetails}
+                       ${tempDetails}
+                          
+                       </tbody>
+                      
+                     </table>
+                       
+                     
+           
+                       </div>
+                   </div>
+       
+                   <div class="bottom_footer">
+                 
+                   <span style="text-align : left;">&nbsp;&nbsp;&nbsp;합계(VAT 포함) : ${commaNumber(item.totalEtcQty)}</span>
+
+
+                   <p> 1. 지시수량 : ${item['task_qty']}</p>
+                   <p> 2. 합격수량 :  ${item['success_qty']}</p>
+                   <p> 3. 불량수량 :  ${item['fail_qty']}</p>
+                 
+      
+              
+                  
+                    
+                
+                   </div>
+       
+       
+       
+                     
+                   
+            </div>
+       
+  
+  
+              
+  
+            
+    
+              </body>
+            </html>
+          `;
+        
+      });
+    
+      // pages는 Promise 객체의 배열이므로 Promise.all을 사용하여 모든 페이지의 HTML을 얻은 뒤 반환합니다.
+      return Promise.all(pages).then(htmlPages => htmlPages.join(''));
+     
+    }
+    
+   
+    const originalContent = document.body.innerHTML;
+  
+    const closePopup = () => {
+      document.body.innerHTML = originalContent;
+      printWindow.close();
+      
+    };
+    
+   
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+  
+    generateA4Pages(check_data)
+      .then(content => {
+        printWindow.document.write(content);
+        printWindow.document.close();
+        // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+        printWindow.onload = () => {
+        
+          // 프린트 다이얼로그 호출
+          printWindow.print();
+        };
+
+        // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
+        printWindow.onafterprint = () => {
+          
+          printWindow.close();
+        };
+
+
+
+        // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+      
+
+        // 프린트 다이얼로그 호출
+        printWindow.print();
+       
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  
+   
+  };
 
 
   const cancelSave =  (param,title) => {
@@ -1246,32 +1666,66 @@ const save =  (param,title) => {
 
         }
 
-        const packingSave = () => {
+        const packingSave = (param,title) => {
           param['company'] = getCookie('company_uid');
           param['user'] = getCookie('my-cookie');
     
-        
+          if(update_form['factory'] === ''){
+            window.alert('입고공장을 선택해주십시오.');
+
+          }
+
           let packing_data = table_modal_data['work_task_packing'].getData();
+
+          
           
           let box_packing_data = [];
-    
-          if(packing_data_data.length > 0){
+          let success_qty = 0;
+          let fail_qty = 0;
+          if(packing_data.length > 0){
             for(let i=0; i<packing_data.length; i++){
-               
-             
-              if(parseInt(production_data[i]['box_qty']) === 0 || parseInt(packing_data[i]['box_qty']) === null || parseInt(production_data[i]['box_qty']) === undefined){
-                  return window.alert('박스갯수를 설정해주십시오.');
-                }else if(parseInt(production_data[i]['inbox_qty']) === 0 || parseInt(packing_data[i]['in_box_qty']) === null || parseInt(production_data[i]['in_box_qty'])){
-                  return window.alert('구성수량을 설정해주십시오.');
-                }
-                else{
+              let newItem = { ...packing_data[i] };
 
-                  let newItem = { ...packing_data[i] };
 
-                  let total_qty = parseInt(newItem['product_qty']); // 총생산량 (낱개 갯수임)
+              console.log(packing_data[i]['inbox_qty']);
+              if(packing_data[i]['inbox_qty'] === undefined || parseInt(packing_data[i]['inbox_qty']) === 0){
                   
-                  let total_box_qty = 0;
-               
+                 return window.alert('구성수량을 설정해주십시오.');
+              }else{
+
+      
+                  let total_qty = parseInt(newItem['product_qty']); // 총생산량 (낱개 갯수임)
+                  let inbox_qty = parseInt(newItem['inbox_qty']);
+                  let total_box_qty = Math.ceil(total_qty / inbox_qty);
+
+                  for(let i=0; i<total_box_qty; i++){
+                    let newObj = { ...newItem };
+                
+                    newObj['work_task_product_uid'] = parseInt(newObj['uid']);
+                    newObj['factory_uid'] = update_form['factory'],
+                    newObj['factory_sub_uid'] = update_form['factory_sub'],
+
+                    newObj['lot'] = newObj['lot']+i;
+                    newObj['inbox_qty'] = inbox_qty;
+                    newObj['box_qty'] = total_box_qty;
+                    if(total_qty >= inbox_qty){
+                      newObj['etc_qty'] = inbox_qty;
+                     
+                    
+                    
+                    }else{
+                      newObj['etc_qty'] = total_qty;
+                    
+                    
+                    }
+
+                    box_packing_data.push(newObj);
+
+                    total_qty -= newObj['etc_qty'];
+                
+                  }
+
+                
 
 
 
@@ -1279,11 +1733,20 @@ const save =  (param,title) => {
 
                 
                 }
+                success_qty += newItem['product_qty'];
               
             }
-  
-            const url = `${api}/work_task/production_update`
-    
+            fail_qty = parseInt(update_form['task_qty']) - success_qty;
+
+            if(fail_qty < 0){
+              window.alert('지시수량 대비 생산량이 많습니다. 불합격수량은 0개로 처리됩니다.');
+              fail_qty = 0;
+            }
+
+          
+            const url = `${api}/work_task/packing_update`
+              
+          
       
             try {
               
@@ -1292,12 +1755,12 @@ const save =  (param,title) => {
                 company_uid : parseInt(param['company']),
                 user_id : param['user'],
                 
-                work_task_product : production_data,
+                work_task_packing : box_packing_data,
                 unit : param['unit'],
                 status : param['status'],
-             
-                production_order : 2, // 제조완료처리함
-                packing_order : parseInt(param['packing_order']),
+                success_qty : success_qty,
+                fail_qty : fail_qty,
+                packing_order : 2, // 포장완료처리함
                 token : login_data['token'],
               };
       
@@ -1780,6 +2243,183 @@ const workTaskPackingModalTable = async(table_modal_state,type,tableComponent) =
 
 }
 
+const workTaskPackingPrint = async(data) => {
+  let check_data ;
+
+  
+
+
+      const url = `${api}/work_task_packing/uid_select`;
+      const params = { work_task_uid : data['uid'] };
+      const config = {
+        params: params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      try {
+        const res = await axios.get(url, config);
+          
+    
+        
+        
+        check_data = res.data;
+
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    
+  
+  const generateA4Pages = async(check_data) => {
+    
+    const pages = await Promise.all(check_data.map(async(item, index) => {
+     
+      let theme = "black";
+      let  barcodeDataURL;
+      try {
+        const canvas = document.createElement('canvas')
+        JsBarcode(canvas,item['lot'], { height: 50, displayValue: false })
+        // QR 코드 데이터 생성
+        barcodeDataURL = await canvas.toDataURL('image/png');
+
+
+
+      } catch (err) {
+        console.error("QR 코드 생성 중 오류 발생:", err);
+          barcodeDataURL = '';
+      }
+
+  
+    
+          
+        return `
+          <html>
+            <head>
+            <style>
+            @media screen {
+            
+              body {
+                visibility: hidden;
+              }
+            }
+            @media print {
+              * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+
+               @page {
+                size: calc(100% - 2px) calc(100% - 2px) landscape;
+                margin: 0; /* 필요에 따라 margin을 조정할 수 있습니다 */
+               }
+               body {
+                visibility: visible;
+                 font-family: 'Nanum Gothic', sans-serif;
+               
+                 padding: 0px 0px 0px 0px;-
+                 box-sizing: border-box;
+   
+                 background-color: #fff;
+                 display: flex;
+                 flex-direction: column;
+                 justify-content: center;
+                 align-items: center;
+
+                 margin: 0;
+
+               }
+               .container {
+                 width: 100%;
+                 height: 95%;
+                  
+               }
+               .theme-border {
+                 border: 0px solid ${theme};
+                 border-radius: 0px;
+                 padding: 1px; /* 예시로 padding을 추가하여 테두리가 둥글게 나타날 수 있도록 함 */
+                 padding-top : 1px;
+   
+               }
+         
+      
+               
+             }
+            </style>
+            </head>
+            <body class="page">
+            <div style ="justify-content:center; text-align:center; " class="container theme-border">  
+                  
+           
+            <img style="margin-top : 15px" width='150' height='50' src="${barcodeDataURL}" alt="QR Code"  />
+             <br/>
+             <span>LOT [ ${item['lot']} ]</span>
+             <br/>
+             <span>코드 [ ${item['bom']['code']} ]</span>
+             
+
+           </div>
+            </body>
+          </html>
+        `;
+      
+    })
+  );
+  
+    // pages는 Promise 객체의 배열이므로 Promise.all을 사용하여 모든 페이지의 HTML을 얻은 뒤 반환합니다.
+    //return Promise.all(pages).then(htmlPages => htmlPages.join(''));
+    return pages.join('');
+   
+  }
+  
+ 
+  const originalContent = document.body.innerHTML;
+
+  const closePopup = () => {
+    document.body.innerHTML = originalContent;
+    printWindow.close();
+    
+  };
+  
+ 
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
+
+  generateA4Pages(check_data)
+    .then(content => {
+     
+      printWindow.document.write(content);
+      printWindow.document.close();
+      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+      printImagesWhenLoaded(printWindow);
+
+      // printWindow.onload = () => {
+      
+      //   // 프린트 다이얼로그 호출
+      //   printWindow.print();
+      // };
+
+      // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
+      printWindow.onafterprint = () => {
+        
+        printWindow.close();
+      };
+
+
+
+      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
+    
+
+      // 프린트 다이얼로그 호출
+      printWindow.print();
+     
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  };
+
 
 
 
@@ -1979,8 +2619,99 @@ const workTaskProductSelectDelete = (row) => {
      
  }
 
+ const printImagesWhenLoaded = (printWindow) => {
+  // 프린트 창에서 이미지가 모두 로드될 때까지 대기
+  const images = printWindow.document.querySelectorAll('img');
+  const promises = Array.from(images).map(image => {
+      return new Promise((resolve) => {
+          image.onload = () => {
+              resolve();
+          };
+      });
+  });
+  // 모든 이미지가 로드되면 프린트
+  Promise.all(promises).then(() => {
+      // 프린트 창에서 프린트 실행
+      printWindow.print();
+  });
+};
+
+
+
+const workTaskPerformanceModalTable = async(table_modal_state,type,tableComponent) => {
+  let data ;
+
+    const url = `${api}/work_task_product/uid_select`
+
+   
+    let params = 
+    {
+      work_task_uid : update_form['uid'],
+
+    };
+    const config = {
+      params : params,
+      headers:{
+        "Content-Type": "application/json",
+        
+      }
+    }
+    if(table_modal_state[type]){
+      table_modal_state[type].destory();
+    }
+
+      await axios.get(url,config).then(res=>{
+          
+     
+       data =  res.data;
+      
+       console.log('data : ', data);
+      });
+
+    table_modal_data[type] =   new Tabulator(tableComponent, {
+    
+      height:TABLE_TOTAL_CONFIG['height'],
+      layout:TABLE_TOTAL_CONFIG['layout'],
+      pagination:TABLE_TOTAL_CONFIG['pagination'],
+      paginationSize:TABLE_TOTAL_CONFIG['paginationSize'],
+      paginationSizeSelector:TABLE_TOTAL_CONFIG['paginationSizeSelector'],
+      movableColumns:TABLE_TOTAL_CONFIG['movableColumns'],
+      paginationCounter: TABLE_TOTAL_CONFIG['paginationCounter'],
+      paginationAddRow:TABLE_TOTAL_CONFIG['paginationAddRow'], //add rows relative to the table
+      locale: TABLE_TOTAL_CONFIG['locale'],
+      langs: TABLE_TOTAL_CONFIG['langs'],
+      rowHeight:40, //set rows to 40px height
+      // selectable: true,
+    rowClick:function(e, row){
+      //e - the click event object
+      //row - row component
+
+   
+      row.toggleSelect(); //toggle row selected state on row click
+  },
+
+    rowFormatter:function(row){
+          row.getElement().classList.add("table-primary"); //mark rows with age greater than or equal to 18 as successful;
+    },
+ 
+
+    data : data,
+    placeholder:"데이터 없음",
+    columns: MODAL_TABLE_HEADER_CONFIG[type],
+    
+    });
+
+    update_form['modal'] = true;
+
+    work_task_form_state.update(()=> update_form);      
+    table_modal_state.update(()=> table_modal_data);
+
+}
 
 
 
 
-export {  workTaskModalOpen,save,modalClose,workPlanSearchTable,workPlanSearchModalClose,makeCustomTable,workPlanSelect,workPlanSearchModalOpen,stockRequestModalTable,barcodeScan,factoryChange,stockApprovalModalTable,cancelSave,approvalSave,measureModalTable,measureSave, productSave,workTaskProductModalTable,workTaskProductAddRow,workTaskProductDeleteRow,workTaskProductAllDeleteRow,workTaskProductSelectDelete,packingSave,workTaskPackingModalTable}
+
+
+
+export {  workTaskModalOpen,save,modalClose,workPlanSearchTable,workPlanSearchModalClose,makeCustomTable,workPlanSelect,workPlanSearchModalOpen,stockRequestModalTable,barcodeScan,factoryChange,stockApprovalModalTable,cancelSave,approvalSave,measureModalTable,measureSave, productSave,workTaskProductModalTable,workTaskProductAddRow,workTaskProductDeleteRow,workTaskProductAllDeleteRow,workTaskProductSelectDelete,packingSave,workTaskPackingModalTable,workTaskPackingPrint,workTaskPerformanceModalTable}

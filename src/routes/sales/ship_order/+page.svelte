@@ -15,23 +15,17 @@
     import { ChevronDownSolid, SearchOutline } from 'flowbite-svelte-icons';
 
 
-    import Util from '$lib/components/modal/work_task/Util.svelte';
-    import UtilStockRequest from '$lib/components/modal/work_task/UtilStockRequest.svelte';
+    import Util from '$lib/components/modal/ship_order/Util.svelte';
     
-    import UtilMeasure from '$lib/components/modal/work_task/UtilMeasure.svelte';
-
-    import UtilProduct from '$lib/components/modal/work_task/UtilProduct.svelte';
-    import UtilPacking from '$lib/components/modal/work_task/UtilPacking.svelte';
-
 
     import * as Icon from 'svelte-awesome-icons';
 
-    import {workTaskModalOpen,makeCustomTable} from '$lib/store/work_task/function';
+    import {shipOrderModalOpen,makeCustomTable} from '$lib/store/ship_order/function';
     import {excelDownload} from '$lib/store/common/function';
     
-    import {work_task_form_state,work_task_modal_state} from '$lib/store/work_task/state';
+    import {ship_order_form_state,ship_order_modal_state} from '$lib/store/ship_order/state';
 
-    import {url_state,cookie_state,production_work_task_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
+    import {url_state,cookie_state,sales_ship_order_state,table_list_state,common_toast_state,common_search_state} from '$lib/store/common/state';
     import {EXCEL_CONFIG} from '$lib/module/sales/constants';
 
     import SearchBar from '$lib/components/layout/SearchBar.svelte'
@@ -54,7 +48,7 @@
     onMount(()=>{
         console.log('시점');
        
-        makeCustomTable(table_list_state,"work_task",tableComponent,"select");
+        makeCustomTable(table_list_state,"ship_order",tableComponent,"select");
 
     });
 
@@ -63,9 +57,9 @@
         if(data.title === 'redirect'){
             window.location.href = '/';
             alert('잘못된 주소거나 요청시간이 만료되었습니다.');
-        }else if($url_state['path'] === '/production/work_task'){
+        }else if($url_state['path'] === '/sales/ship_order'){
          
-            makeCustomTable(table_list_state,"work_task",tableComponent,"select");
+            makeCustomTable(table_list_state,"ship_order",tableComponent,"select");
         }
       
     })
@@ -98,7 +92,7 @@
               <SideBar />
             </div>
             <div class="col-span-1 row-span-1"> 
-              <Title title='생산 관리' subtitle='생산 계획'/>
+              <Title title='영업 관리' subtitle='출하 지시'/>
             </div>
 
           
@@ -108,52 +102,47 @@
                     <TabItem  open >
                    
 
-                      <span slot="title">생산 계획</span>
+                      <span slot="title">출하 지시</span>
 
                 
-                      <SearchBar title="work_task"/>
+                      <SearchBar title="ship_order"/>
 
 
                       <div class='m-5'>
 
-                        <Button  on:click={() => {workTaskModalOpen('','add')}}>
+                        <Button  on:click={() => {shipOrderModalOpen('','add')}}>
                           <Icon.FloppyDiskSolid class='mr-2' size="20" />
                           추가
                         </Button>
 
-                        <Button  color='red' on:click={() => workTaskModalOpen('','check_delete')}>
+                        <Button  color='red' on:click={() => shipOrderModalOpen('','check_delete')}>
                           <Icon.BanSolid class='mr-2' size="20" />
                           선택삭제
                         </Button>
 
-                        <Button  color='light' on:click={() => workTaskModalOpen('','print')}>
-                          <Icon.PrintSolid class='mr-2' size="20" />
-                          생산 실적 출력
+                        <Button  color='green' on:click={() =>excelDownload('ship_order',EXCEL_CONFIG['ship_order'])}>
+                          <Icon.FileCsvSolid class='mr-2' size="20" />
+                          엑셀다운
                       </Button>
 
-                              
+                      
+                      <Button  color='light' on:click={() => shipOrderModalOpen('','print')}>
+                        <Icon.PrintSolid class='mr-2' size="20" />
+                        출하지시서 출력
+                    </Button>
+                      
+                 
+                  
 
                  
-                        {#if $work_task_modal_state['title'] === 'add'}
+                        {#if $ship_order_modal_state['title'] === 'add'}
                           <Util title="add" />
-                        {:else if $work_task_modal_state['title'] === 'update'}
+                        {:else if $ship_order_modal_state['title'] === 'update'}
                           <Util  title="update"/>
-                          {:else if $work_task_modal_state['title'] === 'check_delete'}
+                          {:else if $ship_order_modal_state['title'] === 'check_delete'}
                           <Util  title="check_delete"/>
-                          {:else if $work_task_modal_state['title'] === 'stock_request'}
-                          <UtilStockRequest  title="stock_request"/>
-                          {:else if $work_task_modal_state['title'] === 'measure'}
-                          <UtilMeasure  title="measure"/>
-                          {:else if $work_task_modal_state['title'] === 'production'}
-                          <UtilProduct  title="production"/>
-                          {:else if $work_task_modal_state['title'] === 'packing'}
-                          <UtilPacking  title="packing"/>
-
-                          {:else if $work_task_modal_state['title'] === 'print'} 
+                          {:else if $ship_order_modal_state['title'] === 'print'}
                           <Util  title="print"/>
-                
-
-                     
                         {/if}
                         
 

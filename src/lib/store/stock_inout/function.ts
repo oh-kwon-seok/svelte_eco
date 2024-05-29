@@ -1185,15 +1185,21 @@ const stockInoutPrint = async(data) => {
     const pages = await Promise.all(check_data.map(async(item, index) => {
      
       let theme = "black";
-      let qrCodeDataURL;
+      let  barcodeDataURL;
       try {
-        // QR 코드 데이터 생성
-        qrCodeDataURL = await QRCode.toDataURL(item['lot'], { errorCorrectionLevel: 'H', width: 100, height: 100 });
 
-        console.log('qrURL : ', qrCodeDataURL);
+        const canvas = document.createElement('canvas')
+        JsBarcode(canvas,item['lot'], { height: 50, displayValue: false })
+       
+        // QR 코드 데이터 생성
+        barcodeDataURL = await canvas.toDataURL('image/png');
+
+ 
+  
+       
       } catch (err) {
         console.error("QR 코드 생성 중 오류 발생:", err);
-        qrCodeDataURL = '';
+        barcodeDataURL = '';
       }
 
   
@@ -1254,10 +1260,10 @@ const stockInoutPrint = async(data) => {
             </style>
             </head>
             <body class="page">
-              <div style ="justify-content:center; text-align:center;" class="container theme-border">  
+              <div style ="justify-content:center; text-align:center; " class="container theme-border">  
                   
-                
-                  <img width='100' height='100' src="${qrCodeDataURL}" alt="QR Code"  />
+           
+                 <img style="margin-top : 15px" width='150' height='50' src="${barcodeDataURL}" alt="QR Code"  />
                   <br/>
                   <span>LOT [ ${item['lot']} ]</span>
                   <br/>
@@ -1265,6 +1271,8 @@ const stockInoutPrint = async(data) => {
                   
 
                 </div>
+              
+           
             </body>
           </html>
         `;

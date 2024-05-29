@@ -109,6 +109,8 @@ const url_state : any = writable({ path : '', query : ''});
   // 영업
   const sales_estimate_state : any =  writable([]);
   const sales_order_state : any =  writable([]);
+  const sales_ship_order_state : any =  writable([]);
+  
 
   
   // 재고
@@ -161,7 +163,8 @@ const url_state : any = writable({ path : '', query : ''});
 
     sales_estimate_state ,
     sales_order_state ,
-
+    sales_ship_order_state,
+    
     stock_stock_state,
     stock_stock_record_state,
     stock_stock_inout_state,
