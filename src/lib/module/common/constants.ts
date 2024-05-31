@@ -560,6 +560,7 @@ const MODAL_TABLE_HEADER_CONFIG : any = {
 
     ],
 
+
     process_qc : [
         // {formatter:"rowSelection",width : 60, field: "selected", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, 
         // cellClick:function(e : any, cell:any){

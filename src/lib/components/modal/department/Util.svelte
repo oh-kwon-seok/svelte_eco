@@ -45,18 +45,11 @@
          <form action="#" on:submit={handleSubmit} >
           {#if title === 'add' || title === 'update'}
    
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
 
-          <Label class="space-y-2">
-            <span>사업장</span>
-            <Select id="countrie" class="mt-2" bind:value={$department_form_state['company']} placeholder="">
-                {#each $common_company_filter_state as item}
-                  <option value={item.uid}>{item.name}</option>
-                {/each}
-              </Select>
-          </Label>
+        
 
-          <Label class="space-y-2">
+          <Label class="space-y-1">
             <span>부서명</span>
             <Input type="text" id="last_name" placeholder="부서를 입력하세요" required bind:value={$department_form_state['name']}/>
             {#if $department_form_state['name'] === '' && $common_alert_state['value'] === true}

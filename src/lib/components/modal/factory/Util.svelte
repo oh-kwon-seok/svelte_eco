@@ -56,18 +56,11 @@
    
         <div class="grid grid-cols-2 gap-4">
 
-          <Label class="space-y-2">
-            <span>사업장</span>
-            <Select id="countrie" class="mt-2" bind:value={$factory_form_state['company']} placeholder="">
-                {#each $common_company_filter_state as item}
-                  <option value={item.uid}>{item.name}</option>
-                {/each}
-              </Select>
-          </Label>
+        
 
           <Label class="space-y-2">
             <span>공장명</span>
-            <Input type="text" id="last_name" placeholder="공장을 입력하세요" required bind:value={$factory_form_state['name']}/>
+            <Input type="text" id="last_name" placeholder="공장을 입력하세요" bind:value={$factory_form_state['name']}/>
             {#if $factory_form_state['name'] === '' && $common_alert_state['value'] === true}
             <Helper class="mt-2" color="red"><span class="font-medium">데이터를 입력해주세요</span></Helper>
             {/if}

@@ -47,14 +47,7 @@
    
         <div class="grid grid-cols-2 gap-4">
 
-          <Label class="space-y-2">
-            <span>사업장</span>
-            <Select id="countrie" class="mt-2" bind:value={$employment_form_state['company']} placeholder="">
-                {#each $common_company_filter_state as item}
-                  <option value={item.uid}>{item.name}</option>
-                {/each}
-              </Select>
-          </Label>
+     
 
           <Label class="space-y-2">
             <span>직급</span>

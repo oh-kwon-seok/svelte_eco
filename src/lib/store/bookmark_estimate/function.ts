@@ -43,6 +43,7 @@ let item_modal : any;
 
 const init_form_data:any = {
   uid : 0,
+    modal : false,
     company : '', // 사업장
     user : '',
     name : '',
@@ -143,8 +144,8 @@ const bookmarkEstimateModalTable = async(table_modal_state,type,tableComponent,s
           
           });
 
-         
-         
+          update_form['modal'] = true;
+          bookmark_estimate_form_state.update(()=> update_form); 
           table_modal_state.update(()=> table_modal_data);
         
           
@@ -216,9 +217,9 @@ const bookmarkEstimateModalTable = async(table_modal_state,type,tableComponent,s
       columns: MODAL_TABLE_HEADER_CONFIG[type],
       
       });
-
-    
-    
+      update_form['modal'] = true;
+      bookmark_estimate_form_state.update(()=> update_form); 
+  
       table_modal_state.update(()=> table_modal_data);
   
    
@@ -313,6 +314,8 @@ const bookmarkEstimateModalOpen = (data : any, title : any) => {
    
     if(title === 'add'){
       update_form = init_form_data;
+      update_form['modal'] = false;
+    
       bookmark_estimate_form_state.update(() => update_form);
      
     }
@@ -332,7 +335,7 @@ const bookmarkEstimateModalOpen = (data : any, title : any) => {
            
         }); 
 
-        
+        update_form['modal'] = false;
           
             bookmark_estimate_form_state.update(() => update_form);
             bookmark_estimate_modal_state.update(() => update_modal);

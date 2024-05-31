@@ -14,6 +14,8 @@ import {TOAST_SAMPLE} from '$lib/module/common/constants';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER} from '$lib/module/common/constants';
 import Excel from 'exceljs';
+import { setCookie, getCookie, removeCookie } from '$lib/cookies';
+
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -186,6 +188,7 @@ const modalClose = (title) => {
 
 const save = (param,title) => {
 
+  param['company'] = getCookie('company_uid');
   console.log('param : ', param);
   update_modal['title'] = 'add';
   update_modal['add']['use'] = true;

@@ -42,9 +42,9 @@ let item_modal : any;
 
 
 const init_form_data:any = {
-  uid : 0,
+    uid : 0,
     company : '', // 사업장
-   
+    modal : false,
     name : '',
     stauts : '',
     process_qc_array : [],
@@ -142,8 +142,10 @@ const processModalTable = async(table_modal_state,type,tableComponent,select,tit
           
           });
 
-         
-         
+          update_form['modal'] = true;
+
+          process_form_state.update(()=> update_form);
+          
           table_modal_state.update(()=> table_modal_data);
         
           
@@ -238,7 +240,9 @@ const processModalTable = async(table_modal_state,type,tableComponent,select,tit
       
       });
 
-    
+      update_form['modal'] = true;
+
+      process_form_state.update(()=> update_form);
     
       table_modal_state.update(()=> table_modal_data);
   
@@ -325,6 +329,9 @@ const processModalOpen = (data : any, title : any) => {
    
     if(title === 'add'){
       update_form = init_form_data;
+
+      update_form['modal'] = false;
+
       process_form_state.update(() => update_form);
      
     }
@@ -351,7 +358,8 @@ const processModalOpen = (data : any, title : any) => {
            
         }); 
 
-        
+            update_form['modal'] = false;
+
           
             process_form_state.update(() => update_form);
             process_modal_state.update(() => update_modal);

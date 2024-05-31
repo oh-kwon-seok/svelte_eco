@@ -47,70 +47,41 @@
 
     onMount(()=>{
       
-      console.log('table_modal_state : ', table_modal_state['bookmark_estimate_sub']);
-     if(table_modal_state['bookmark_estimate_sub']){
-
-     }else{
+  
        if(title === 'add'){
-         if($bookmark_estimate_form_state['name'] !== ""){
+         if($bookmark_estimate_form_state['modal'] === false){
            // 여기에 테이블 그려야됌
          bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","add");
          
        
        }
 
-       }else if(title === 'update'){
+       }if(title === 'update'){
          // 수정일때, 이따 작업
-         if($bookmark_estimate_form_state['name'] !== ""){
+         if($bookmark_estimate_form_state['modal'] === false){
                 bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","update");
              
             }
        }
       
-     }
-    
-
    });
 
    afterUpdate(()=> {
       
-      if(table_modal_state['bookmark_estimate_sub']){
-       
-        }else{
-          if(title === 'add'){
-            console.log('d돌아가나 ? :  ',);
-          
-              if($bookmark_estimate_form_state['name'] !== ""){
-               
-                if($table_modal_state['bookmark_estimate_sub']){
-                  
-                }else{
-                  bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","add");
-                }
-              
-              
-              }
+    if(title === 'add'){
+         if($bookmark_estimate_form_state['modal'] === false){
+           // 여기에 테이블 그려야됌
+         bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","add");
+         
+       }
 
-            
-              
-
-          }else if(title === 'update'){
-          // 수정일때, 이따 작업
-          if($bookmark_estimate_form_state['name'] !== ""){
-
-
-            if($table_modal_state['bookmark_estimate_sub']){
-
-            }else{
-              console.log('동작하나? ');
-              bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","update");
+       }if(title === 'update'){
+         // 수정일때, 이따 작업
+         if($bookmark_estimate_form_state['modal'] === false){
+                bookmarkEstimateModalTable(table_modal_state,"bookmark_estimate_sub",tableComponent,"info_select","update");
+             
             }
-              
-                
-             }
-        }
-        
-        }
+       }
     })
 
     
@@ -188,7 +159,7 @@
         
               
          
-              {#if $bookmark_estimate_form_state['name'] !== ""}
+        
               <div class="grid grid-cols-1 gap-4">
                 <p class="mb-4 font-semibold text-xl dark:text-white">레시피 리스트</p>
               
@@ -212,12 +183,7 @@
            
            
 
-              {:else}
-                <div class="grid grid-cols-1 gap-4">
-                  <p class="mb-4 font-semibold text-xl dark:text-white">견적명을 입력해주십시오.</p>
-                
-                </div>
-          {/if}
+          
              
             
           {#if $item_modal_state['title'] === 'bookmark_estimate_search'}

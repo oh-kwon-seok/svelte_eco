@@ -15,9 +15,10 @@ import {TOAST_SAMPLE} from '$lib/module/common/constants';
 import { businessNumber,phoneNumber,commaNumber} from '$lib/module/common/function';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {TABLE_TOTAL_CONFIG,TABLE_HEADER_CONFIG,TABLE_FILTER,CLIENT_INFO} from '$lib/module/common/constants';
-import { user_form_state } from '../user/state';
+
 import Excel from 'exceljs';
 import { end } from '@popperjs/core';
+import { setCookie, getCookie, removeCookie } from '$lib/cookies';
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -181,7 +182,7 @@ const modalClose = (title) => {
 
 const save = (param,title) => {
 
-
+  param['company'] = getCookie('company_uid');
   update_modal['title'] = 'add';
   update_modal['add']['use'] = true;
   
@@ -506,7 +507,7 @@ const factorySubAddRow = () => {
 
   update_form['factory_sub_array'].push(new_obj);
   console.log('update_form : ', update_form);
-  user_form_state.update(()=> update_form);
+  factory_form_state.update(()=> update_form);
 
 }
 const factorySubDeleteRow = () => {
@@ -514,7 +515,7 @@ const factorySubDeleteRow = () => {
 
   update_form['factory_sub_array'].pop();
 
-  user_form_state.update(()=> update_form);
+  factory_form_state.update(()=> update_form);
 
 }
 const factorySubAllDeleteRow = () => {
@@ -522,7 +523,7 @@ const factorySubAllDeleteRow = () => {
 
   update_form['factory_sub_array'] = [];
 
-  user_form_state.update(()=> update_form);
+  factory_form_state.update(()=> update_form);
 
 }
 const factorySubSelectDeleteRow = (index) => {
@@ -531,7 +532,7 @@ const factorySubSelectDeleteRow = (index) => {
 
   update_form['factory_sub_array'].splice(index,1);
   
-  user_form_state.update(()=> update_form);
+  factory_form_state.update(()=> update_form);
 
 }
 

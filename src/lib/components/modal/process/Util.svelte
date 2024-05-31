@@ -46,11 +46,9 @@
     onMount(()=>{
       
       console.log('table_modal_state : ', table_modal_state['process_qc']);
-     if(table_modal_state['process_qc']){
-
-     }else{
+    
        if(title === 'add'){
-         if($process_form_state['name'] !== ""){
+         if($process_form_state['modal'] === false){
            // 여기에 테이블 그려야됌
          processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","add");
          
@@ -59,58 +57,31 @@
 
        }else if(title === 'update'){
          // 수정일때, 이따 작업
-         if($process_form_state['name'] !== ""){
+         if($process_form_state['modal']  === false){
                 processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","update");
              
             }
        }
       
-     }
-    
-
+  
    });
 
    afterUpdate(()=> {
       
-      if(table_modal_state['process_qc']){
-       
-        }else{
+  
           if(title === 'add'){
-          
-              if($process_form_state['name'] !== ""){
-               
-                if($table_modal_state['process_qc']){
-                  
-                }else{
-                  processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","add");
-                }
-              
-              
+              if($process_form_state['modal'] === false){
+                  processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","add");              
               }
-
-            
-              
 
           }else if(title === 'update'){
           // 수정일때, 이따 작업
-          if($process_form_state['name'] !== ""){
-
-
-            if($table_modal_state['process_qc']){
-
-            }else{
-              console.log('동작하나? ');
+          if($process_form_state['modal'] === false){
               processModalTable(table_modal_state,"process_qc",tableComponent,"info_select","update");
-            }
-              
-                
              }
         }
-        
-        }
-    })
-
-    
+      
+      });
 
     </script>
       

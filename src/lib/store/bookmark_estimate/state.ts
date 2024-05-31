@@ -18,6 +18,7 @@ import {v4 as uuid} from 'uuid';
 
   const bookmark_estimate_form_state : any = writable({
     uid : 0,
+    modal: false,
     company : '', // 사업장
     user : '',
     name : '',

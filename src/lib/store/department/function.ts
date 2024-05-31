@@ -11,6 +11,7 @@ import {common_alert_state, common_toast_state,common_search_state,login_state,t
 import moment from 'moment';
 import {select_query} from '$lib/store/common/function';
 import {TOAST_SAMPLE} from '$lib/module/common/constants';
+import { setCookie, getCookie, removeCookie } from '$lib/cookies';
 
 const api = import.meta.env.VITE_API_BASE_URL;
 
@@ -135,6 +136,7 @@ const modalClose = (title) => {
 const save = (param,title) => {
 
 
+  param['company'] = getCookie('company_uid');
   update_modal['title'] = 'add';
   update_modal['add']['use'] = true;
  
