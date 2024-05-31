@@ -30,7 +30,7 @@
 		infoCallApi('employment','info_select');
 		infoCallApi('type','info_select');
 		infoCallApi('restric_material','info_select');
-		
+		infoCallApi('equipment','info_select');
 		infoCallApi('factory','info_select');
 		infoCallApi('factory_sub','info_total_select');
 		

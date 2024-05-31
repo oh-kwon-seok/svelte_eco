@@ -97,7 +97,7 @@
                    
 
                       <span slot="title">생산/불량 현황</span>
-
+ㅎ
                 
                       <SearchBar title="work_task"/>
 

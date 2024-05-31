@@ -22,7 +22,7 @@ import {TabulatorFull as Tabulator} from 'tabulator-tables';
 
 import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/stock/constants';
 import Excel from 'exceljs';
-import QRCode from 'qrcode';
+
 const api = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -1151,208 +1151,151 @@ const stockInoutSubitemSelect = (row) => {
 
 
 
-const stockInoutPrint = async(data) => {
-  let check_data ;
-
+const stockInoutPrint = async (data) => {
+  let check_data;
   let test_sub_data = [];
 
+  const url = `${api}/stock_inout_sub/uid_select`;
+  const params = { stock_inout_uid: data['uid'] };
+  const config = {
+    params: params,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
 
-      const url = `${api}/stock_inout_sub/uid_select`;
-      const params = { stock_inout_uid : data['uid'] };
-      const config = {
-        params: params,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
+  try {
+    const res = await axios.get(url, config);
+    check_data = res.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
 
-      try {
-        const res = await axios.get(url, config);
-          
-    
-        
-        
-        check_data = res.data;
-
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    
-  
-  const generateA4Pages = async(check_data) => {
-    
-    const pages = await Promise.all(check_data.map(async(item, index) => {
-     
+  const generateA4Pages = async (check_data) => {
+    const pages = await Promise.all(check_data.map(async (item, index) => {
       let theme = "black";
-      let  barcodeDataURL;
+      let barcodeDataURL;
       try {
-
-        const canvas = document.createElement('canvas')
-        JsBarcode(canvas,item['lot'], { height: 50, displayValue: false })
-       
-        // QR 코드 데이터 생성
+        const canvas = document.createElement('canvas');
+        JsBarcode(canvas, item['lot'], { height: 50, displayValue: false });
         barcodeDataURL = await canvas.toDataURL('image/png');
-
- 
-  
-       
       } catch (err) {
         console.error("QR 코드 생성 중 오류 발생:", err);
         barcodeDataURL = '';
       }
 
-  
-    
-          
-        return `
-          <html>
-            <head>
+      return `
+        <html>
+          <head>
             <style>
-            @media screen {
-            
-              body {
-                visibility: hidden;
+              @media screen {
+                body {
+                  visibility: hidden;
+                }
               }
-            }
-            @media print {
-              * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+              @media print {
+                * {
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+                @page {
+                  size: calc(100% - 2px) calc(100% - 2px) landscape;
+                  margin: 0;
+                }
+                body {
+                  visibility: visible;
+                  font-family: 'Nanum Gothic', sans-serif;
+                  padding: 0;
+                  box-sizing: border-box;
+                  background-color: #fff;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0;
+                }
+                .container {
+                  width: 100%;
+                  height: 95%;
+                }
+                .theme-border {
+                  border: 0px solid ${theme};
+                  border-radius: 0px;
+                  padding: 1px;
+                  padding-top: 1px;
+                }
               }
-
-               @page {
-                size: calc(100% - 2px) calc(100% - 2px) landscape;
-                margin: 0; /* 필요에 따라 margin을 조정할 수 있습니다 */
-               }
-               body {
-                visibility: visible;
-                 font-family: 'Nanum Gothic', sans-serif;
-               
-                 padding: 0px 0px 0px 0px;-
-                 box-sizing: border-box;
-   
-                 background-color: #fff;
-                 display: flex;
-                 flex-direction: column;
-                 justify-content: center;
-                 align-items: center;
-
-                 margin: 0;
-
-               }
-               .container {
-                 width: 100%;
-                 height: 95%;
-                  
-               }
-               .theme-border {
-                 border: 0px solid ${theme};
-                 border-radius: 0px;
-                 padding: 1px; /* 예시로 padding을 추가하여 테두리가 둥글게 나타날 수 있도록 함 */
-                 padding-top : 1px;
-   
-               }
-         
-      
-               
-             }
             </style>
-            </head>
-            <body class="page">
-              <div style ="justify-content:center; text-align:center; " class="container theme-border">  
-                  
-           
-                 <img style="margin-top : 15px" width='150' height='50' src="${barcodeDataURL}" alt="QR Code"  />
-                  <br/>
-                  <span>LOT [ ${item['lot']} ]</span>
-                  <br/>
-                  <span>코드 [ ${item['item']['code']} ]</span>
-                  
+          </head>
+          <body class="page">
+            <div style="justify-content:center; text-align:center;" class="container theme-border">
+              <img style="margin-top: 15px" width="150" height="50" src="${barcodeDataURL}" alt="QR Code" />
+              <br/>
+              <span>LOT [ ${item['lot']} ]</span>
+              <br/>
+              <span>코드 [ ${item['item']['code']} ]</span>
+            </div>
+          </body>
+        </html>
+      `;
+    }));
 
-                </div>
-              
-           
-            </body>
-          </html>
-        `;
-      
-    })
-  );
-  
-    // pages는 Promise 객체의 배열이므로 Promise.all을 사용하여 모든 페이지의 HTML을 얻은 뒤 반환합니다.
-    //return Promise.all(pages).then(htmlPages => htmlPages.join(''));
     return pages.join('');
-   
-  }
-  
- 
-  const originalContent = document.body.innerHTML;
-
-  const closePopup = () => {
-    document.body.innerHTML = originalContent;
-    printWindow.close();
-    
   };
-  
- 
+
+  const originalContent = document.body.innerHTML;
   const printWindow = window.open('', '_blank', 'width=800,height=600');
-  
+
+  // const closePopup = () => {
+  //   document.body.innerHTML = originalContent;
+  //   printWindow.close();
+  // };
 
   generateA4Pages(check_data)
     .then(content => {
-     
       printWindow.document.write(content);
       printWindow.document.close();
-      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
-      printImagesWhenLoaded(printWindow);
-
-      // printWindow.onload = () => {
-      
-      //   // 프린트 다이얼로그 호출
-      //   printWindow.print();
-      // };
-
-      // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
       printWindow.onafterprint = () => {
-        
+        console.log('ㅎ닫기');
         printWindow.close();
       };
+      
+      // 모든 이미지가 로드되면 프린트 실행
+      printImagesWhenLoaded(printWindow).then(() => {
+        printWindow.print();
 
-
-
-      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
-    
-
-      // 프린트 다이얼로그 호출
-      printWindow.print();
-     
+      });
     })
     .catch(error => {
       console.error(error);
     });
-  };
-
-
-
-  const printImagesWhenLoaded = (printWindow) => {
-    // 프린트 창에서 이미지가 모두 로드될 때까지 대기
-    const images = printWindow.document.querySelectorAll('img');
-    const promises = Array.from(images).map(image => {
-        return new Promise((resolve) => {
-            image.onload = () => {
-                resolve();
-            };
-        });
-    });
-    // 모든 이미지가 로드되면 프린트
-    Promise.all(promises).then(() => {
-        // 프린트 창에서 프린트 실행
-        printWindow.print();
-    });
 };
 
-
+const printImagesWhenLoaded = (printWindow) => {
+  return new Promise((resolve) => {
+    const images = printWindow.document.querySelectorAll('img');
+    let loadedCount = 0;
+    images.forEach(image => {
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) {
+          resolve();
+        }
+      };
+      // If an image fails to load, count it as loaded to avoid hanging the print process
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) {
+          resolve();
+        }
+      };
+    });
+    // If there are no images, resolve immediately
+    if (images.length === 0) {
+      resolve();
+    }
+  });
+};
 
 
 

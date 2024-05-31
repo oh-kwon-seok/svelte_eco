@@ -140,6 +140,9 @@ const makeCustomTable = (table_list_state,type,tableComponent,select,temp_chart,
      
       if(res.data.length > 0){
 
+   
+
+
         let filter_temp_data = res.data.filter((item) => {
           return item['type'] === 'TEMP'
         })
@@ -216,11 +219,14 @@ const makeCustomTable = (table_list_state,type,tableComponent,select,temp_chart,
         humi_options.update(()=> humi_data);
         ph_options.update(()=> ph_data);
         weight_options.update(()=> weight_data);
+        console.log('tem_chart',temp_chart);
+       
+        if (temp_chart instanceof ApexCharts) temp_chart.destroy();
+        if (humi_chart instanceof ApexCharts) humi_chart.destroy();
+        if (ph_chart instanceof ApexCharts) ph_chart.destroy();
+        if (weight_chart instanceof ApexCharts) weight_chart.destroy();
 
-        console.log('temp_data : ', temp_data);
-        console.log('humi_data : ', humi_data);
-        console.log('ph_data : ', ph_data);
-        
+        console.log('temp_Chart : ', temp_chart);
 
         temp_chart = new ApexCharts(document.querySelector("#temp_chart"), temp_data);
         temp_chart.render();
@@ -446,7 +452,11 @@ const select_query = (type,temp_chart,humi_chart,ph_chart,weight_chart) => {
         console.log('temp_data : ', temp_data);
         console.log('humi_data : ', humi_data);
         console.log('ph_data : ', ph_data);
-        
+        if (temp_chart instanceof ApexCharts) temp_chart.destroy();
+        if (humi_chart instanceof ApexCharts) humi_chart.destroy();
+        if (ph_chart instanceof ApexCharts) ph_chart.destroy();
+        if (weight_chart instanceof ApexCharts) weight_chart.destroy();
+
 
         temp_chart = new ApexCharts(document.querySelector("#temp_chart"), temp_data);
         temp_chart.render();

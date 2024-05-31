@@ -144,6 +144,15 @@
 
             </SidebarDropdownWrapper>
           </SidebarGroup>
+          <SidebarGroup border>  
+            <SidebarDropdownWrapper class={text_style} label="설비 관리" isOpen={mainPath ==='equipment' ? true : false} transitionType="fly" {transitionParams} >
+              <svelte:fragment slot="icon">
+                <Icon.ScrewdriverWrenchSolid size="20"/>
+            </svelte:fragment>
+            <SidebarDropdownItem class={text_style} label="설비 가동 현황" href='/equipment/equipment_runtime' active={activeUrl === '/equipment/equipment_runtime'} on:click={handleToggle('equipment_runtime')} />
+         
+            </SidebarDropdownWrapper>
+          </SidebarGroup>
        
        
         </SidebarWrapper>

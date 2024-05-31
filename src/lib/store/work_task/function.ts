@@ -20,7 +20,7 @@ import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/production/constants';
 import Excel from 'exceljs';
 import { fail } from '@sveltejs/kit';
-import QRCode from 'qrcode';
+
 
 const api = import.meta.env.VITE_API_BASE_URL;
 
@@ -2387,38 +2387,51 @@ const workTaskPackingPrint = async(data) => {
   
 
   generateA4Pages(check_data)
-    .then(content => {
-     
-      printWindow.document.write(content);
-      printWindow.document.close();
-      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
-      printImagesWhenLoaded(printWindow);
+  .then(content => {
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.onafterprint = () => {
+   
+      printWindow.close();
+    };
 
-      // printWindow.onload = () => {
-      
-      //   // 프린트 다이얼로그 호출
-      //   printWindow.print();
-      // };
-
-      // 프린트 다이얼로그가 닫힐 때 현재 창의 내용을 원복
-      printWindow.onafterprint = () => {
-        
-        printWindow.close();
-      };
-
-
-
-      // 프린트 다이얼로그가 열릴 때 현재 창의 내용을 복원
-    
-
-      // 프린트 다이얼로그 호출
+    // 모든 이미지가 로드되면 프린트 실행
+    printImagesWhenLoaded(printWindow).then(() => {
       printWindow.print();
-     
-    })
-    .catch(error => {
-      console.error(error);
+
+    });
+  })
+  .catch(error => {
+    console.error(error);
+  });
+  };
+
+  const printImagesWhenLoaded = (printWindow) => {
+    return new Promise((resolve) => {
+      const images = printWindow.document.querySelectorAll('img');
+      let loadedCount = 0;
+      images.forEach(image => {
+        image.onload = () => {
+          loadedCount++;
+          if (loadedCount === images.length) {
+            resolve();
+          }
+        };
+        // If an image fails to load, count it as loaded to avoid hanging the print process
+        image.onerror = () => {
+          loadedCount++;
+          if (loadedCount === images.length) {
+            resolve();
+          }
+        };
+      });
+      // If there are no images, resolve immediately
+      if (images.length === 0) {
+        resolve();
+      }
     });
   };
+  
 
 
 
@@ -2619,22 +2632,7 @@ const workTaskProductSelectDelete = (row) => {
      
  }
 
- const printImagesWhenLoaded = (printWindow) => {
-  // 프린트 창에서 이미지가 모두 로드될 때까지 대기
-  const images = printWindow.document.querySelectorAll('img');
-  const promises = Array.from(images).map(image => {
-      return new Promise((resolve) => {
-          image.onload = () => {
-              resolve();
-          };
-      });
-  });
-  // 모든 이미지가 로드되면 프린트
-  Promise.all(promises).then(() => {
-      // 프린트 창에서 프린트 실행
-      printWindow.print();
-  });
-};
+
 
 
 
