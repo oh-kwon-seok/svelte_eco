@@ -153,6 +153,16 @@
          
             </SidebarDropdownWrapper>
           </SidebarGroup>
+
+          <SidebarGroup border>  
+            <SidebarDropdownWrapper class={text_style} label="모니터링" isOpen={mainPath ==='monitoring' ? true : false} transitionType="fly" {transitionParams} >
+              <svelte:fragment slot="icon">
+                <Icon.ComputerSolid size="20"/>
+            </svelte:fragment>
+            <SidebarDropdownItem class={text_style} label="생산 현황" href='/monitoring/product_status' active={activeUrl === '/monitoring/product_status'} on:click={handleToggle('product_status')} />
+         
+            </SidebarDropdownWrapper>
+          </SidebarGroup>
        
        
         </SidebarWrapper>
