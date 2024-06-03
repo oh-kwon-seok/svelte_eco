@@ -51,7 +51,7 @@
         <SidebarWrapper divClass='overflow-y-auto py-4 px-3 bg-gray-50 rounded  h-screen'>
           <SidebarGroup >
             
-            <SidebarItem class={text_style} label="Home" href='/home' active={activeUrl === '/home'} {spanClass}>
+            <SidebarItem class={text_style} label="Home" href='/info/employment' active={activeUrl === '/info/employment'} {spanClass}>
              
                 <svelte:fragment slot="icon">
                     <Icon.HouseSolid size="20"/>
@@ -160,6 +160,8 @@
                 <Icon.ComputerSolid size="20"/>
             </svelte:fragment>
             <SidebarDropdownItem class={text_style} label="생산 현황" href='/monitoring/product_status' active={activeUrl === '/monitoring/product_status'} on:click={handleToggle('product_status')} />
+            <SidebarDropdownItem class={text_style} label="제조리드타임 현황" href='/monitoring/read_time_status' active={activeUrl === '/monitoring/read_time_status'} on:click={handleToggle('read_time_status')} />
+            <SidebarDropdownItem class={text_style} label="매출액 현황" href='/monitoring/sales_amount_status' active={activeUrl === '/monitoring/sales_amount_status'} on:click={handleToggle('sales_amount_status')} />
          
             </SidebarDropdownWrapper>
           </SidebarGroup>

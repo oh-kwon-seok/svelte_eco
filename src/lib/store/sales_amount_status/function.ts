@@ -19,7 +19,7 @@ import {temp_options} from './state';
 import ApexCharts from 'apexcharts';
 
 
-import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/monitoring/product_status/constants';
+import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/monitoring/sales_amount_status/constants';
 
 const api = import.meta.env.VITE_API_BASE_URL;
 
@@ -124,7 +124,7 @@ const makeCustomTable = (table_list_state,type,tableComponent,select,temp_chart)
         let temp_status_array = [];
 
         for (let i = 0; i < res.data.length; i++) {
-          let code = res.data[i].bom.code;
+          let code = res.data[i].name;
           if (!temp_status_array.includes(code)) {
             temp_status_array.push(code);
           }
@@ -139,8 +139,8 @@ const makeCustomTable = (table_list_state,type,tableComponent,select,temp_chart)
         });
     
         for (let i = 0; i < res.data.length; i++) {
-            let taskQty = 1;
-            let status = res.data[i].bom.code;
+            let taskQty = res.data[i].totalBuyPrice;
+            let status = res.data[i].name;
             
             if (temp_status_array.includes(status)) {
                 statusSum[status] += taskQty;
@@ -288,26 +288,26 @@ const select_query = (type,temp_chart) => {
         let temp_status_array = [];
 
         for (let i = 0; i < res.data.length; i++) {
-          let code = res.data[i].bom.code;
+          let code = res.data[i].name;
           if (!temp_status_array.includes(code)) {
             temp_status_array.push(code);
           }
         } 
-
+      
         let statusSum = {};
       
         temp_status_array.forEach(status => {
-          statusSum[status] = 0;
-      });
-  
-      for (let i = 0; i < res.data.length; i++) {
-          let taskQty = 1;
-          let status = res.data[i].bom.code;
-          
-          if (temp_status_array.includes(status)) {
-              statusSum[status] += taskQty;
-          }
-      }
+            statusSum[status] = 0;
+        });
+    
+        for (let i = 0; i < res.data.length; i++) {
+            let taskQty = res.data[i].totalBuyPrice;
+            let status = res.data[i].name;
+            
+            if (temp_status_array.includes(status)) {
+                statusSum[status] += taskQty;
+            }
+        }
 
         temp_data_array = temp_status_array.map(status => statusSum[status]);
 
@@ -316,20 +316,21 @@ const select_query = (type,temp_chart) => {
       
         temp_options.update(()=> temp_data);
 
-        /* 차트 초기화가 안돼서 초기화 삽입 */
-        const chartElement = document.querySelector("#temp_chart");
-        chartElement.innerHTML = "";
-
+         /* 차트 초기화가 안돼서 초기화 삽입 */
+         const chartElement = document.querySelector("#temp_chart");
+         chartElement.innerHTML = "";
+         
+        console.log('temp_data : ', temp_data);
 
         if (temp_chart instanceof ApexCharts) temp_chart.destroy();
 
         temp_chart = new ApexCharts(document.querySelector("#temp_chart"), temp_data);
         temp_chart.render();
           
-      table_list_data['work_task'].setData(res.data);
+      table_list_data['order'].setData(res.data);
       table_list_state.update(() => table_list_data);
       }else{
-        table_list_data['work_task'].setData([]);
+        table_list_data['order'].setData([]);
         table_list_state.update(() => table_list_data);
       }
    

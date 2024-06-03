@@ -19,7 +19,7 @@ import {temp_options} from './state';
 import ApexCharts from 'apexcharts';
 
 
-import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/monitoring/product_status/constants';
+import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/monitoring/read_time_status/constants';
 
 const api = import.meta.env.VITE_API_BASE_URL;
 
@@ -287,27 +287,27 @@ const select_query = (type,temp_chart) => {
         let temp_data_array = [];
         let temp_status_array = [];
 
+        let statusSum = {};
+
         for (let i = 0; i < res.data.length; i++) {
           let code = res.data[i].bom.code;
           if (!temp_status_array.includes(code)) {
             temp_status_array.push(code);
           }
         } 
-
-        let statusSum = {};
       
-        temp_status_array.forEach(status => {
-          statusSum[status] = 0;
-      });
-  
-      for (let i = 0; i < res.data.length; i++) {
-          let taskQty = 1;
-          let status = res.data[i].bom.code;
-          
-          if (temp_status_array.includes(status)) {
-              statusSum[status] += taskQty;
+          temp_status_array.forEach(status => {
+              statusSum[status] = 0;
+          });
+      
+          for (let i = 0; i < res.data.length; i++) {
+              let taskQty = 1;
+              let status = res.data[i]['status'];
+              
+              if (temp_status_array.includes(status)) {
+                  statusSum[status] += taskQty;
+              }
           }
-      }
 
         temp_data_array = temp_status_array.map(status => statusSum[status]);
 
@@ -316,11 +316,9 @@ const select_query = (type,temp_chart) => {
       
         temp_options.update(()=> temp_data);
 
-        /* 차트 초기화가 안돼서 초기화 삽입 */
-        const chartElement = document.querySelector("#temp_chart");
-        chartElement.innerHTML = "";
+        console.log('temp_data : ', temp_data);
 
-
+        temp_chart.destroy();
         if (temp_chart instanceof ApexCharts) temp_chart.destroy();
 
         temp_chart = new ApexCharts(document.querySelector("#temp_chart"), temp_data);
