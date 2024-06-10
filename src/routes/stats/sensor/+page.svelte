@@ -15,7 +15,7 @@
   import { temp_options, humi_options, ph_options, weight_options } from '$lib/store/sensor/state';
   import { SearchOutline } from 'flowbite-svelte-icons';
   import { afterUpdate, onMount, onDestroy } from 'svelte';
-  import ApexCharts from 'apexcharts';
+  
   import moment from 'moment';
 
   export let data;
@@ -30,12 +30,7 @@
   const initializeCharts = () => {
       // Initialize charts again
       makeCustomTable(table_list_state, "sensor", tableComponent, "select", temp_chart, humi_chart, ph_chart, weight_chart)
-          // .then(charts => {
-          //     temp_chart = charts.temp_chart;
-          //     humi_chart = charts.humi_chart;
-          //     ph_chart = charts.ph_chart;
-          //     weight_chart = charts.weight_chart;
-          // });
+         
   };
 
   onMount(() => {
