@@ -16,7 +16,7 @@ import {TOAST_SAMPLE,CLIENT_INFO} from '$lib/module/common/constants';
 import {TabulatorFull as Tabulator} from 'tabulator-tables';
 import {temp_options,humi_options,ph_options,weight_options} from './state';
 
-import ApexCharts from 'apexcharts';
+// import ApexCharts from 'apexcharts';
 
 
 import {TABLE_TOTAL_CONFIG,MODAL_TABLE_HEADER_CONFIG,TABLE_FILTER,EXCEL_CONFIG,TABLE_HEADER_CONFIG} from '$lib/module/stats/constants';
