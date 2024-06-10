@@ -34,7 +34,7 @@
   };
 
   onMount(() => {
-      console.log('시점');
+      console.log('시점dd');
       initializeCharts();
   });
 
